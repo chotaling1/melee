@@ -88,7 +88,7 @@ if [ -x port/build/melee ]; then
         bad "run exit $rc (log: $LOG/run.log)"
         grep -v "no type known\|retrace\|^\[audit\]" "$LOG/run.log" | tail -15
     fi
-    grep -E '^\[port\] (f[0-9]+ p[0-9]|p[0-9] kind [0-9]+ attrs)' "$LOG/run.log" \
+    grep -E '^\[port\] (f[0-9]+ (p[0-9]|item spawn)|p[0-9] kind [0-9]+ attrs)' "$LOG/run.log" \
         | sed 's/^\[port\] //' >"$LOG/trace.txt"
     step "trace vs port/tests/demo_line.trace (informational)"
     if [ "$UPDATE" = 1 ]; then

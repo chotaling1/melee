@@ -59,16 +59,6 @@ their own worktree.
 
 ## Tickets
 
-### PORT-002: Items-on forced match
-- Status: open
-- Depends: PORT-001
-- Do: `MELEE_PORT_DEMO_ITEMS=1` keeps items on (default frequency) in the
-  forced demo match; fix what breaks (item spawn, pickup, throw).
-- Done when: Fox vs Marth on the line stage with items on reaches 9000
-  retraces with exit 0, and the trace shows at least one item spawned
-  (add item spawns to `MELEE_PORT_TRACE` output).
-- Log:
-
 ### PORT-003: Battlefield from the real DAT
 - Status: open
 - Do: `MELEE_PORT_DEMO_MATCH=1` without `MELEE_PORT_STAGE=line` uses

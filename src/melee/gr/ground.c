@@ -119,6 +119,10 @@
 #include <sysdolphin/baselib/spline.h>
 #include <sysdolphin/baselib/wobj.h>
 
+#ifdef MELEE_PORT
+#include <port/stage.h>
+#endif
+
 /* 1BFFA8 */ static void Ground_OnStart(void);
 /* 1BFFAC */ static void Ground_801BFFAC(int);
 /* 1C0478 */ static void mem_free(void* ptr);
@@ -432,6 +436,9 @@ GXColor* Ground_801C06A4(void)
 
 void Ground_801C06B8(GrKind arg0)
 {
+#ifdef MELEE_PORT
+    stage_datas[arg0] = port_stage_override(arg0, stage_datas[arg0]);
+#endif
     if (stage_datas[arg0] == NULL) {
         return;
     }
@@ -456,9 +463,16 @@ void Ground_801C0754(StageIdPair* pair)
     s32 arg3;
     Ground_801BFFB0();
     stage_info.grkind = pair->grkind;
+#ifdef MELEE_PORT
+    stage_datas[pair->grkind] =
+        port_stage_override(pair->grkind, stage_datas[pair->grkind]);
+#endif
     stage = stage_datas[pair->grkind];
     arg3 = (pair->stkind == St_Kind_Heal) ? 0 : 1;
     grDatFiles_801C6038(stage->data1, 0, arg3);
+#ifdef MELEE_PORT
+    port_stage_load(stage);
+#endif
     Ground_801C28CC(&stage_info.xA0, pair->stkind);
     stage_info.on_touch_line = stage->on_touch_line;
     stage_info.on_check_shadow_render = stage->on_check_shadow_render;

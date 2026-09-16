@@ -70,8 +70,19 @@ OSErrorHandler OSSetErrorHandler(OSError error, OSErrorHandler handler)
 /// Dolphin for step-2 comparisons.
 #define PORT_ARENA_LO (PORT_MEM1_BASE + 0x00600000u)
 
+/* Bounds of the port executable's own image (static linking: code, data
+ * and bss sit at low host addresses). */
+extern const char __ehdr_start[];
+extern char _end[];
+
 void* port_mem1_ptr(u32 addr)
 {
+    /* Static buffers in the executable (e.g. devcom.c's DVD->ARAM relay
+     * buffers, which live in MEM1 .bss on the console) have host addresses
+     * below 0x01800000 and must not be mistaken for physical addresses. */
+    if (addr >= (uintptr_t) __ehdr_start && addr < (uintptr_t) _end) {
+        return (void*) addr;
+    }
     if (addr < PORT_MEM1_BASE) {
         addr |= PORT_MEM1_BASE; /* physical -> cached */
     }

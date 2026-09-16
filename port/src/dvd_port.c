@@ -2,7 +2,7 @@
 ///
 /// The disc image path comes from $MELEE_ISO, defaulting to the dump in
 /// orig/GALE01/. Nothing from the disc is ever written anywhere; the FST
-/// is parsed in memory and file reads are pread()s at the file's disc
+/// is parsed in memory and file reads are positioned host reads at the file's disc
 /// offset. Completion callbacks are delivered through port_defer, like the
 /// DVD interrupt would on hardware.
 ///
@@ -18,12 +18,11 @@
 
 #include <dolphin/dvd.h>
 
-#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include <unistd.h>
 
+#include <port/host.h>
 #include <port/port.h>
 
 #define DEFAULT_ISO                                                           \
@@ -47,7 +46,7 @@ static int read_at(void* dst, u32 len, u64 off)
 {
     u8* p = dst;
     while (len) {
-        ssize_t n = pread(iso_fd, p, len, (off_t) off);
+        long n = port_host_file_read_at(iso_fd, p, len, off);
         if (n <= 0) {
             return 0;
         }
@@ -97,7 +96,7 @@ void DVDInit(void)
     if (!path) {
         path = DEFAULT_ISO;
     }
-    iso_fd = open(path, O_RDONLY);
+    iso_fd = port_host_file_open(path);
     if (iso_fd < 0) {
         port_log("cannot open ISO '%s' (set MELEE_ISO)", path);
         abort();

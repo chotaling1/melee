@@ -61,6 +61,11 @@ void port_walk_SceneDesc(SceneDesc* s);
 void port_walk_StaticModelDesc(StaticModelDesc* m);
 void port_walk_DynamicModelDesc(DynamicModelDesc* m);
 
+/// Particle banks (sysdolphin/baselib/particle.c): command bank, texture
+/// bank and optional form bank, before psInitDataBankLocate relocates
+/// their internal offsets. Arguments are the untyped bank pointers.
+void port_swap_ps_banks(void* cmdBank, void* texBank, int* formBank);
+
 /// Swap the object graph rooted at a public archive symbol, choosing the
 /// type from the symbol name.
 void port_swap_public(const char* symbol, void* addr);

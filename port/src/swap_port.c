@@ -23,6 +23,7 @@
 #include <sysdolphin/baselib/lobj.h>
 #include <sysdolphin/baselib/mobj.h>
 #include <sysdolphin/baselib/pobj.h>
+#include <sysdolphin/baselib/psstructs.h>
 #include <sysdolphin/baselib/robj.h>
 #include <sysdolphin/baselib/spline.h>
 #include <sysdolphin/baselib/tobj.h>
@@ -400,6 +401,101 @@ void port_walk_SceneDesc(SceneDesc* s)
     if (OK(s->fogs)) {
         port_walk_FogDesc(s->fogs->desc);
         EACH(HSD_CameraAnim, s->fogs->anims, a) { port_walk_CameraAnim(a); }
+    }
+}
+
+/* ---- particle banks (sysdolphin/baselib/particle.c, psstructs.h) ---- */
+
+static void swap_PSCmdList(HSD_PSCmdList* cl)
+{
+    /* type, texGroup, genLife, life */
+    port_swap16_array(cl, 4);
+    /* kind, then grav..param3: 12 words; cmdList[] bytes stay as-is
+     * (particle.c decodes them byte-wise). */
+    port_swap32_array(&cl->kind, 12);
+}
+
+void port_swap_ps_banks(void* cmdBank, void* texBank, int* formBank)
+{
+    s32* cmd = cmdBank;
+    s32* tex = texBank;
+    s32 i;
+
+    /* Command bank: u16 version, then either
+     *   v0:        [1]=count, [2..] offsets
+     *   v0x40-43:  [1]=num,   [2]=count, [3..] offsets
+     * The offsets are bank-relative until psInitDataBankLocate runs. */
+    if (OK(cmd)) {
+        u32 version, count, first;
+        port_swap16(cmd);
+        port_swap16((u8*) cmd + 2);
+        version = *(u16*) cmd;
+        if (version == 0) {
+            port_swap32(&cmd[1]);
+            count = (u32) cmd[1];
+            first = 2;
+        } else if (version >= 0x40 && version < 0x44) {
+            port_swap32_array(&cmd[1], 2);
+            count = (u32) cmd[2];
+            first = 3;
+        } else {
+            port_log("port_swap_ps_banks: unknown cmd bank version 0x%x",
+                     version);
+            count = 0;
+            first = 0;
+        }
+        port_swap32_array(&cmd[first], count);
+        for (i = 0; (u32) i < count; i++) {
+            if (cmd[first + i] != 0) {
+                swap_PSCmdList(
+                    (HSD_PSCmdList*) ((u8*) cmd + (u32) cmd[first + i]));
+            }
+        }
+    }
+
+    /* Texture bank: [0]=num_groups, [1..num_groups] group offsets. */
+    if (OK(tex)) {
+        s32 num_groups;
+        port_swap32(&tex[0]);
+        num_groups = tex[0];
+        port_swap32_array(&tex[1], (size_t) num_groups);
+        for (i = 1; i <= num_groups; i++) {
+            HSD_PSTexGroup* tg;
+            u32 n;
+            if (tex[i] == 0) {
+                continue;
+            }
+            tg = (HSD_PSTexGroup*) ((u8*) tex + (u32) tex[i]);
+            port_swap32_array(tg, 5); /* num, fmt, tlutfmt, width, height */
+            port_swap16(&tg->palnum);
+            port_swap16(&tg->palflag);
+            /* Entry count, mirroring psInitDataBankLocate's palette rules. */
+            n = tg->num;
+            if (tg->fmt == 8 || tg->fmt == 9 || tg->fmt == 10) {
+                if (tg->palflag & 1) {
+                    n += 1;
+                } else if (tg->palnum != 0) {
+                    n += tg->palnum;
+                } else {
+                    n = tg->num * 2;
+                }
+            }
+            port_swap32_array(tg->texTable, n); /* image data stays BE */
+        }
+
+        /* Form bank: [1..num_groups] offsets to {num, formTable[num]}. */
+        if (formBank != NULL && OK(formBank)) {
+            for (i = 1; i <= num_groups; i++) {
+                HSD_PSFormGroup* fg;
+                port_swap32(&formBank[i]);
+                if (formBank[i] == 0) {
+                    continue;
+                }
+                fg = (HSD_PSFormGroup*) ((u8*) formBank + (u32) formBank[i]);
+                port_swap32(&fg->num);
+                port_swap32_array(fg->formTable, fg->num);
+            }
+        }
     }
 }
 

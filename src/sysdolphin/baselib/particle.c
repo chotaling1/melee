@@ -32,6 +32,10 @@ typedef struct {
 #include <dolphin/gx.h>
 #include <dolphin/os.h>
 
+#ifdef MELEE_PORT
+#include <port/swap.h>
+#endif
+
 /* 4D78D8 */ u16 hsd_804D78D8 = 0;
 /* 4D78DA */ u16 hsd_804D78DA = 0;
 /* 4D78DC */ static u16 numPeakParticles;
@@ -169,6 +173,10 @@ void psInitDataBankLocate(HSD_Archive* cmdBank, HSD_Archive* texBank,
     s32* groups;
     s32* base;
     s32 version;
+
+#ifdef MELEE_PORT
+    port_swap_ps_banks(cmdBank, texBank, formBank);
+#endif
 
     version = *(u16*) cmdBank;
     if (version < 0x40) {
@@ -631,10 +639,18 @@ static inline void psEnableTexture(HSD_Particle* pp, u8* const* textures)
 static inline void psReadFloat(u8** stream)
 {
     u8* p = *stream;
+#ifdef MELEE_PORT
+    /* Stream floats are big-endian; fill a little-endian f32 backwards. */
+    ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[3] = *p++;
+    ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[2] = *p++;
+    ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[1] = *p++;
+    ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[0] = *p++;
+#else
     ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[0] = *p++;
     ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[1] = *p++;
     ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[2] = *p++;
     ((ParticleFloatBytes*) &hsd_804D78D0)->bytes[3] = *p++;
+#endif
     *stream = p;
 }
 

@@ -393,6 +393,11 @@ void port_walk_DynamicModelDesc(DynamicModelDesc* m)
     }
 }
 
+void port_walk_DynamicModelDescs(DynamicModelDesc** models)
+{
+    EACH(DynamicModelDesc, models, m) { port_walk_DynamicModelDesc(m); }
+}
+
 void port_walk_LightLists(LightList** lists)
 {
     EACH(LightList, lists, l)
@@ -420,6 +425,31 @@ void port_walk_SceneDesc(SceneDesc* s)
     if (OK(s->fogs)) {
         port_walk_FogDesc(s->fogs->desc);
         EACH(HSD_CameraAnim, s->fogs->anims, a) { port_walk_CameraAnim(a); }
+    }
+}
+
+/* ---- figatree (fighter animations, src/melee/lb/lbanim.h) ---- */
+
+/// FigaTree { s32 type; u32 flags; f32 frames; s8* nodes; FigaTrack* }.
+/// nodes are per-joint track counts (bytes). Each FigaTrack is
+/// { u16 length; u16 startframe; u8 obj_type, frac_value, frac_slope;
+/// u8* ad_head } (12 bytes); the keyframe bytes stay big-endian (fobj.c
+/// decodes them byte-wise).
+static void walk_FigaTree(void* addr)
+{
+    u32* tree = addr;
+    u8* tracks;
+    size_t i, n;
+
+    port_swap32_array(tree, 3);
+    tracks = (u8*) (uintptr_t) tree[4];
+    if (!OK(tracks)) {
+        return;
+    }
+    n = port_extent(tracks) / 12;
+    for (i = 0; i < n; i++) {
+        port_swap16(tracks + i * 12);
+        port_swap16(tracks + i * 12 + 2);
     }
 }
 
@@ -540,16 +570,26 @@ void port_swap_public(const char* symbol, void* addr)
         port_walk_AnimJoint(addr);
     } else if (ends_with(symbol, "_joint")) {
         walk_Joint(addr);
-    } else if (ends_with(symbol, "_scene_data") ||
-               ends_with(symbol, "_scene_models")) {
+    } else if (ends_with(symbol, "_figatree")) {
+        walk_FigaTree(addr);
+    } else if (ends_with(symbol, "_scene_data")) {
         port_walk_SceneDesc(addr);
+    } else if (ends_with(symbol, "_scene_models") ||
+               strcmp(symbol, "Stc_scemdls") == 0 ||
+               strcmp(symbol, "Stc_rarwmdls") == 0 ||
+               strcmp(symbol, "lupe") == 0 || strcmp(symbol, "tdsce") == 0)
+    {
+        /* NULL-terminated DynamicModelDesc* arrays (IfAll.usd). */
+        port_walk_DynamicModelDescs(addr);
     } else if (ends_with(symbol, "_camera")) {
         port_walk_CObjDesc(addr);
     } else if (ends_with(symbol, "_lights")) {
         port_walk_LightLists(addr);
     } else if (ends_with(symbol, "_fog")) {
         port_walk_FogDesc(addr);
-    } else if (!port_swap_game_public(symbol, addr)) {
+    } else if (!port_swap_game_public(symbol, addr) &&
+               !port_swap_fighter_public(symbol, addr))
+    {
         port_log("port_swap_public: no type known for symbol '%s'", symbol);
     }
 }

@@ -57,6 +57,17 @@ void port_swap_UnkStageDat_x8_t(void* p);
 void port_swap_GroundShadowEntry(void* p);
 void port_swap_GrJoint(void* p);
 
+/* Generated: fighters, items. */
+void port_swap_ftCo_DatAttrs(void* p);
+void port_swap_ftCommonData(void* p);
+void port_swap_ItemAttr(void* p);
+void port_swap_ItemModelDesc(void* p);
+
+/* Fighters (port/src/swap_fighter.c) and items (port/src/swap_item.c). */
+void port_swap_script(void* p);
+void port_swap_article(void* a);
+int port_swap_fighter_public(const char* symbol, void* addr);
+
 /* Graph walkers (port/src/swap_port.c). */
 void port_walk_Joint(HSD_Joint* j);
 void port_walk_MObjDesc(struct _HSD_MObjDesc* m);
@@ -74,6 +85,7 @@ void port_walk_FogDesc(HSD_FogDesc* f);
 void port_walk_SceneDesc(SceneDesc* s);
 void port_walk_StaticModelDesc(StaticModelDesc* m);
 void port_walk_DynamicModelDesc(DynamicModelDesc* m);
+void port_walk_DynamicModelDescs(DynamicModelDesc** models);
 
 /// Particle banks (sysdolphin/baselib/particle.c): command bank, texture
 /// bank and optional form bank, before psInitDataBankLocate relocates

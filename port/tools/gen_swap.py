@@ -93,6 +93,11 @@ TYPES = [
     "UnkStageDat_x8_t",
     "GroundShadowEntry",
     "GrJoint",
+    # Fighters (src/melee/ft/types.h) and items (src/melee/it/types.h)
+    "ftCo_DatAttrs",
+    "ftCommonData",
+    "ItemAttr",
+    "ItemModelDesc",
 ]
 
 

@@ -172,12 +172,20 @@ int port_swap_game_public(const char* symbol, void* addr)
     size_t i;
     size_t n = strlen(symbol);
 
-    /* eff*DataTable (src/melee/ef/types.h EF_DAT_Entry-shaped): two bank
-     * pointers only. The banks themselves are swapped by
-     * psInitDataBankLocate -> port_swap_ps_banks. */
+    /* eff*DataTable: { cmd bank*; tex bank*; EF_EffectDesc[] } where each
+     * EF_EffectDesc (src/melee/ef/types.h, 0x14) is { f32 lifetime;
+     * StaticModelDesc }, indexed by gfx_id % 1000 (efLib_Create). The banks
+     * are swapped by psInitDataBankLocate -> port_swap_ps_banks. */
     if (strncmp(symbol, "eff", 3) == 0 && n > 9 &&
         strcmp(symbol + n - 9, "DataTable") == 0)
     {
+        u8* descs = (u8*) addr + 8;
+        size_t count = (port_extent(addr) - 8) / 0x14;
+        for (i = 0; i < count; i++) {
+            u8* d = descs + i * 0x14;
+            port_swap32(d);
+            port_walk_StaticModelDesc((StaticModelDesc*) (d + 4));
+        }
         return 1;
     }
     for (i = 0; i < sizeof(roots) / sizeof(roots[0]); i++) {

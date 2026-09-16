@@ -38,6 +38,12 @@ static void on_fatal(int sig, siginfo_t* si, void* ctx)
 
     fprintf(stderr, "\n[port] fatal signal %d (%s) addr=%p eip=0x%08lx esp=0x%08lx\n",
             sig, strsignal(sig), si->si_addr, eip, esp);
+    /* After a call through a bad function pointer, eip is garbage but the
+     * return address is still on top of the stack. */
+    if (readable((void*) esp)) {
+        fprintf(stderr, "[port] [esp]=0x%08lx (return address if eip is a bad call target)\n",
+                *(unsigned long*) esp);
+    }
     fprintf(stderr, "[port] backtrace: 0x%08lx", eip);
     for (i = 0; i < 48 && readable((void*) ebp) && (ebp & 3) == 0; i++) {
         unsigned long* frame = (unsigned long*) ebp;

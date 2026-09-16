@@ -226,6 +226,12 @@ BOOL DVDReadAsyncPrio(DVDFileInfo* fileInfo, void* addr, s32 length,
     fileInfo->cb.offset = (u32) offset;
     fileInfo->cb.length = (u32) length;
     fileInfo->cb.transferredSize = (u32) length;
+    if (callback == NULL) {
+        /* Nothing to notify: finish now rather than touching fileInfo
+         * later, since callers often keep it on the stack. */
+        fileInfo->cb.state = DVD_STATE_END;
+        return TRUE;
+    }
     fileInfo->cb.state = DVD_STATE_BUSY;
     port_defer(read_complete, fileInfo);
     return TRUE;

@@ -11,6 +11,10 @@
 #include <dolphin/ar.h>
 #include <dolphin/os.h>
 
+#ifdef MELEE_PORT
+#include <port/port.h>
+#endif
+
 /* 389334 */ static int HSD_Synth_80389334(int sfx_id, u8 vol, u8 vol2, u8 pan,
                                            int priority, int itd_flag,
                                            float pitch1, float pitch2,
@@ -183,8 +187,44 @@ static void HSD_SynthSFXHeaderLoadCallback(int result, int length, void* addr,
     HSD_SynthSFXSampleLoadCallback(0, 0, NULL, 0);
 }
 
+#ifdef MELEE_PORT
+/* No audio yet (roadmap step 5): SSM banks are big-endian and the port has
+ * no DSP/AX mixer, so bank data is never read. The request queue still
+ * runs exactly as with real loads: each queued bank "finishes" in a
+ * deferred interrupt, doing what the tail of
+ * HSD_SynthSFXSampleLoadCallback does (notify, dequeue, start the next),
+ * so lbAudioAx's wait/cancel/chain logic behaves as on hardware. */
+static void port_SynthSFXLoadDone(void* unused)
+{
+    BOOL intr;
+    s32 i;
+
+    if (HSD_Synth_804D7738 == 0) {
+        if (HSD_Synth_804C2A60[0].x8 != NULL) {
+            HSD_Synth_804C2A60[0].x8(HSD_Synth_804C2A60[0].entrynum,
+                                     HSD_Synth_804C2A60[0].xC);
+        }
+    } else {
+        HSD_Synth_804D7738 = 0;
+    }
+    intr = OSDisableInterrupts();
+    HSD_Synth_804D772C -= 1;
+    for (i = 0; i < HSD_Synth_804D772C; i++) {
+        HSD_Synth_804C2A60[i] = HSD_Synth_804C2A60[i + 1];
+    }
+    HSD_SynthSFXLoadNewProc();
+    OSRestoreInterrupts(intr);
+}
+#endif
+
 void HSD_SynthSFXLoadNewProc(void)
 {
+#ifdef MELEE_PORT
+    if (HSD_Synth_804D772C != 0) {
+        port_defer(port_SynthSFXLoadDone, NULL);
+    }
+    return;
+#endif
     if (HSD_Synth_804D772C != 0) {
         bool enabled = OSDisableInterrupts();
         HSD_Synth_804D6028[0] = HSD_DevComRequest(
@@ -204,12 +244,6 @@ int HSD_SynthSFXLoad(const char* filename, int bankID, void (*cb)(int, int),
                      "invalid bankID = %d; filename = %s\n", bankID, filename);
 
     entrynum = DVDConvertPathToEntrynum(filename);
-
-#ifdef MELEE_PORT
-    /* No audio yet (roadmap step 5): SSM banks are big-endian and the
-     * port has no DSP/AX mixer, so skip loading them entirely. */
-    return entrynum;
-#endif
 
     while (HSD_Synth_804D772C >= 6) {
     }
@@ -1421,6 +1455,11 @@ int HSD_Synth_8038B5AC(int entrynum, u8 vol, u8 vol2, int channel)
     AXVPB* voice;
 
     PAD_STACK(8);
+
+#ifdef MELEE_PORT
+    /* No audio yet (roadmap step 5): no voices, so no stream. */
+    return -1;
+#endif
 
     do {
     } while (HSD_Synth_804D7778 != 0);

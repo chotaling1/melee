@@ -513,7 +513,12 @@ void fn_8001F2A4(OSAlarm* alarm, OSContext* context)
     frame = lbMthp_GetFrame(rate_table, streamPlayer->unk_80);
 
     if (streamPlayer->unk_78 != frame) {
+#ifdef MELEE_PORT
+        /* No THP decoder yet: frames are "decoded" instantly. */
+        streamPlayer->unk_78 = frame;
+#else
         fn_8001F06C(lbMthp_GetDecoder(streamPlayer));
+#endif
     }
 }
 
@@ -526,6 +531,42 @@ void lbMthp_8001F410(const char* filename, u32* rate_table, void* buf,
 
     HSD_ASSERT(833, !MoviePlayer.power);
     MoviePlayer.power = 1;
+#ifdef MELEE_PORT
+    /* Timing-only playback: keep the 60 Hz frame clock the scenes key off
+     * (lbMthp_8001F5C4 / lbMthp_8001F604) but decode and draw nothing.
+     * Only the frame count is needed, from the big-endian MTHP header:
+     * "MTHP", version, ?, buf_size, width (+0x10), height, frame_rate,
+     * num_frames (+0x1C), first_frame, ... */
+    {
+        DVDFileInfo info;
+        u8 header[0x30];
+        s32 entry = DVDConvertPathToEntrynum(filename);
+        u32 num_frames = 0;
+        if (entry >= 0 && DVDFastOpen(entry, &info) &&
+            DVDReadAsyncPrio(&info, header, sizeof(header), 0, NULL, 0))
+        {
+            num_frames = ((u32) header[0x1C] << 24) |
+                         ((u32) header[0x1D] << 16) |
+                         ((u32) header[0x1E] << 8) | header[0x1F];
+        }
+        OSReport("[port] movie %s: %u frames (not decoded)\n", filename,
+                 num_frames);
+        MoviePlayer.unk_40 = num_frames;
+        MoviePlayer.rate_table = rate_table;
+        MoviePlayer.unk_68 = loop;
+        MoviePlayer.unk_78 = MoviePlayer.unk_7C = 0;
+        MoviePlayer.unk_80 = MoviePlayer.unk_84 = 0;
+        MoviePlayer.unk_88 = MoviePlayer.unk_90 = 0;
+        MoviePlayer.unk_110 = 0;
+        MoviePlayer.unk_140 = NULL;
+        MoviePlayer.unk_144 = 0;
+        MoviePlayer.unk_148 = 0;
+        OSCreateAlarm(&MoviePlayer.alarm);
+        OSSetPeriodicAlarm(&streamPlayer->alarm, OSSecondsToTicks(1.0f / 60),
+                           OSSecondsToTicks(1.0f / 60), fn_8001F2A4);
+        return;
+    }
+#endif
     fn_8001EB14(&MoviePlayer, filename);
     MoviePlayer.rate_table = rate_table;
     memoryRequired = fn_8001EBF0(&MoviePlayer);
@@ -606,6 +647,10 @@ void lbMthp_8001F67C(HSD_GObj* gobj, int arg1)
 {
     THPDecComp* streamPlayer = &MoviePlayer;
     PAD_STACK(8);
+
+#ifdef MELEE_PORT
+    return; /* no decoded frames to show; see lbMthp_8001F410 */
+#endif
 
     fn_8001EF5C(streamPlayer);
     if (streamPlayer->unk_148 != 0) {

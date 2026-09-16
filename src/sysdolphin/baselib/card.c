@@ -143,9 +143,20 @@ ASSERT_OFFSET(CardContext, requests, 0x1210);
     idle,
 } hsd_804D799C;
 
+#ifdef MELEE_PORT
+/* These three are accessed both directly and through one CardContext*
+ * spanning all of them, which relies on the GameCube link placing them
+ * back to back. A host compiler lays statics out freely, so keep them in
+ * one real CardContext. */
+static CardContext hsd_804D1138;
+#define active_requests (hsd_804D1138.active)
+static CardCmd* const commands = hsd_804D1138.cmds;
+static CardRequest* const requests = hsd_804D1138.requests;
+#else
 /* 4D1138 */ static CardActiveRequest active_requests;
 /* 4D1148 */ static CardCmd commands[128];
 /* 4D2348 */ static CardRequest requests[32];
+#endif
 
 static int checkOpen(CardState* state)
 {

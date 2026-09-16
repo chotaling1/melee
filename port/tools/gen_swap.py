@@ -110,6 +110,10 @@ TYPES = [
     # Item special attributes with u8/s16 fields (itPublicData articles).
     "itLeadeadAttributes",
     "itOctarockAttributes",
+    # Trophy tables (TyDatai.usd, src/melee/ty/types.h)
+    "TrophyData",
+    "ToyNameData",
+    "TyDspEntry",
     "ItemAttr",
     "ItemCommonData",
     "ItemModelDesc",

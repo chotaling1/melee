@@ -61,11 +61,14 @@ void port_swap_GrJoint(void* p);
 void port_swap_ftCo_DatAttrs(void* p);
 void port_swap_ftCommonData(void* p);
 void port_swap_ItemAttr(void* p);
+void port_swap_ItemCommonData(void* p);
 void port_swap_ItemModelDesc(void* p);
 
 /* Fighters (port/src/swap_fighter.c) and items (port/src/swap_item.c). */
 void port_swap_script(void* p);
 void port_swap_article(void* a);
+void port_swap_color_anims(void* p);
+void port_swap_itPublicData(void* addr);
 int port_swap_fighter_public(const char* symbol, void* addr);
 
 /* Graph walkers (port/src/swap_port.c). */

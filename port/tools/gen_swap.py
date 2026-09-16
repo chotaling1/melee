@@ -97,6 +97,7 @@ TYPES = [
     "ftCo_DatAttrs",
     "ftCommonData",
     "ItemAttr",
+    "ItemCommonData",
     "ItemModelDesc",
 ]
 

@@ -9,8 +9,9 @@
 # can symlink both from the main checkout.
 #
 # Exit status 0 only if every gate passes:
-#   1. port build (configure + ninja)
-#   2. matching build: build/GALE01/main.dol sha1 is the retail one
+#   1. matching build: build/GALE01/main.dol sha1 is the retail one
+#      (--quick skips it once build/GALE01/include exists)
+#   2. port build (configure + ninja)
 #   3. headless forced match (Fox vs Marth, line stage) reaches 9000
 #      retraces and exits 0
 # It also reports (without failing) whether the fighter trace differs from
@@ -40,15 +41,9 @@ step() { printf '== %s\n' "$*"; }
 ok() { printf '   PASS %s\n' "$*"; }
 bad() { printf '   FAIL %s\n' "$*"; fail=1; }
 
-step "port build"
-if $PY port/configure.py >"$LOG/port.log" 2>&1 && $NINJA -C port >>"$LOG/port.log" 2>&1; then
-    ok "port/build/melee"
-else
-    bad "port build (log: $LOG/port.log)"
-    tail -20 "$LOG/port.log"
-fi
-
-if [ "$QUICK" = 0 ]; then
+# The port build includes headers the matching build extracts from the
+# user's DOL (build/GALE01/include), so this runs first on fresh checkouts.
+if [ "$QUICK" = 0 ] || [ ! -d build/GALE01/include ]; then
     step "matching build"
     if (source .venv/bin/activate && python configure.py && ninja) >"$LOG/match.log" 2>&1; then
         sha=$(sha1sum build/GALE01/main.dol | cut -d' ' -f1)
@@ -61,6 +56,14 @@ if [ "$QUICK" = 0 ]; then
         bad "matching build (log: $LOG/match.log)"
         tail -20 "$LOG/match.log"
     fi
+fi
+
+step "port build"
+if $PY port/configure.py >"$LOG/port.log" 2>&1 && $NINJA -C port >>"$LOG/port.log" 2>&1; then
+    ok "port/build/melee"
+else
+    bad "port build (log: $LOG/port.log)"
+    tail -20 "$LOG/port.log"
 fi
 
 if [ -x port/build/melee ]; then

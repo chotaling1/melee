@@ -39,8 +39,14 @@ typedef struct ftCo_ItemThrowAttrs {
 } ftCo_ItemThrowAttrs;
 
 typedef struct ftCo_ItemThrowCmd {
+#ifdef MELEE_PORT
+    /* fp->cmd_vars is a host u32 set by script commands; LSB-first. */
+    s32 angle : 12;
+    u32 pad : 20;
+#else
     /* +0:0  */ u32 pad : 20;
     /* +0:20 */ s32 angle : 12;
+#endif
 } ftCo_ItemThrowCmd;
 
 bool ftCo_80094E54(Fighter* fp)

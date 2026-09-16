@@ -149,6 +149,20 @@ static void article_table(Article** t, ItemKind first, size_t count)
         if (!OK(a)) {
             continue;
         }
+        /* Special attributes with s16/u8 fields: typed swap first, so the
+         * extent word pass in port_swap_article skips those words. */
+        if (OK(a->x4_specialAttributes)) {
+            switch ((ItemKind) (first + i)) {
+            case It_Kind_Leadead:
+                port_swap_itLeadeadAttributes(a->x4_specialAttributes);
+                break;
+            case It_Kind_Octarock:
+                port_swap_itOctarockAttributes(a->x4_specialAttributes);
+                break;
+            default:
+                break;
+            }
+        }
         port_swap_article(a);
         if (OK(a->x4_specialAttributes)) {
             swap_special_pointers((ItemKind) (first + i),

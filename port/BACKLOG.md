@@ -105,7 +105,12 @@ their own worktree.
 - Do: `MELEE_PORT_DEMO_MATCH=1` without `MELEE_PORT_STAGE=line` uses
   Battlefield (`GrNBa.dat`). Complete the stage swaps (map_head models,
   yakumono, particles, `ALDYakuAll`, `itemdata`) and stage callbacks until
-  it runs.
+  it runs. Stage-only items whose special attributes have s16/u8 fields
+  need typed swaps like Redead/Octorok got in PORT-005 (add them to
+  `gen_swap.py` TYPES and swap them before the extent pass):
+  `itLikelikeAttributes` (u8 +3C..+3E), `itTincleAttributes` (u8 +54/+55),
+  `itWhiteBeaAttributes` (s16 +08..+14), `itOldottoseaAttributes`
+  (u8 +10, +28).
 - Done when: the Battlefield forced match reaches 9000 retraces with exit 0;
   fighters stand on the platforms (trace y > 0 on ground at some point).
   Add it as a second gate in check.sh with its own baseline trace.
@@ -118,21 +123,6 @@ their own worktree.
   `lbRumbleData`, `ty*Tbl` (trophy tables), `TitleMark_sobjdesc`,
   `MemCardIconData`, `lbBgFlashColAnimData`. One commit per symbol family.
 - Done when: check.sh reports 0 "no type known" warnings.
-- Log:
-
-### PORT-005: Sweep for runtime bitfields that receive DAT words
-- Status: in-progress
-- Owner: chat
-- Why: `Fighter::x594` got a whole u32 flags word from the action table
-  and was read through MSB-first bitfields; it silently decoded wrong
-  until it crashed. Others may not crash.
-- Do: find struct/union bitfields in `src/melee` that are written from
-  loaded data as whole words (assignments from DAT struct fields, memcpy
-  of DAT data into runtime structs, casts of DAT pointers to bitfield
-  types). Give each an `#ifdef MELEE_PORT` LSB-first layout or convert
-  explicitly. Record the list and what was fixed in the log.
-- Done when: the sweep method and every hit are logged here; fixes land
-  with check.sh passing.
 - Log:
 
 ### PORT-006: Forced match for any two characters

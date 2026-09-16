@@ -96,6 +96,20 @@ TYPES = [
     # Fighters (src/melee/ft/types.h) and items (src/melee/it/types.h)
     "ftCo_DatAttrs",
     "ftCommonData",
+    # Fighter special attributes with u8/s16 fields (ftData +04); swapped
+    # before the extent word pass (swap_fighter.c).
+    "ftFox_DatAttrs",
+    "ftMario_DatAttrs",
+    "ftMewtwoAttributes",
+    "ftNessAttributes",
+    "ftZelda_DatAttrs",
+    "ftKb_DatAttrs",
+    "ftLk_DatAttrs",
+    "ftGameWatchAttributes",
+    "MarsAttributes",
+    # Item special attributes with u8/s16 fields (itPublicData articles).
+    "itLeadeadAttributes",
+    "itOctarockAttributes",
     "ItemAttr",
     "ItemCommonData",
     "ItemModelDesc",
@@ -142,6 +156,9 @@ class Layout:
         if tag in ("DW_TAG_base_type", "DW_TAG_enumeration_type"):
             size = die.attributes["DW_AT_byte_size"].value
             if size == 1:
+                # Claim single bytes so a later extent word swap of the same
+                # object leaves the word that holds them alone.
+                out.append(f"    port_claim((u8*) p + 0x{base:X}, 1); /* {path} */")
                 return
             if size == 2:
                 out.append(f"    port_swap16((u8*) p + 0x{base:X}); /* {path} */")
@@ -166,6 +183,10 @@ class Layout:
             esize = self.size(elem)
             if esize is None:
                 problems.append(f"{path}: array of unsized type")
+                return
+            if esize == 1 and self.strip(elem).tag == "DW_TAG_base_type":
+                # Raw byte arrays are usually placeholders for unidentified
+                # words (pad_*, _XX); leave them to the extent word pass.
                 return
             for i in range(count):
                 self.emit(elem, base + i * esize, f"{path}[{i}]", out, problems)

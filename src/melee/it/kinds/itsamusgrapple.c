@@ -49,6 +49,23 @@ ItemStateTable it_803F73A8[] = {
     { -1, NULL, itSamusgrapple_UnkMotion8_Phys, NULL },
 };
 
+#ifdef MELEE_PORT
+/* The port declares script command bitfields in reverse order (see
+ * CmdUnion in lb/types.h), so name the fields instead of relying on
+ * positional order. */
+const itSamusGrapple_Hitbox it_803B8660 = {
+    { .opcode = 11, .id = 0, .hit_group = 0, .only_hit_grabbed = 0,
+      .bone = 139, .use_common_bone_ids = 0, .damage = 0 },
+    { .size = 1200, .z_offset = 0 },
+    { .y_offset = 0, .x_offset = 0 },
+    { .angle = 361, .knockback_growth = 100, .weight_set_knockback = 0,
+      .item_hit_interaction = 1, .ignore_thrown_fighters = 0,
+      .ignore_fighter_scale = 0, .clank = 1, .rebound = 0 },
+    { .base_knockback = 0, .element = 8, .shield_damage = 0,
+      .hit_sfx_severity = 1, .hit_sfx_kind = 2, .hit_grounded = 1,
+      .hit_aerial = 0 },
+};
+#else
 const itSamusGrapple_Hitbox it_803B8660 = {
     { 11, 0, 0, 0, 139, 0, 0 },
     { 1200, 0 },
@@ -56,6 +73,7 @@ const itSamusGrapple_Hitbox it_803B8660 = {
     { 361, 100, 0, 1, 0, 0, 1, 0 },
     { 0, 8, 0, 1, 2, 1, 0 },
 };
+#endif
 
 const Vec3 it_803B8674 = { 0.0f, 0.0f, 0.0f };
 
@@ -173,7 +191,11 @@ void it_802B7160(Fighter_GObj* gobj, itSamusGrapple_HitboxData* data)
         fp->x2219_b3 = 1;
         ftColl_800768A0(fp, hitbox);
     }
+#ifdef MELEE_PORT
+    damage = &((u16*) data)[CMD_HALF(1)];
+#else
     damage = (u16*) ((u8*) data + 2);
+#endif
     {
         u32 bone = data->create_hitbox.create_hitbox_0.bone;
         if (data->create_hitbox.create_hitbox_0.use_common_bone_ids) {
@@ -194,15 +216,33 @@ void it_802B7160(Fighter_GObj* gobj, itSamusGrapple_HitboxData* data)
     hitbox->b_offset.z =
         data->create_hitbox.create_hitbox_2.x_offset * 0.003906f;
     ftColl_8007AC9C(hitbox, data->create_hitbox.create_hitbox_3.angle, gobj);
+#ifdef MELEE_PORT
+    /* The byte arithmetic below assumes big-endian words; read the fields
+     * directly (hit_grounded is spawn_hitbox_4's second-lowest bit). */
+    hitbox_flags = NULL;
+#else
     hitbox_flags = (struct samus_grapple_hitbox_flags*) &data->create_hitbox
                        .create_hitbox_4 +
                    3;
+#endif
     hitbox->x24 = data->create_hitbox.create_hitbox_3.knockback_growth;
     hitbox->x28 = data->create_hitbox.create_hitbox_3.weight_set_knockback;
     hitbox->x43_b0 = data->create_hitbox.create_hitbox_3.item_hit_interaction;
     hitbox->x43_b1 = data->create_hitbox.create_hitbox_3.ignore_fighter_scale;
     hitbox->x40_b0 = data->create_hitbox.create_hitbox_3.clank;
     hitbox->x40_b1 = data->create_hitbox.create_hitbox_3.rebound;
+#ifdef MELEE_PORT
+    {
+        struct spawn_hitbox_4* h4 = &data->create_hitbox.create_hitbox_4;
+        hitbox->x2C = h4->base_knockback;
+        hitbox->element = h4->element;
+        hitbox->x34 = h4->shield_damage;
+        hitbox->sfx_severity = h4->hit_sfx_severity;
+        hitbox->sfx_kind = h4->hit_sfx_kind;
+        hitbox->x40_b2 = h4->hit_aerial;
+        hitbox->x40_b3 = h4->hit_grounded;
+    }
+#else
     hitbox->x2C =
         ((struct spawn_hitbox_4*) (hitbox_flags - 3))->base_knockback;
     hitbox->element = ((struct spawn_hitbox_4*) (hitbox_flags - 3))->element;
@@ -213,6 +253,7 @@ void it_802B7160(Fighter_GObj* gobj, itSamusGrapple_HitboxData* data)
         ((struct spawn_hitbox_4*) (hitbox_flags - 3))->hit_sfx_kind;
     hitbox->x40_b2 = ((struct spawn_hitbox_4*) (hitbox_flags - 3))->hit_aerial;
     hitbox->x40_b3 = hitbox_flags->hit_grounded;
+#endif
     hitbox->x42_b5 = 1;
     hitbox->x42_b7 = 1;
     hitbox->x41_b4 = 0;

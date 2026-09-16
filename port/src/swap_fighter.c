@@ -224,12 +224,44 @@ static void swap_sfx(void* p)
     }
 }
 
-static void swap_ftData(void* addr)
+/// Special attribute structs (ftData +04) that are not all 32-bit words:
+/// reflector/cape/bat `behavior` bytes, sword trail colors, Game & Watch
+/// colors, Kirby's s16. Their generated swaps convert (or claim) those
+/// fields before the extent word pass. Other fighters' attributes are all
+/// f32/s32 in the data.
+static const struct {
+    const char* symbol;
+    void (*swap)(void*);
+} typed_attrs[] = {
+    { "ftDataFox", port_swap_ftFox_DatAttrs },
+    { "ftDataFalco", port_swap_ftFox_DatAttrs },
+    { "ftDataMario", port_swap_ftMario_DatAttrs },
+    { "ftDataDrmario", port_swap_ftMario_DatAttrs },
+    { "ftDataMewtwo", port_swap_ftMewtwoAttributes },
+    { "ftDataNess", port_swap_ftNessAttributes },
+    { "ftDataZelda", port_swap_ftZelda_DatAttrs },
+    { "ftDataKirby", port_swap_ftKb_DatAttrs },
+    { "ftDataLink", port_swap_ftLk_DatAttrs },
+    { "ftDataClink", port_swap_ftLk_DatAttrs },
+    { "ftDataGamewatch", port_swap_ftGameWatchAttributes },
+    { "ftDataMars", port_swap_MarsAttributes },
+    { "ftDataEmblem", port_swap_MarsAttributes },
+};
+
+static void swap_ftData(const char* symbol, void* addr)
 {
     ftData* d = addr;
     size_t i, n;
 
     port_swap_ftCo_DatAttrs(d->x0);
+    if (OK(d->ext_attr)) {
+        for (i = 0; i < sizeof(typed_attrs) / sizeof(typed_attrs[0]); i++) {
+            if (strcmp(symbol, typed_attrs[i].symbol) == 0) {
+                typed_attrs[i].swap(d->ext_attr);
+                break;
+            }
+        }
+    }
     words(d->ext_attr);
     swap_model_lookup(d->x8);
     swap_action_table(d->xC);
@@ -357,7 +389,7 @@ int port_swap_fighter_public(const char* symbol, void* addr)
         return 1;
     }
     if (strncmp(symbol, "ftData", 6) == 0) {
-        swap_ftData(addr);
+        swap_ftData(symbol, addr);
         return 1;
     }
     return 0;

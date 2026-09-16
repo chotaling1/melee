@@ -60,6 +60,17 @@ void port_swap_GrJoint(void* p);
 /* Generated: fighters, items. */
 void port_swap_ftCo_DatAttrs(void* p);
 void port_swap_ftCommonData(void* p);
+void port_swap_ftFox_DatAttrs(void* p);
+void port_swap_ftMario_DatAttrs(void* p);
+void port_swap_ftMewtwoAttributes(void* p);
+void port_swap_ftNessAttributes(void* p);
+void port_swap_ftZelda_DatAttrs(void* p);
+void port_swap_ftKb_DatAttrs(void* p);
+void port_swap_ftLk_DatAttrs(void* p);
+void port_swap_ftGameWatchAttributes(void* p);
+void port_swap_MarsAttributes(void* p);
+void port_swap_itLeadeadAttributes(void* p);
+void port_swap_itOctarockAttributes(void* p);
 void port_swap_ItemAttr(void* p);
 void port_swap_ItemCommonData(void* p);
 void port_swap_ItemModelDesc(void* p);

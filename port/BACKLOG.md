@@ -117,7 +117,8 @@ their own worktree.
 - Log:
 
 ### PORT-004: Remaining untyped public symbols in a match
-- Status: open
+- Status: in-progress
+- Owner: chat
 - Do: add walkers for the symbols check.sh still reports as "no type
   known": `SIS_IntroData`, `SIS_MessageData` (sislib text),
   `lbRumbleData`, `ty*Tbl` (trophy tables), `TitleMark_sobjdesc`,
@@ -136,7 +137,8 @@ their own worktree.
 - Log:
 
 ### PORT-010: Source-line map of MWCC fused multiply-adds
-- Status: open
+- Status: in-progress
+- Owner: chat
 - Why: see `port/docs/fp-parity.md`. 3683 fused instructions in 819
   retail functions; clang's own contraction agrees in only 379 functions,
   so each site must be made explicit.

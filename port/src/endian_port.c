@@ -165,6 +165,12 @@ int port_archive_swap(u8* src, size_t file_size)
     return 1;
 }
 
+int port_claim(void* p, size_t n)
+{
+    Region* r = find_region(p);
+    return r != NULL && claim(r, (u32) ((u8*) p - r->base), (u32) n);
+}
+
 void port_swap32(void* p)
 {
     Region* r = find_region(p);

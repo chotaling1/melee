@@ -386,3 +386,213 @@ void port_swap_HSD_Spline(void* p)
     port_swap32((u8*) p + 0x4); /* HSD_Spline.tension */
     port_swap32((u8*) p + 0xC); /* HSD_Spline.totalLength */
 }
+
+/* GroundParam: 0xDC bytes */
+void port_swap_GroundParam(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* GroundParam.y */
+    port_swap16((u8*) p + 0x4); /* GroundParam.x4 */
+    port_swap16((u8*) p + 0x8); /* GroundParam.x8 */
+    port_swap16((u8*) p + 0xA); /* GroundParam.xA */
+    port_swap32((u8*) p + 0xC); /* GroundParam.xC */
+    port_swap32((u8*) p + 0x10); /* GroundParam.x10 */
+    port_swap32((u8*) p + 0x14); /* GroundParam.x14 */
+    port_swap32((u8*) p + 0x18); /* GroundParam.x18 */
+    port_swap32((u8*) p + 0x1C); /* GroundParam.x1C */
+    port_swap32((u8*) p + 0x20); /* GroundParam.x20 */
+    port_swap32((u8*) p + 0x24); /* GroundParam.x24 */
+    port_swap32((u8*) p + 0x28); /* GroundParam.x28 */
+    port_swap16((u8*) p + 0x2E); /* GroundParam.x2E */
+    port_swap32((u8*) p + 0x30); /* GroundParam.x30 */
+    port_swap32((u8*) p + 0x34); /* GroundParam.x34 */
+    port_swap32((u8*) p + 0x38); /* GroundParam.x38 */
+    port_swap32((u8*) p + 0x3C); /* GroundParam.x3C */
+    port_swap32((u8*) p + 0x40); /* GroundParam.x40 */
+    port_swap32((u8*) p + 0x44); /* GroundParam.x44 */
+    port_swap32((u8*) p + 0x48); /* GroundParam.x48 */
+    port_swap32((u8*) p + 0x4C); /* GroundParam.x4C_fixed_cam */
+    port_swap32((u8*) p + 0x50); /* GroundParam.x50 */
+    port_swap32((u8*) p + 0x54); /* GroundParam.x54 */
+    port_swap32((u8*) p + 0x58); /* GroundParam.x58 */
+    port_swap32((u8*) p + 0x5C); /* GroundParam.x5C */
+    port_swap32((u8*) p + 0x60); /* GroundParam.x60 */
+    port_swap32((u8*) p + 0x64); /* GroundParam.x64 */
+    port_swap16((u8*) p + 0x68); /* GroundParam.x68 */
+    port_swap16((u8*) p + 0x6A); /* GroundParam.x6A[0] */
+    port_swap16((u8*) p + 0x6C); /* GroundParam.x6A[1] */
+    port_swap16((u8*) p + 0x6E); /* GroundParam.x6A[2] */
+    port_swap16((u8*) p + 0x70); /* GroundParam.x6A[3] */
+    port_swap16((u8*) p + 0x72); /* GroundParam.x6A[4] */
+    port_swap16((u8*) p + 0x74); /* GroundParam.x6A[5] */
+    port_swap16((u8*) p + 0x76); /* GroundParam.x6A[6] */
+    port_swap16((u8*) p + 0x78); /* GroundParam.x6A[7] */
+    port_swap16((u8*) p + 0x7A); /* GroundParam.x6A[8] */
+    port_swap16((u8*) p + 0x7C); /* GroundParam.x6A[9] */
+    port_swap16((u8*) p + 0x7E); /* GroundParam.x6A[10] */
+    port_swap16((u8*) p + 0x80); /* GroundParam.x6A[11] */
+    port_swap16((u8*) p + 0x82); /* GroundParam.x6A[12] */
+    port_swap16((u8*) p + 0x84); /* GroundParam.x6A[13] */
+    port_swap16((u8*) p + 0x86); /* GroundParam.x6A[14] */
+    port_swap16((u8*) p + 0x88); /* GroundParam.x6A[15] */
+    port_swap16((u8*) p + 0x8A); /* GroundParam.x6A[16] */
+    port_swap16((u8*) p + 0x8C); /* GroundParam.x6A[17] */
+    port_swap16((u8*) p + 0x8E); /* GroundParam.x6A[18] */
+    port_swap16((u8*) p + 0x90); /* GroundParam.x6A[19] */
+    port_swap16((u8*) p + 0x92); /* GroundParam.x6A[20] */
+    port_swap16((u8*) p + 0x94); /* GroundParam.x6A[21] */
+    port_swap16((u8*) p + 0x96); /* GroundParam.x6A[22] */
+    port_swap16((u8*) p + 0x98); /* GroundParam.x6A[23] */
+    port_swap16((u8*) p + 0x9A); /* GroundParam.x6A[24] */
+    port_swap16((u8*) p + 0x9C); /* GroundParam.x6A[25] */
+    port_swap16((u8*) p + 0x9E); /* GroundParam.x6A[26] */
+    port_swap16((u8*) p + 0xA0); /* GroundParam.x6A[27] */
+    port_swap16((u8*) p + 0xA2); /* GroundParam.x6A[28] */
+    port_swap16((u8*) p + 0xA4); /* GroundParam.x6A[29] */
+    port_swap16((u8*) p + 0xA6); /* GroundParam.x6A[30] */
+    port_swap16((u8*) p + 0xA8); /* GroundParam.x6A[31] */
+    port_swap16((u8*) p + 0xAA); /* GroundParam.x6A[32] */
+    port_swap16((u8*) p + 0xAC); /* GroundParam.x6A[33] */
+    port_swap16((u8*) p + 0xAE); /* GroundParam.x6A[34] */
+    port_swap32((u8*) p + 0xB4); /* GroundParam.stage_param_count */
+}
+
+/* StageParam: 0x64 bytes */
+void port_swap_StageParam(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* StageParam.stkind */
+    port_swap32((u8*) p + 0x4); /* StageParam.x4 */
+    port_swap32((u8*) p + 0x8); /* StageParam.x8 */
+    port_swap32((u8*) p + 0xC); /* StageParam.xC */
+    port_swap32((u8*) p + 0x10); /* StageParam.x10 */
+    port_swap16((u8*) p + 0x14); /* StageParam.x14 */
+    port_swap16((u8*) p + 0x16); /* StageParam.x16 */
+    port_swap16((u8*) p + 0x18); /* StageParam.x18 */
+    port_swap16((u8*) p + 0x1A); /* StageParam.x1A[0] */
+    port_swap16((u8*) p + 0x1C); /* StageParam.x1A[1] */
+    port_swap16((u8*) p + 0x1E); /* StageParam.x1A[2] */
+    port_swap16((u8*) p + 0x20); /* StageParam.x1A[3] */
+    port_swap16((u8*) p + 0x22); /* StageParam.x1A[4] */
+    port_swap16((u8*) p + 0x24); /* StageParam.x1A[5] */
+    port_swap16((u8*) p + 0x26); /* StageParam.x1A[6] */
+    port_swap16((u8*) p + 0x28); /* StageParam.x1A[7] */
+    port_swap16((u8*) p + 0x2A); /* StageParam.x1A[8] */
+    port_swap16((u8*) p + 0x2C); /* StageParam.x1A[9] */
+    port_swap16((u8*) p + 0x2E); /* StageParam.x1A[10] */
+    port_swap16((u8*) p + 0x30); /* StageParam.x1A[11] */
+    port_swap16((u8*) p + 0x32); /* StageParam.x1A[12] */
+    port_swap16((u8*) p + 0x34); /* StageParam.x1A[13] */
+    port_swap16((u8*) p + 0x36); /* StageParam.x1A[14] */
+    port_swap16((u8*) p + 0x38); /* StageParam.x1A[15] */
+    port_swap16((u8*) p + 0x3A); /* StageParam.x1A[16] */
+    port_swap16((u8*) p + 0x3C); /* StageParam.x1A[17] */
+    port_swap16((u8*) p + 0x3E); /* StageParam.x1A[18] */
+    port_swap16((u8*) p + 0x40); /* StageParam.x1A[19] */
+    port_swap16((u8*) p + 0x42); /* StageParam.x1A[20] */
+    port_swap16((u8*) p + 0x44); /* StageParam.x1A[21] */
+    port_swap16((u8*) p + 0x46); /* StageParam.x1A[22] */
+    port_swap16((u8*) p + 0x48); /* StageParam.x1A[23] */
+    port_swap16((u8*) p + 0x4A); /* StageParam.x1A[24] */
+    port_swap16((u8*) p + 0x4C); /* StageParam.x1A[25] */
+    port_swap16((u8*) p + 0x4E); /* StageParam.x1A[26] */
+    port_swap16((u8*) p + 0x50); /* StageParam.x1A[27] */
+    port_swap16((u8*) p + 0x52); /* StageParam.x1A[28] */
+    port_swap16((u8*) p + 0x54); /* StageParam.x1A[29] */
+    port_swap16((u8*) p + 0x56); /* StageParam.x1A[30] */
+    port_swap16((u8*) p + 0x58); /* StageParam.x1A[31] */
+    port_swap16((u8*) p + 0x5A); /* StageParam.x1A[32] */
+    port_swap16((u8*) p + 0x5C); /* StageParam.x1A[33] */
+    port_swap16((u8*) p + 0x5E); /* StageParam.x1A[34] */
+    port_swap16((u8*) p + 0x60); /* StageParam.x1A[35] */
+    port_swap16((u8*) p + 0x62); /* StageParam.x1A[36] */
+}
+
+/* MapCollData: 0x30 bytes */
+void port_swap_MapCollData(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* MapCollData.vert_count */
+    port_swap32((u8*) p + 0xC); /* MapCollData.line_count */
+    port_swap16((u8*) p + 0x10); /* MapCollData.floor_start */
+    port_swap16((u8*) p + 0x12); /* MapCollData.floor_count */
+    port_swap16((u8*) p + 0x14); /* MapCollData.ceiling_start */
+    port_swap16((u8*) p + 0x16); /* MapCollData.ceiling_count */
+    port_swap16((u8*) p + 0x18); /* MapCollData.right_wall_start */
+    port_swap16((u8*) p + 0x1A); /* MapCollData.right_wall_count */
+    port_swap16((u8*) p + 0x1C); /* MapCollData.left_wall_start */
+    port_swap16((u8*) p + 0x1E); /* MapCollData.left_wall_count */
+    port_swap16((u8*) p + 0x20); /* MapCollData.dynamic_start */
+    port_swap16((u8*) p + 0x22); /* MapCollData.dynamic_count */
+    port_swap32((u8*) p + 0x28); /* MapCollData.joint_count */
+    port_swap32((u8*) p + 0x2C); /* MapCollData.x2C */
+}
+
+/* MapLine: 0x10 bytes */
+void port_swap_MapLine(void* p)
+{
+    port_swap16((u8*) p + 0x0); /* MapLine.v0_idx */
+    port_swap16((u8*) p + 0x2); /* MapLine.v1_idx */
+    port_swap16((u8*) p + 0x4); /* MapLine.prev_id0 */
+    port_swap16((u8*) p + 0x6); /* MapLine.next_id0 */
+    port_swap16((u8*) p + 0x8); /* MapLine.prev_id1 */
+    port_swap16((u8*) p + 0xA); /* MapLine.next_id1 */
+    port_swap16((u8*) p + 0xC); /* MapLine.hi_flags */
+    port_swap16((u8*) p + 0xE); /* MapLine.lo_flags */
+}
+
+/* MapJoint: 0x28 bytes */
+void port_swap_MapJoint(void* p)
+{
+    port_swap16((u8*) p + 0x0); /* MapJoint.floor_start */
+    port_swap16((u8*) p + 0x2); /* MapJoint.floor_count */
+    port_swap16((u8*) p + 0x4); /* MapJoint.ceiling_start */
+    port_swap16((u8*) p + 0x6); /* MapJoint.ceiling_count */
+    port_swap16((u8*) p + 0x8); /* MapJoint.right_wall_start */
+    port_swap16((u8*) p + 0xA); /* MapJoint.right_wall_count */
+    port_swap16((u8*) p + 0xC); /* MapJoint.left_wall_start */
+    port_swap16((u8*) p + 0xE); /* MapJoint.left_wall_count */
+    port_swap16((u8*) p + 0x10); /* MapJoint.dynamic_start */
+    port_swap16((u8*) p + 0x12); /* MapJoint.dynamic_count */
+    port_swap32((u8*) p + 0x14); /* MapJoint.left_bound */
+    port_swap32((u8*) p + 0x18); /* MapJoint.bottom_bound */
+    port_swap32((u8*) p + 0x1C); /* MapJoint.right_bound */
+    port_swap32((u8*) p + 0x20); /* MapJoint.top_bound */
+    port_swap16((u8*) p + 0x24); /* MapJoint.vtx_start */
+    port_swap16((u8*) p + 0x26); /* MapJoint.vtx_count */
+}
+
+/* UnkStageDat: 0x30 bytes */
+void port_swap_UnkStageDat(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* UnkStageDat.unk4 */
+    port_swap32((u8*) p + 0xC); /* UnkStageDat.unkC */
+    port_swap32((u8*) p + 0x14); /* UnkStageDat.unk14 */
+    port_swap32((u8*) p + 0x1C); /* UnkStageDat.unk1C */
+    port_swap32((u8*) p + 0x24); /* UnkStageDat.unk24 */
+    port_swap32((u8*) p + 0x2C); /* UnkStageDat.unk2C */
+}
+
+/* UnkStageDat_x8_t: 0x34 bytes */
+void port_swap_UnkStageDat_x8_t(void* p)
+{
+    port_swap32((u8*) p + 0x24); /* UnkStageDat_x8_t.unk24 */
+    port_swap32((u8*) p + 0x30); /* UnkStageDat_x8_t.x30 */
+}
+
+/* GroundShadowEntry: 0x8 bytes */
+void port_swap_GroundShadowEntry(void* p)
+{
+    if (port_claim((u8*) p + 0x4, 1)) { /* bitfields: GroundShadowEntry.flag */
+        u8* b = (u8*) p + 0x4;
+        u32 be = ((u32) b[0] << 0);
+        u32 host = 0;
+        host |= ((be >> 7) & 0x1u) << 0;
+        *(u8*) b = (u8) host;
+    }
+}
+
+/* GrJoint: 0x6 bytes */
+void port_swap_GrJoint(void* p)
+{
+    port_swap16((u8*) p + 0x0); /* GrJoint.x */
+    port_swap16((u8*) p + 0x2); /* GrJoint.y */
+    port_swap16((u8*) p + 0x4); /* GrJoint.z */
+}

@@ -37,6 +37,11 @@ static inline void port_swapf32(void* p)
     port_swap32(p);
 }
 
+/// Claim [p, p+n) for in-place conversion: returns 1 (and marks it) if the
+/// range is inside a registered archive and not yet converted, else 0.
+/// For conversions that are not plain byte swaps (e.g. bitfield units).
+int port_claim(void* p, size_t n);
+
 /// Swap `count` consecutive fields of the given width.
 void port_swap16_array(void* p, size_t count);
 void port_swap32_array(void* p, size_t count);

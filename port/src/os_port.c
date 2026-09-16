@@ -149,10 +149,16 @@ static OSTime next_retrace;
 
 static void init_time(void)
 {
-    /* Start from the wall clock so the calendar the game prints is real.
+    /* Deterministic by default: the RNG is seeded from OSGetTick() in
+     * main(), so a fixed start time makes every headless run identical.
+     * MELEE_PORT_CLOCK=wall starts from the real date instead.
      * GameCube epoch is 2000-01-01 00:00:00. */
-    time_t now = time(NULL);
-    port_ticks = (OSTime) (now - 946684800) * PORT_TIMER_CLOCK;
+    const char* clock = getenv("MELEE_PORT_CLOCK");
+    time_t start = 1007337600; /* 2001-12-03 00:00:00 UTC, NA launch */
+    if (clock != NULL && strcmp(clock, "wall") == 0) {
+        start = time(NULL);
+    }
+    port_ticks = (OSTime) (start - 946684800) * PORT_TIMER_CLOCK;
     next_retrace = port_ticks + PORT_TICKS_PER_RETRACE;
 }
 

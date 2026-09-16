@@ -46,8 +46,22 @@ void port_swap_HSD_LightSpotDesc(void* p);
 void port_swap_HSD_TexLODDesc(void* p);
 void port_swap_HSD_Spline(void* p);
 
+/* Generated: stages. */
+void port_swap_GroundParam(void* p);
+void port_swap_StageParam(void* p);
+void port_swap_MapCollData(void* p);
+void port_swap_MapLine(void* p);
+void port_swap_MapJoint(void* p);
+void port_swap_UnkStageDat(void* p);
+void port_swap_UnkStageDat_x8_t(void* p);
+void port_swap_GroundShadowEntry(void* p);
+void port_swap_GrJoint(void* p);
+
 /* Graph walkers (port/src/swap_port.c). */
 void port_walk_Joint(HSD_Joint* j);
+void port_walk_MObjDesc(struct _HSD_MObjDesc* m);
+void port_walk_Spline(struct HSD_Spline* s);
+void port_walk_LightLists(struct LightList** lists);
 void port_walk_AnimJoint(HSD_AnimJoint* j);
 void port_walk_MatAnimJoint(HSD_MatAnimJoint* j);
 void port_walk_ShapeAnimJoint(HSD_ShapeAnimJoint* j);

@@ -15,10 +15,15 @@ struct instance in place via port_swap16/32. Pointer members are skipped:
 port_archive_swap already converted every relocated word, and NULL is the
 same in both byte orders. Nested structs and arrays are expanded inline.
 
+Bitfields are remapped, not just swapped: MWCC (big-endian) allocates
+bitfields from the MSB of each storage unit, clang on x86 from the LSB.
+Both pack a run of same-typed bitfields sequentially, so a field at LSB
+position `pos` (from DWARF's DW_AT_data_bit_offset) sits at MSB position
+`pos` in the disc data. Each unit is read big-endian and rebuilt with every
+field moved to its host position.
+
 Members the generator cannot convert safely are reported, not guessed:
-  - bitfields (MWCC allocates from the MSB, clang x86 from the LSB, so the
-    storage unit must be bit-reversed, not just byte-swapped)
-  - unions (the active member depends on data)
+  - unions with mixed-size members (the active member depends on data)
   - 8-byte scalars
 Write those by hand in port/src/swap_port.c.
 """
@@ -78,6 +83,16 @@ TYPES = [
     "HSD_LightSpotDesc",
     "HSD_TexLODDesc",
     "HSD_Spline",
+    # Stages (src/melee/gr/types.h, src/melee/mp/types.h)
+    "GroundParam",
+    "StageParam",
+    "MapCollData",
+    "MapLine",
+    "MapJoint",
+    "UnkStageDat",
+    "UnkStageDat_x8_t",
+    "GroundShadowEntry",
+    "GrJoint",
 ]
 
 
@@ -165,20 +180,48 @@ class Layout:
             problems.append(f"{path}: union")
             return
         if tag == "DW_TAG_structure_type":
+            units = {}  # (byte offset, unit bytes) -> [(pos, size, name)]
             for m in die.iter_children():
                 if m.tag != "DW_TAG_member":
                     continue
                 mname = m.attributes.get("DW_AT_name")
                 mname = mname.value.decode() if mname else "<anon>"
-                if ("DW_AT_bit_size" in m.attributes):
-                    problems.append(f"{path}.{mname}: bitfield")
+                mtype = m.get_DIE_from_attribute("DW_AT_type")
+                if "DW_AT_bit_size" in m.attributes:
+                    ubytes = self.size(mtype)
+                    ubits = ubytes * 8
+                    boff = m.attributes["DW_AT_data_bit_offset"].value
+                    ustart = (boff // ubits) * ubytes
+                    pos = boff - ustart * 8
+                    size = m.attributes["DW_AT_bit_size"].value
+                    units.setdefault((base + ustart, ubytes), []).append(
+                        (pos, size, f"{path}.{mname}"))
                     continue
                 off = m.attributes.get("DW_AT_data_member_location")
                 off = off.value if off else 0
-                self.emit(m.get_DIE_from_attribute("DW_AT_type"), base + off,
-                          f"{path}.{mname}", out, problems)
+                self.emit(mtype, base + off, f"{path}.{mname}", out, problems)
+            for (uoff, ubytes), fields in sorted(units.items()):
+                self.emit_bitfield_unit(uoff, ubytes, fields, out)
             return
         problems.append(f"{path}: unhandled {tag}")
+
+    @staticmethod
+    def emit_bitfield_unit(uoff, ubytes, fields, out):
+        ubits = ubytes * 8
+        names = ", ".join(n for _, _, n in fields)
+        ctype = {1: "u8", 2: "u16", 4: "u32"}[ubytes]
+        out.append(f"    if (port_claim((u8*) p + 0x{uoff:X}, {ubytes})) {{ /* bitfields: {names} */")
+        out.append(f"        u8* b = (u8*) p + 0x{uoff:X};")
+        be = " | ".join(f"((u32) b[{i}] << {8 * (ubytes - 1 - i)})"
+                        for i in range(ubytes))
+        out.append(f"        u32 be = {be};")
+        out.append("        u32 host = 0;")
+        for pos, size, name in fields:
+            mask = (1 << size) - 1
+            shift = ubits - pos - size
+            out.append(f"        host |= ((be >> {shift}) & 0x{mask:X}u) << {pos};")
+        out.append(f"        *({ctype}*) b = ({ctype}) host;")
+        out.append("    }")
 
     def size(self, die):
         die = self.strip(die)

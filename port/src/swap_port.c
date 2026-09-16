@@ -207,22 +207,44 @@ static void walk_TObjDesc(HSD_TObjDesc* t)
     }
 }
 
+void port_walk_MObjDesc(HSD_MObjDesc* m)
+{
+    if (!OK(m)) {
+        return;
+    }
+    port_swap_HSD_MObjDesc(m);
+    walk_TObjDesc(m->texdesc);
+    if (OK(m->mat)) {
+        port_swap_HSD_Material(m->mat);
+    }
+    if (OK(m->pedesc)) {
+        port_swap_HSD_PEDesc(m->pedesc);
+    }
+}
+
 static void walk_DObjDesc(HSD_DObjDesc* d)
 {
     for (; OK(d); d = d->next) {
         port_swap_HSD_DObjDesc(d);
-        if (OK(d->mobjdesc)) {
-            HSD_MObjDesc* m = d->mobjdesc;
-            port_swap_HSD_MObjDesc(m);
-            walk_TObjDesc(m->texdesc);
-            if (OK(m->mat)) {
-                port_swap_HSD_Material(m->mat);
-            }
-            if (OK(m->pedesc)) {
-                port_swap_HSD_PEDesc(m->pedesc);
-            }
-        }
+        port_walk_MObjDesc(d->mobjdesc);
         walk_PObjDesc(d->pobjdesc);
+    }
+}
+
+void port_walk_Spline(HSD_Spline* s)
+{
+    if (!OK(s)) {
+        return;
+    }
+    port_swap_HSD_Spline(s);
+    if (OK(s->cv)) {
+        port_swap32_array(s->cv, (size_t) s->numcv * 3);
+    }
+    if (OK(s->segLength)) {
+        port_swap32_array(s->segLength, (size_t) s->numcv);
+    }
+    if (OK(s->segPoly)) {
+        port_swap32_array(s->segPoly, (size_t) s->numcv * 5);
     }
 }
 
@@ -231,19 +253,7 @@ static void walk_Joint(HSD_Joint* j)
     for (; OK(j); j = j->next) {
         port_swap_HSD_Joint(j);
         if (j->flags & JOBJ_SPLINE) {
-            HSD_Spline* s = j->u.spline;
-            if (OK(s)) {
-                port_swap_HSD_Spline(s);
-                if (OK(s->cv)) {
-                    port_swap32_array(s->cv, (size_t) s->numcv * 3);
-                }
-                if (OK(s->segLength)) {
-                    port_swap32_array(s->segLength, (size_t) s->numcv);
-                }
-                if (OK(s->segPoly)) {
-                    port_swap32_array(s->segPoly, (size_t) s->numcv * 5);
-                }
-            }
+            port_walk_Spline(j->u.spline);
         } else if (!(j->flags & JOBJ_PTCL)) {
             walk_DObjDesc(j->u.dobjdesc);
         }
@@ -380,6 +390,15 @@ void port_walk_DynamicModelDesc(DynamicModelDesc* m)
     EACH(HSD_ShapeAnimJoint, m->shapeanims, a)
     {
         port_walk_ShapeAnimJoint(a);
+    }
+}
+
+void port_walk_LightLists(LightList** lists)
+{
+    EACH(LightList, lists, l)
+    {
+        port_walk_LightDesc(l->desc);
+        EACH(HSD_LightAnim, l->anims, a) { port_walk_LightAnim(a); }
     }
 }
 
@@ -527,11 +546,7 @@ void port_swap_public(const char* symbol, void* addr)
     } else if (ends_with(symbol, "_camera")) {
         port_walk_CObjDesc(addr);
     } else if (ends_with(symbol, "_lights")) {
-        EACH(LightList, addr, l)
-        {
-            port_walk_LightDesc(l->desc);
-            EACH(HSD_LightAnim, l->anims, a) { port_walk_LightAnim(a); }
-        }
+        port_walk_LightLists(addr);
     } else if (ends_with(symbol, "_fog")) {
         port_walk_FogDesc(addr);
     } else if (!port_swap_game_public(symbol, addr)) {

@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include <melee/ft/types.h>
+#include <melee/it/types.h>
 
 #include <port/endian.h>
 #include <port/port.h>
@@ -54,11 +55,24 @@ static void word_ptr_array(void* p)
 /// Subaction / color-animation event script. Every command is built from
 /// 32-bit words (see CmdUnion in src/melee/lb/types.h), so the whole script
 /// is converted word by word; embedded pointers (goto/subroutine targets)
-/// are relocated words and are skipped. Bitfield commands are read through
+/// are relocated words: skipped, and followed to convert their targets. Bitfield commands are read through
 /// the port's LSB-first declarations (port/include/port/lb_cmd.h).
 void port_swap_script(void* p)
 {
+    size_t i, n;
+    if (!OK(p) || port_is_claimed(p)) {
+        return; /* NULL, not archive data, or already converted */
+    }
     words(p);
+    /* Goto/subroutine targets are separate objects that only other
+     * scripts point at: follow every pointer word. */
+    n = port_extent(p) / 4;
+    for (i = 0; i < n; i++) {
+        void* w = (u8*) p + i * 4;
+        if (port_is_pointer_word(w)) {
+            port_swap_script(*(void**) w);
+        }
+    }
 }
 
 /* ---- ftData (Pl<Xx>.dat) --------------------------------------------- */
@@ -284,10 +298,26 @@ static void swap_ftData(const char* symbol, void* addr)
     words(d->x3C); /* camera box */
     words(d->x40); /* item pickup ranges */
     swap_env_coll(d->x44);
-    if (OK(d->x48_items)) { /* articles */
+    if (OK(d->x48_items)) {
+        /* Mostly Article* (0x18: ItemAttr* (0x84), ...), but some slots
+         * hold other data: Fox [4] is a small s32 table, Samus [4] a model
+         * set Kirby uses for the copied hat. Only article-shaped entries get
+         * the article walker; the rest get the word pass (pointer words are
+         * untouched), their deeper structure is not converted yet. */
         n = port_extent(d->x48_items) / 4;
         for (i = 0; i < n; i++) {
-            port_swap_article(d->x48_items[i]);
+            Article* a = d->x48_items[i];
+            if (!OK(a)) {
+                continue;
+            }
+            if (port_extent(a) == sizeof(Article) &&
+                OK(a->x0_common_attr) &&
+                port_extent(a->x0_common_attr) == 0x84)
+            {
+                port_swap_article(a);
+            } else {
+                words(a);
+            }
         }
     }
     swap_sfx(d->x4C_sfx);

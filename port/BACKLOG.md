@@ -85,15 +85,55 @@ their own worktree.
   Add it as a second gate in check.sh with its own baseline trace.
 - Log:
 
-### PORT-006: Forced match for any two characters
-- Status: in-progress
-- Owner: chat
-- Do: `MELEE_PORT_DEMO_MATCH=<ckind>,<ckind>` picks the characters (keep
-  `1` = Fox vs Marth). Then run every character against Fox on the line
-  stage for 3000 retraces after match start and fix crashes. Split into
-  one ticket per character or group if needed.
-- Done when: all 25 selectable characters (plus Zelda/Sheik transform and
-  Ice Climbers pair) survive the run; results table logged here.
+### PORT-013: Samus: texture animation crash
+- Status: open
+- Do: `MELEE_PORT_DEMO_MATCH=16,2 MELEE_PORT_STAGE=line` crashes in
+  `HSD_TObjAddAnim` (tobj.c) <- `HSD_MObjAddAnim` <- `HSD_JObjAddAnim`
+  (addr 0x3000300: unconverted texture/material animation data, likely an
+  article or effect model's matanim). Find the unconverted object with
+  `MELEE_PORT_SWAP_AUDIT=1` and fix its walker.
+- Done when: `port/tools/char_matrix.sh` shows ckind 16 exit 0.
+- Log:
+
+### PORT-014: Link and Young Link: hookshot and boomerang
+- Status: open
+- Do: Link (`6,2`) asserts `jobj->child` in `HSD_JObjResolveRefs` from
+  `it_802A2568` (itlinkhookshot.c); Young Link (`21,2`) asserts `jobj` in
+  `it_80273B50` (it_2725.c) from `it_802A0534` (itlinkboomerang.c). Both
+  load article models from the fighter's `x48_items`; check the article
+  model/state data (and the non-article slots, see PORT-017).
+- Done when: ckind 6 and 21 exit 0 in `char_matrix.sh`.
+- Log:
+
+### PORT-015: Ness and Mr. Game & Watch
+- Status: open
+- Do: Ness (`11,2`) panics in dobj.c:312 while loading a model (recursive
+  `DObjLoad`: a DObj `next` chain loops or points at unconverted data);
+  Game & Watch (`3,2`) segfaults in `HSD_DObjSetFlags` from
+  `ftParts_800750C8` (model part visibility tables, ftData +08).
+- Done when: ckind 11 and 3 exit 0 in `char_matrix.sh`.
+- Log:
+
+### PORT-016: Kirby hangs
+- Status: open
+- Do: Kirby (`4,2`) never returns (timeout) right after stage init, i.e.
+  during fighter creation. Run with `MELEE_PORT_ABORT_AT_LIMIT=1` and a
+  low `MELEE_PORT_FRAMES` or attach a watchdog to find the loop; Kirby
+  loads extra data (copy abilities, per-character hat data in each
+  fighter's `x48_items`).
+- Done when: ckind 4 exits 0 in `char_matrix.sh`.
+- Log:
+
+### PORT-017: Non-article entries in ftData x48_items
+- Status: open
+- Why: `x48_items` mixes Article* with other data (Fox [4]: s32 table;
+  Samus [4]: { HSD_Joint*; AnimJoint**; MatAnimJoint*; ... } used for
+  Kirby's copied hat). Since PORT-006 those get only the word pass, so
+  their models/animations stay big-endian.
+- Do: identify each character's extra slots (decomp: ftkirbyspecials.c
+  `x48_items[4]`, ftyoshispecialn.c `[3]`, HSDLib) and walk them properly.
+- Done when: `MELEE_PORT_SWAP_AUDIT` shows no unconverted models/anims
+  reachable from x48_items for all characters.
 - Log:
 
 ### PORT-011: Explicit fused math in gameplay code

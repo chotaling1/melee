@@ -100,6 +100,18 @@ void port_swap_HSD_MObjDesc(void* p)
 /* HSD_Material: 0x14 bytes */
 void port_swap_HSD_Material(void* p)
 {
+    port_claim((u8*) p + 0x0, 1); /* HSD_Material.ambient.r */
+    port_claim((u8*) p + 0x1, 1); /* HSD_Material.ambient.g */
+    port_claim((u8*) p + 0x2, 1); /* HSD_Material.ambient.b */
+    port_claim((u8*) p + 0x3, 1); /* HSD_Material.ambient.a */
+    port_claim((u8*) p + 0x4, 1); /* HSD_Material.diffuse.r */
+    port_claim((u8*) p + 0x5, 1); /* HSD_Material.diffuse.g */
+    port_claim((u8*) p + 0x6, 1); /* HSD_Material.diffuse.b */
+    port_claim((u8*) p + 0x7, 1); /* HSD_Material.diffuse.a */
+    port_claim((u8*) p + 0x8, 1); /* HSD_Material.specular.r */
+    port_claim((u8*) p + 0x9, 1); /* HSD_Material.specular.g */
+    port_claim((u8*) p + 0xA, 1); /* HSD_Material.specular.b */
+    port_claim((u8*) p + 0xB, 1); /* HSD_Material.specular.a */
     port_swap32((u8*) p + 0xC); /* HSD_Material.alpha */
     port_swap32((u8*) p + 0x10); /* HSD_Material.shininess */
 }
@@ -107,6 +119,18 @@ void port_swap_HSD_Material(void* p)
 /* HSD_PEDesc: 0xC bytes */
 void port_swap_HSD_PEDesc(void* p)
 {
+    port_claim((u8*) p + 0x0, 1); /* HSD_PEDesc.flags */
+    port_claim((u8*) p + 0x1, 1); /* HSD_PEDesc.ref0 */
+    port_claim((u8*) p + 0x2, 1); /* HSD_PEDesc.ref1 */
+    port_claim((u8*) p + 0x3, 1); /* HSD_PEDesc.dst_alpha */
+    port_claim((u8*) p + 0x4, 1); /* HSD_PEDesc.type */
+    port_claim((u8*) p + 0x5, 1); /* HSD_PEDesc.src_factor */
+    port_claim((u8*) p + 0x6, 1); /* HSD_PEDesc.dst_factor */
+    port_claim((u8*) p + 0x7, 1); /* HSD_PEDesc.logic_op */
+    port_claim((u8*) p + 0x8, 1); /* HSD_PEDesc.z_comp */
+    port_claim((u8*) p + 0x9, 1); /* HSD_PEDesc.alpha_comp0 */
+    port_claim((u8*) p + 0xA, 1); /* HSD_PEDesc.alpha_op */
+    port_claim((u8*) p + 0xB, 1); /* HSD_PEDesc.alpha_comp1 */
 }
 
 /* HSD_TObjDesc: 0x5C bytes */
@@ -125,6 +149,8 @@ void port_swap_HSD_TObjDesc(void* p)
     port_swap32((u8*) p + 0x30); /* HSD_TObjDesc.translate.z */
     port_swap32((u8*) p + 0x34); /* HSD_TObjDesc.wrap_s */
     port_swap32((u8*) p + 0x38); /* HSD_TObjDesc.wrap_t */
+    port_claim((u8*) p + 0x3C, 1); /* HSD_TObjDesc.repeat_s */
+    port_claim((u8*) p + 0x3D, 1); /* HSD_TObjDesc.repeat_t */
     port_swap32((u8*) p + 0x40); /* HSD_TObjDesc.blend_flags */
     port_swap32((u8*) p + 0x44); /* HSD_TObjDesc.blending */
     port_swap32((u8*) p + 0x48); /* HSD_TObjDesc.magFilt */
@@ -152,6 +178,34 @@ void port_swap_HSD_TlutDesc(void* p)
 /* HSD_TObjTevDesc: 0x20 bytes */
 void port_swap_HSD_TObjTevDesc(void* p)
 {
+    port_claim((u8*) p + 0x0, 1); /* HSD_TObjTevDesc.color_op */
+    port_claim((u8*) p + 0x1, 1); /* HSD_TObjTevDesc.alpha_op */
+    port_claim((u8*) p + 0x2, 1); /* HSD_TObjTevDesc.color_bias */
+    port_claim((u8*) p + 0x3, 1); /* HSD_TObjTevDesc.alpha_bias */
+    port_claim((u8*) p + 0x4, 1); /* HSD_TObjTevDesc.color_scale */
+    port_claim((u8*) p + 0x5, 1); /* HSD_TObjTevDesc.alpha_scale */
+    port_claim((u8*) p + 0x6, 1); /* HSD_TObjTevDesc.color_clamp */
+    port_claim((u8*) p + 0x7, 1); /* HSD_TObjTevDesc.alpha_clamp */
+    port_claim((u8*) p + 0x8, 1); /* HSD_TObjTevDesc.color_a */
+    port_claim((u8*) p + 0x9, 1); /* HSD_TObjTevDesc.color_b */
+    port_claim((u8*) p + 0xA, 1); /* HSD_TObjTevDesc.color_c */
+    port_claim((u8*) p + 0xB, 1); /* HSD_TObjTevDesc.color_d */
+    port_claim((u8*) p + 0xC, 1); /* HSD_TObjTevDesc.alpha_a */
+    port_claim((u8*) p + 0xD, 1); /* HSD_TObjTevDesc.alpha_b */
+    port_claim((u8*) p + 0xE, 1); /* HSD_TObjTevDesc.alpha_c */
+    port_claim((u8*) p + 0xF, 1); /* HSD_TObjTevDesc.alpha_d */
+    port_claim((u8*) p + 0x10, 1); /* HSD_TObjTevDesc.konst.r */
+    port_claim((u8*) p + 0x11, 1); /* HSD_TObjTevDesc.konst.g */
+    port_claim((u8*) p + 0x12, 1); /* HSD_TObjTevDesc.konst.b */
+    port_claim((u8*) p + 0x13, 1); /* HSD_TObjTevDesc.konst.a */
+    port_claim((u8*) p + 0x14, 1); /* HSD_TObjTevDesc.tev0.r */
+    port_claim((u8*) p + 0x15, 1); /* HSD_TObjTevDesc.tev0.g */
+    port_claim((u8*) p + 0x16, 1); /* HSD_TObjTevDesc.tev0.b */
+    port_claim((u8*) p + 0x17, 1); /* HSD_TObjTevDesc.tev0.a */
+    port_claim((u8*) p + 0x18, 1); /* HSD_TObjTevDesc.tev1.r */
+    port_claim((u8*) p + 0x19, 1); /* HSD_TObjTevDesc.tev1.g */
+    port_claim((u8*) p + 0x1A, 1); /* HSD_TObjTevDesc.tev1.b */
+    port_claim((u8*) p + 0x1B, 1); /* HSD_TObjTevDesc.tev1.a */
     port_swap32((u8*) p + 0x1C); /* HSD_TObjTevDesc.active */
 }
 
@@ -199,6 +253,7 @@ void port_swap_HSD_VtxDescList(void* p)
     port_swap32((u8*) p + 0x4); /* HSD_VtxDescList.attr_type */
     port_swap32((u8*) p + 0x8); /* HSD_VtxDescList.comp_cnt */
     port_swap32((u8*) p + 0xC); /* HSD_VtxDescList.comp_type */
+    port_claim((u8*) p + 0x10, 1); /* HSD_VtxDescList.frac */
     port_swap16((u8*) p + 0x12); /* HSD_VtxDescList.stride */
 }
 
@@ -215,6 +270,10 @@ void port_swap_HSD_FObjDesc(void* p)
 {
     port_swap32((u8*) p + 0x4); /* HSD_FObjDesc.length */
     port_swap32((u8*) p + 0x8); /* HSD_FObjDesc.startframe */
+    port_claim((u8*) p + 0xC, 1); /* HSD_FObjDesc.type */
+    port_claim((u8*) p + 0xD, 1); /* HSD_FObjDesc.frac_value */
+    port_claim((u8*) p + 0xE, 1); /* HSD_FObjDesc.frac_slope */
+    port_claim((u8*) p + 0xF, 1); /* HSD_FObjDesc.dummy0 */
 }
 
 /* HSD_AnimJoint: 0x14 bytes */
@@ -246,6 +305,10 @@ void port_swap_HSD_LightDesc(void* p)
 {
     port_swap16((u8*) p + 0x8); /* HSD_LightDesc.flags */
     port_swap16((u8*) p + 0xA); /* HSD_LightDesc.attnflags */
+    port_claim((u8*) p + 0xC, 1); /* HSD_LightDesc.color.r */
+    port_claim((u8*) p + 0xD, 1); /* HSD_LightDesc.color.g */
+    port_claim((u8*) p + 0xE, 1); /* HSD_LightDesc.color.b */
+    port_claim((u8*) p + 0xF, 1); /* HSD_LightDesc.color.a */
 }
 
 /* HSD_LightPoint: 0x14 bytes */
@@ -290,6 +353,10 @@ void port_swap_HSD_FogDesc(void* p)
     port_swap32((u8*) p + 0x0); /* HSD_FogDesc.type */
     port_swap32((u8*) p + 0x8); /* HSD_FogDesc.start */
     port_swap32((u8*) p + 0xC); /* HSD_FogDesc.end */
+    port_claim((u8*) p + 0x10, 1); /* HSD_FogDesc.color.r */
+    port_claim((u8*) p + 0x11, 1); /* HSD_FogDesc.color.g */
+    port_claim((u8*) p + 0x12, 1); /* HSD_FogDesc.color.b */
+    port_claim((u8*) p + 0x13, 1); /* HSD_FogDesc.color.a */
 }
 
 /* HSD_FogAdjDesc: 0x44 bytes */
@@ -376,12 +443,15 @@ void port_swap_HSD_TexLODDesc(void* p)
 {
     port_swap32((u8*) p + 0x0); /* HSD_TexLODDesc.minFilt */
     port_swap32((u8*) p + 0x4); /* HSD_TexLODDesc.LODBias */
+    port_claim((u8*) p + 0x8, 1); /* HSD_TexLODDesc.bias_clamp */
+    port_claim((u8*) p + 0x9, 1); /* HSD_TexLODDesc.edgeLODEnable */
     port_swap32((u8*) p + 0xC); /* HSD_TexLODDesc.max_anisotropy */
 }
 
 /* HSD_Spline: 0x18 bytes */
 void port_swap_HSD_Spline(void* p)
 {
+    port_claim((u8*) p + 0x0, 1); /* HSD_Spline.type */
     port_swap16((u8*) p + 0x2); /* HSD_Spline.numcv */
     port_swap32((u8*) p + 0x4); /* HSD_Spline.tension */
     port_swap32((u8*) p + 0xC); /* HSD_Spline.totalLength */
@@ -454,6 +524,42 @@ void port_swap_GroundParam(void* p)
     port_swap16((u8*) p + 0xAC); /* GroundParam.x6A[33] */
     port_swap16((u8*) p + 0xAE); /* GroundParam.x6A[34] */
     port_swap32((u8*) p + 0xB4); /* GroundParam.stage_param_count */
+    port_claim((u8*) p + 0xB8, 1); /* GroundParam.xB8.r */
+    port_claim((u8*) p + 0xB9, 1); /* GroundParam.xB8.g */
+    port_claim((u8*) p + 0xBA, 1); /* GroundParam.xB8.b */
+    port_claim((u8*) p + 0xBB, 1); /* GroundParam.xB8.a */
+    port_claim((u8*) p + 0xBC, 1); /* GroundParam.xBC.r */
+    port_claim((u8*) p + 0xBD, 1); /* GroundParam.xBC.g */
+    port_claim((u8*) p + 0xBE, 1); /* GroundParam.xBC.b */
+    port_claim((u8*) p + 0xBF, 1); /* GroundParam.xBC.a */
+    port_claim((u8*) p + 0xC0, 1); /* GroundParam.xC0.r */
+    port_claim((u8*) p + 0xC1, 1); /* GroundParam.xC0.g */
+    port_claim((u8*) p + 0xC2, 1); /* GroundParam.xC0.b */
+    port_claim((u8*) p + 0xC3, 1); /* GroundParam.xC0.a */
+    port_claim((u8*) p + 0xC4, 1); /* GroundParam.xC4.r */
+    port_claim((u8*) p + 0xC5, 1); /* GroundParam.xC4.g */
+    port_claim((u8*) p + 0xC6, 1); /* GroundParam.xC4.b */
+    port_claim((u8*) p + 0xC7, 1); /* GroundParam.xC4.a */
+    port_claim((u8*) p + 0xC8, 1); /* GroundParam.xC8.r */
+    port_claim((u8*) p + 0xC9, 1); /* GroundParam.xC8.g */
+    port_claim((u8*) p + 0xCA, 1); /* GroundParam.xC8.b */
+    port_claim((u8*) p + 0xCB, 1); /* GroundParam.xC8.a */
+    port_claim((u8*) p + 0xCC, 1); /* GroundParam.xCC.r */
+    port_claim((u8*) p + 0xCD, 1); /* GroundParam.xCC.g */
+    port_claim((u8*) p + 0xCE, 1); /* GroundParam.xCC.b */
+    port_claim((u8*) p + 0xCF, 1); /* GroundParam.xCC.a */
+    port_claim((u8*) p + 0xD0, 1); /* GroundParam.xD0.r */
+    port_claim((u8*) p + 0xD1, 1); /* GroundParam.xD0.g */
+    port_claim((u8*) p + 0xD2, 1); /* GroundParam.xD0.b */
+    port_claim((u8*) p + 0xD3, 1); /* GroundParam.xD0.a */
+    port_claim((u8*) p + 0xD4, 1); /* GroundParam.xD4.r */
+    port_claim((u8*) p + 0xD5, 1); /* GroundParam.xD4.g */
+    port_claim((u8*) p + 0xD6, 1); /* GroundParam.xD4.b */
+    port_claim((u8*) p + 0xD7, 1); /* GroundParam.xD4.a */
+    port_claim((u8*) p + 0xD8, 1); /* GroundParam.xD8.r */
+    port_claim((u8*) p + 0xD9, 1); /* GroundParam.xD8.g */
+    port_claim((u8*) p + 0xDA, 1); /* GroundParam.xD8.b */
+    port_claim((u8*) p + 0xDB, 1); /* GroundParam.xD8.a */
 }
 
 /* StageParam: 0x64 bytes */
@@ -696,6 +802,7 @@ void port_swap_ftCo_DatAttrs(void* p)
     port_swap32((u8*) p + 0x174); /* ftCo_DatAttrs.x170.y */
     port_swap32((u8*) p + 0x178); /* ftCo_DatAttrs.x170.z */
     port_swap32((u8*) p + 0x17C); /* ftCo_DatAttrs.x17C */
+    port_claim((u8*) p + 0x180, 1); /* ftCo_DatAttrs.weight_independent_throws_mask */
 }
 
 /* ftCommonData: 0x818 bytes */
@@ -1140,6 +1247,22 @@ void port_swap_ftCommonData(void* p)
     port_swap32((u8*) p + 0x6D0); /* ftCommonData.x6D0 */
     port_swap32((u8*) p + 0x6D4); /* ftCommonData.x6D4 */
     port_swap32((u8*) p + 0x6D8); /* ftCommonData.x6D8[0] */
+    port_claim((u8*) p + 0x6DC, 1); /* ftCommonData.x6DC_colorsByPlayer[0].r */
+    port_claim((u8*) p + 0x6DD, 1); /* ftCommonData.x6DC_colorsByPlayer[0].g */
+    port_claim((u8*) p + 0x6DE, 1); /* ftCommonData.x6DC_colorsByPlayer[0].b */
+    port_claim((u8*) p + 0x6DF, 1); /* ftCommonData.x6DC_colorsByPlayer[0].a */
+    port_claim((u8*) p + 0x6E0, 1); /* ftCommonData.x6DC_colorsByPlayer[1].r */
+    port_claim((u8*) p + 0x6E1, 1); /* ftCommonData.x6DC_colorsByPlayer[1].g */
+    port_claim((u8*) p + 0x6E2, 1); /* ftCommonData.x6DC_colorsByPlayer[1].b */
+    port_claim((u8*) p + 0x6E3, 1); /* ftCommonData.x6DC_colorsByPlayer[1].a */
+    port_claim((u8*) p + 0x6E4, 1); /* ftCommonData.x6DC_colorsByPlayer[2].r */
+    port_claim((u8*) p + 0x6E5, 1); /* ftCommonData.x6DC_colorsByPlayer[2].g */
+    port_claim((u8*) p + 0x6E6, 1); /* ftCommonData.x6DC_colorsByPlayer[2].b */
+    port_claim((u8*) p + 0x6E7, 1); /* ftCommonData.x6DC_colorsByPlayer[2].a */
+    port_claim((u8*) p + 0x6E8, 1); /* ftCommonData.x6DC_colorsByPlayer[3].r */
+    port_claim((u8*) p + 0x6E9, 1); /* ftCommonData.x6DC_colorsByPlayer[3].g */
+    port_claim((u8*) p + 0x6EA, 1); /* ftCommonData.x6DC_colorsByPlayer[3].b */
+    port_claim((u8*) p + 0x6EB, 1); /* ftCommonData.x6DC_colorsByPlayer[3].a */
     port_swap32((u8*) p + 0x6F0); /* ftCommonData.metal_armor */
     port_swap32((u8*) p + 0x6F4); /* ftCommonData.x6F4_unkDamage */
     port_swap32((u8*) p + 0x6F8); /* ftCommonData.x6F8 */
@@ -1198,6 +1321,10 @@ void port_swap_ftCommonData(void* p)
     port_swap32((u8*) p + 0x7CC); /* ftCommonData.x7CC */
     port_swap32((u8*) p + 0x7D0); /* ftCommonData.x7D0 */
     port_swap32((u8*) p + 0x7D4); /* ftCommonData.hit_weight_mul */
+    port_claim((u8*) p + 0x7D8, 1); /* ftCommonData.x7D8.r */
+    port_claim((u8*) p + 0x7D9, 1); /* ftCommonData.x7D8.g */
+    port_claim((u8*) p + 0x7DA, 1); /* ftCommonData.x7D8.b */
+    port_claim((u8*) p + 0x7DB, 1); /* ftCommonData.x7D8.a */
     port_swap32((u8*) p + 0x7DC); /* ftCommonData.x7DC */
     port_swap32((u8*) p + 0x7E0); /* ftCommonData.x7E0 */
     port_swap32((u8*) p + 0x7E4); /* ftCommonData.x7E4_scaleZ */
@@ -1215,9 +1342,716 @@ void port_swap_ftCommonData(void* p)
     port_swap32((u8*) p + 0x814); /* ftCommonData.x814 */
 }
 
+/* ftFox_DatAttrs: 0xD4 bytes */
+void port_swap_ftFox_DatAttrs(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftFox_DatAttrs.x0_FOX_BLASTER_UNK1 */
+    port_swap32((u8*) p + 0x4); /* ftFox_DatAttrs.x4_FOX_BLASTER_UNK2 */
+    port_swap32((u8*) p + 0x8); /* ftFox_DatAttrs.x8_FOX_BLASTER_UNK3 */
+    port_swap32((u8*) p + 0xC); /* ftFox_DatAttrs.xC_FOX_BLASTER_UNK4 */
+    port_swap32((u8*) p + 0x10); /* ftFox_DatAttrs.x10_FOX_BLASTER_ANGLE */
+    port_swap32((u8*) p + 0x14); /* ftFox_DatAttrs.x14_FOX_BLASTER_VEL */
+    port_swap32((u8*) p + 0x18); /* ftFox_DatAttrs.x18_FOX_BLASTER_LANDING_LAG */
+    port_swap32((u8*) p + 0x1C); /* ftFox_DatAttrs.x1C_FOX_BLASTER_SHOT_ITKIND */
+    port_swap32((u8*) p + 0x20); /* ftFox_DatAttrs.x20_FOX_BLASTER_GUN_ITKIND */
+    port_swap32((u8*) p + 0x24); /* ftFox_DatAttrs.x24_FOX_ILLUSION_GRAVITY_DELAY */
+    port_swap32((u8*) p + 0x28); /* ftFox_DatAttrs.x28_FOX_ILLUSION_GROUND_VEL_X */
+    port_swap32((u8*) p + 0x2C); /* ftFox_DatAttrs.x2C_FOX_ILLUSION_UNK1 */
+    port_swap32((u8*) p + 0x30); /* ftFox_DatAttrs.x30_FOX_ILLUSION_UNK2 */
+    port_swap32((u8*) p + 0x34); /* ftFox_DatAttrs.x34_FOX_ILLUSION_GROUND_END_VEL_X */
+    port_swap32((u8*) p + 0x38); /* ftFox_DatAttrs.x38_FOX_ILLUSION_GROUND_FRICTION */
+    port_swap32((u8*) p + 0x3C); /* ftFox_DatAttrs.x3C_FOX_ILLUSION_AIR_END_VEL_X */
+    port_swap32((u8*) p + 0x40); /* ftFox_DatAttrs.x40_FOX_ILLUSION_AIR_MUL_X */
+    port_swap32((u8*) p + 0x44); /* ftFox_DatAttrs.x44_FOX_ILLUSION_FALL_ACCEL */
+    port_swap32((u8*) p + 0x48); /* ftFox_DatAttrs.x48_FOX_ILLUSION_TERMINAL_VELOCITY */
+    port_swap32((u8*) p + 0x4C); /* ftFox_DatAttrs.x4C_FOX_ILLUSION_FREEFALL_MOBILITY */
+    port_swap32((u8*) p + 0x50); /* ftFox_DatAttrs.x50_FOX_ILLUSION_LANDING_LAG */
+    port_swap32((u8*) p + 0x54); /* ftFox_DatAttrs.x54_FOX_FIREFOX_GRAVITY_DELAY */
+    port_swap32((u8*) p + 0x58); /* ftFox_DatAttrs.x58_FOX_FIREFOX_VEL_X */
+    port_swap32((u8*) p + 0x5C); /* ftFox_DatAttrs.x5C_FOX_FIREFOX_AIR_MOMENTUM_PRESERVE_X */
+    port_swap32((u8*) p + 0x60); /* ftFox_DatAttrs.x60_FOX_FIREFOX_FALL_ACCEL */
+    port_swap32((u8*) p + 0x64); /* ftFox_DatAttrs.x64_FOX_FIREFOX_DIRECTION_STICK_RANGE_MIN */
+    port_swap32((u8*) p + 0x68); /* ftFox_DatAttrs.x68_FOX_FIREFOX_DURATION */
+    port_swap32((u8*) p + 0x6C); /* ftFox_DatAttrs.x6C_FOX_FIREFOX_BOUNCE_VAR */
+    port_swap32((u8*) p + 0x70); /* ftFox_DatAttrs.x70_FOX_FIREFOX_DURATION_END */
+    port_swap32((u8*) p + 0x74); /* ftFox_DatAttrs.x74_FOX_FIREFOX_SPEED */
+    port_swap32((u8*) p + 0x78); /* ftFox_DatAttrs.x78_FOX_FIREFOX_REVERSE_ACCEL */
+    port_swap32((u8*) p + 0x7C); /* ftFox_DatAttrs.x7C_FOX_FIREFOX_GROUND_MOMENTUM_END */
+    port_swap32((u8*) p + 0x80); /* ftFox_DatAttrs.x80_FOX_FIREFOX_UNK2 */
+    port_swap32((u8*) p + 0x84); /* ftFox_DatAttrs.x84_FOX_FIREFOX_BOUND_VEL_X */
+    port_swap32((u8*) p + 0x88); /* ftFox_DatAttrs.x88_FOX_FIREFOX_FACING_STICK_RANGE_MIN */
+    port_swap32((u8*) p + 0x8C); /* ftFox_DatAttrs.x8C_FOX_FIREFOX_FREEFALL_MOBILITY */
+    port_swap32((u8*) p + 0x90); /* ftFox_DatAttrs.x90_FOX_FIREFOX_LANDING_LAG */
+    port_swap32((u8*) p + 0x94); /* ftFox_DatAttrs.x94_FOX_FIREFOX_BOUND_ANGLE */
+    port_swap32((u8*) p + 0x98); /* ftFox_DatAttrs.x98_FOX_REFLECTOR_RELEASE_LAG */
+    port_swap32((u8*) p + 0x9C); /* ftFox_DatAttrs.x9C_FOX_REFLECTOR_TURN_FRAMES */
+    port_swap32((u8*) p + 0xA0); /* ftFox_DatAttrs.xA0_FOX_REFLECTOR_UNK1 */
+    port_swap32((u8*) p + 0xA4); /* ftFox_DatAttrs.xA4_FOX_REFLECTOR_GRAVITY_DELAY */
+    port_swap32((u8*) p + 0xA8); /* ftFox_DatAttrs.xA8_FOX_REFLECTOR_MOMENTUM_PRESERVE_X */
+    port_swap32((u8*) p + 0xAC); /* ftFox_DatAttrs.xAC_FOX_REFLECTOR_FALL_ACCEL */
+    port_swap32((u8*) p + 0xB0); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x0_bone_id */
+    port_swap32((u8*) p + 0xB4); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x4_max_damage */
+    port_swap32((u8*) p + 0xB8); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x8_offset.x */
+    port_swap32((u8*) p + 0xBC); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x8_offset.y */
+    port_swap32((u8*) p + 0xC0); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x8_offset.z */
+    port_swap32((u8*) p + 0xC4); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x14_size */
+    port_swap32((u8*) p + 0xC8); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x18_damage_mul */
+    port_swap32((u8*) p + 0xCC); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x1C_speed_mul */
+    port_claim((u8*) p + 0xD0, 1); /* ftFox_DatAttrs.xB0_FOX_REFLECTOR_REFLECTION.x20_behavior */
+}
+
+/* ftMario_DatAttrs: 0x84 bytes */
+void port_swap_ftMario_DatAttrs(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftMario_DatAttrs.specials.vel_x_decay */
+    port_swap32((u8*) p + 0x4); /* ftMario_DatAttrs.specials.vel.x */
+    port_swap32((u8*) p + 0x8); /* ftMario_DatAttrs.specials.vel.y */
+    port_swap32((u8*) p + 0xC); /* ftMario_DatAttrs.specials.grav */
+    port_swap32((u8*) p + 0x10); /* ftMario_DatAttrs.specials.terminal_vel */
+    port_swap32((u8*) p + 0x14); /* ftMario_DatAttrs.specials.cape_kind */
+    port_swap32((u8*) p + 0x18); /* ftMario_DatAttrs.specialhi.freefall_mobility */
+    port_swap32((u8*) p + 0x1C); /* ftMario_DatAttrs.specialhi.landing_lag */
+    port_swap32((u8*) p + 0x20); /* ftMario_DatAttrs.specialhi.reverse_stick_range */
+    port_swap32((u8*) p + 0x24); /* ftMario_DatAttrs.specialhi.momentum_stick_range */
+    port_swap32((u8*) p + 0x28); /* ftMario_DatAttrs.specialhi.angle_diff */
+    port_swap32((u8*) p + 0x2C); /* ftMario_DatAttrs.specialhi.vel_x */
+    port_swap32((u8*) p + 0x30); /* ftMario_DatAttrs.specialhi.grav */
+    port_swap32((u8*) p + 0x34); /* ftMario_DatAttrs.specialhi.vel_mul */
+    port_swap32((u8*) p + 0x38); /* ftMario_DatAttrs.speciallw.vel_y */
+    port_swap32((u8*) p + 0x3C); /* ftMario_DatAttrs.speciallw.momentum_x */
+    port_swap32((u8*) p + 0x40); /* ftMario_DatAttrs.speciallw.air_momentum_x */
+    port_swap32((u8*) p + 0x44); /* ftMario_DatAttrs.speciallw.momentum_x_mul */
+    port_swap32((u8*) p + 0x48); /* ftMario_DatAttrs.speciallw.air_momentum_x_mul */
+    port_swap32((u8*) p + 0x4C); /* ftMario_DatAttrs.speciallw.friction_end */
+    port_swap32((u8*) p + 0x50); /* ftMario_DatAttrs.speciallw.unk0 */
+    port_swap32((u8*) p + 0x54); /* ftMario_DatAttrs.speciallw.tap_y_vel_max */
+    port_swap32((u8*) p + 0x58); /* ftMario_DatAttrs.speciallw.tap_grav */
+    port_swap32((u8*) p + 0x5C); /* ftMario_DatAttrs.speciallw.landing_lag */
+    port_swap32((u8*) p + 0x60); /* ftMario_DatAttrs.cape_reflection.x0_bone_id */
+    port_swap32((u8*) p + 0x64); /* ftMario_DatAttrs.cape_reflection.x4_max_damage */
+    port_swap32((u8*) p + 0x68); /* ftMario_DatAttrs.cape_reflection.x8_offset.x */
+    port_swap32((u8*) p + 0x6C); /* ftMario_DatAttrs.cape_reflection.x8_offset.y */
+    port_swap32((u8*) p + 0x70); /* ftMario_DatAttrs.cape_reflection.x8_offset.z */
+    port_swap32((u8*) p + 0x74); /* ftMario_DatAttrs.cape_reflection.x14_size */
+    port_swap32((u8*) p + 0x78); /* ftMario_DatAttrs.cape_reflection.x18_damage_mul */
+    port_swap32((u8*) p + 0x7C); /* ftMario_DatAttrs.cape_reflection.x1C_speed_mul */
+    port_claim((u8*) p + 0x80, 1); /* ftMario_DatAttrs.cape_reflection.x20_behavior */
+}
+
+/* ftMewtwoAttributes: 0x88 bytes */
+void port_swap_ftMewtwoAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftMewtwoAttributes.x0_MEWTWO_SHADOWBALL_CHARGE_CYCLES */
+    port_swap32((u8*) p + 0x4); /* ftMewtwoAttributes.x4_MEWTWO_SHADOWBALL_GROUND_RECOIL_X */
+    port_swap32((u8*) p + 0x8); /* ftMewtwoAttributes.x8_MEWTWO_SHADOWBALL_AIR_RECOIL_X */
+    port_swap32((u8*) p + 0xC); /* ftMewtwoAttributes.xC_MEWTWO_SHADOWBALL_CHARGE_ITERATIONS */
+    port_swap32((u8*) p + 0x10); /* ftMewtwoAttributes.x10_MEWTWO_SHADOWBALL_RELEASE_LAG */
+    port_swap32((u8*) p + 0x14); /* ftMewtwoAttributes.x14_MEWTWO_SHADOWBALL_LANDING_LAG */
+    port_swap32((u8*) p + 0x18); /* ftMewtwoAttributes.x18_MEWTWO_CONFUSION_AIR_BOOST */
+    port_swap32((u8*) p + 0x1C); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x0_bone_id */
+    port_swap32((u8*) p + 0x20); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x4_max_damage */
+    port_swap32((u8*) p + 0x24); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x8_offset.x */
+    port_swap32((u8*) p + 0x28); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x8_offset.y */
+    port_swap32((u8*) p + 0x2C); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x8_offset.z */
+    port_swap32((u8*) p + 0x30); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x14_size */
+    port_swap32((u8*) p + 0x34); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x18_damage_mul */
+    port_swap32((u8*) p + 0x38); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x1C_speed_mul */
+    port_claim((u8*) p + 0x3C, 1); /* ftMewtwoAttributes.x1C_MEWTWO_CONFUSION_REFLECTION.x20_behavior */
+    port_swap32((u8*) p + 0x40); /* ftMewtwoAttributes.x40_MEWTWO_TELEPORT_VEL_DIV_X */
+    port_swap32((u8*) p + 0x44); /* ftMewtwoAttributes.x44_MEWTWO_TELEPORT_VEL_DIV_Y */
+    port_swap32((u8*) p + 0x48); /* ftMewtwoAttributes.x48_MEWTWO_TELEPORT_GRAVITY */
+    port_swap32((u8*) p + 0x4C); /* ftMewtwoAttributes.x4C_MEWTWO_TELEPORT_TERMINAL_VELOCITY */
+    port_swap32((u8*) p + 0x50); /* ftMewtwoAttributes.x50_MEWTWO_TELEPORT_DURATION */
+    port_swap32((u8*) p + 0x54); /* ftMewtwoAttributes.x54_MEWTWO_TELEPORT_UNK2 */
+    port_swap32((u8*) p + 0x58); /* ftMewtwoAttributes.x58_MEWTWO_TELEPORT_STICK_RANGE_MIN */
+    port_swap32((u8*) p + 0x5C); /* ftMewtwoAttributes.x5C_MEWTWO_TELEPORT_MOMENTUM */
+    port_swap32((u8*) p + 0x60); /* ftMewtwoAttributes.x60_MEWTWO_TELEPORT_MOMENTUM_ADD */
+    port_swap32((u8*) p + 0x64); /* ftMewtwoAttributes.x64_MEWTWO_TELEPORT_DRIFT */
+    port_swap32((u8*) p + 0x68); /* ftMewtwoAttributes.x68_MEWTWO_TELEPORT_ANGLE_CLAMP */
+    port_swap32((u8*) p + 0x6C); /* ftMewtwoAttributes.x6C_MEWTWO_TELEPORT_MOMENTUM_END_MUL */
+    port_swap32((u8*) p + 0x70); /* ftMewtwoAttributes.x70_MEWTWO_TELEPORT_FREEFALL_MOBILITY */
+    port_swap32((u8*) p + 0x74); /* ftMewtwoAttributes.x74_MEWTWO_TELEPORT_LANDING_LAG */
+    port_swap32((u8*) p + 0x78); /* ftMewtwoAttributes.x78_MEWTWO_DISABLE_GRAVITY */
+    port_swap32((u8*) p + 0x7C); /* ftMewtwoAttributes.x7C_MEWTWO_DISABLE_TERMINAL_VELOCITY */
+    port_swap32((u8*) p + 0x80); /* ftMewtwoAttributes.x80_MEWTWO_DISABLE_OFFSET_X */
+    port_swap32((u8*) p + 0x84); /* ftMewtwoAttributes.x84_MEWTWO_DISABLE_OFFSET_Y */
+}
+
+/* ftNessAttributes: 0xDC bytes */
+void port_swap_ftNessAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftNessAttributes.x0_PKFLASH_TIMER1_LOOPFRAMES */
+    port_swap32((u8*) p + 0x4); /* ftNessAttributes.x4_PKFLASH_TIMER2_LOOPFRAMES */
+    port_swap32((u8*) p + 0x8); /* ftNessAttributes.x8_PKFLASH_GRAVITY_DELAY */
+    port_swap32((u8*) p + 0xC); /* ftNessAttributes.xC_PKFLASH_MINCHARGEFRAMES */
+    port_swap32((u8*) p + 0x10); /* ftNessAttributes.x10_PKFLASH_UNK1 */
+    port_swap32((u8*) p + 0x14); /* ftNessAttributes.x14_PKFLASH_FALL_ACCEL */
+    port_swap32((u8*) p + 0x18); /* ftNessAttributes.x18_PKFLASH_UNK2 */
+    port_swap32((u8*) p + 0x1C); /* ftNessAttributes.x1C_PKFLASH_LANDING_LAG */
+    port_swap32((u8*) p + 0x20); /* ftNessAttributes.x20_PKFIRE_AERIAL_LAUNCH_TRAJECTORY */
+    port_swap32((u8*) p + 0x24); /* ftNessAttributes.x24_PKFIRE_AERIAL_VELOCITY */
+    port_swap32((u8*) p + 0x28); /* ftNessAttributes.x28_PKFIRE_GROUNDED_LAUNCH_TRAJECTORY */
+    port_swap32((u8*) p + 0x2C); /* ftNessAttributes.x2C_PKFIRE_GROUNDED_VELOCITY */
+    port_swap32((u8*) p + 0x30); /* ftNessAttributes.x30_PKFIRE_SPAWN_X */
+    port_swap32((u8*) p + 0x34); /* ftNessAttributes.x34_PKFIRE_SPAWN_Y */
+    port_swap32((u8*) p + 0x38); /* ftNessAttributes.x38_PKFIRE_LANDING_LAG */
+    port_swap32((u8*) p + 0x3C); /* ftNessAttributes.x3C_PK_THUNDER_UNK1 */
+    port_swap32((u8*) p + 0x40); /* ftNessAttributes.x40_PK_THUNDER_LOOP1 */
+    port_swap32((u8*) p + 0x44); /* ftNessAttributes.x44_PK_THUNDER_LOOP2 */
+    port_swap32((u8*) p + 0x48); /* ftNessAttributes.x48_PK_THUNDER_GRAVITY_DELAY */
+    port_swap32((u8*) p + 0x4C); /* ftNessAttributes.x4C_PK_THUNDER_UNK2 */
+    port_swap32((u8*) p + 0x50); /* ftNessAttributes.x50_PK_THUNDER_FALL_ACCEL */
+    port_swap32((u8*) p + 0x54); /* ftNessAttributes.x54_PK_THUNDER_2_MOMENTUM */
+    port_swap32((u8*) p + 0x58); /* ftNessAttributes.x58_PK_THUNDER_2_UNK1 */
+    port_swap32((u8*) p + 0x5C); /* ftNessAttributes.x5C_PK_THUNDER_2_DECELERATION_RATE */
+    port_swap32((u8*) p + 0x60); /* ftNessAttributes.x60_PK_THUNDER_2_KNOCKDOWN_ANGLE */
+    port_swap32((u8*) p + 0x64); /* ftNessAttributes.x64_PK_THUNDER_2_WALLHUG_ANGLE */
+    port_swap32((u8*) p + 0x68); /* ftNessAttributes.x68_PK_THUNDER_2_UNK2 */
+    port_swap32((u8*) p + 0x6C); /* ftNessAttributes.x6C_PK_THUNDER_2_FREEFALL_ANIM_BLEND */
+    port_swap32((u8*) p + 0x70); /* ftNessAttributes.x70_PK_THUNDER_2_LANDING_LAG */
+    port_swap32((u8*) p + 0x74); /* ftNessAttributes.x74_PSI_MAGNET_RELEASE_LAG */
+    port_swap32((u8*) p + 0x78); /* ftNessAttributes.x78_PSI_MAGNET_UNK1 */
+    port_swap32((u8*) p + 0x7C); /* ftNessAttributes.x7C_PSI_MAGNET_UNK2 */
+    port_swap32((u8*) p + 0x80); /* ftNessAttributes.x80_PSI_MAGNET_UNK3 */
+    port_swap32((u8*) p + 0x84); /* ftNessAttributes.x84_PSI_MAGNET_FRAMES_BEFORE_GRAVITY */
+    port_swap32((u8*) p + 0x88); /* ftNessAttributes.x88_PSI_MAGNET_MOMENTUM_PRESERVATION */
+    port_swap32((u8*) p + 0x8C); /* ftNessAttributes.x8C_PSI_MAGNET_FALL_ACCEL */
+    port_swap32((u8*) p + 0x90); /* ftNessAttributes.x90_PSI_MAGNET_UNK4 */
+    port_swap32((u8*) p + 0x94); /* ftNessAttributes.x94_PSI_MAGNET_HEAL_MUL */
+    port_swap32((u8*) p + 0x98); /* ftNessAttributes.x98_PSI_MAGNET_ABSORPTION.x0_bone_id */
+    port_swap32((u8*) p + 0x9C); /* ftNessAttributes.x98_PSI_MAGNET_ABSORPTION.x4_offset.x */
+    port_swap32((u8*) p + 0xA0); /* ftNessAttributes.x98_PSI_MAGNET_ABSORPTION.x4_offset.y */
+    port_swap32((u8*) p + 0xA4); /* ftNessAttributes.x98_PSI_MAGNET_ABSORPTION.x4_offset.z */
+    port_swap32((u8*) p + 0xA8); /* ftNessAttributes.x98_PSI_MAGNET_ABSORPTION.x10_size */
+    port_swap32((u8*) p + 0xAC); /* ftNessAttributes.xAC_YOYO_CHARGE_DURATION */
+    port_swap32((u8*) p + 0xB0); /* ftNessAttributes.xB0_YOYO_DAMAGE_MUL */
+    port_swap32((u8*) p + 0xB4); /* ftNessAttributes.xB4_YOYO_REHIT_RATE */
+    port_swap32((u8*) p + 0xB8); /* ftNessAttributes.xB8_BASEBALL_BAT.x0_bone_id */
+    port_swap32((u8*) p + 0xBC); /* ftNessAttributes.xB8_BASEBALL_BAT.x4_max_damage */
+    port_swap32((u8*) p + 0xC0); /* ftNessAttributes.xB8_BASEBALL_BAT.x8_offset.x */
+    port_swap32((u8*) p + 0xC4); /* ftNessAttributes.xB8_BASEBALL_BAT.x8_offset.y */
+    port_swap32((u8*) p + 0xC8); /* ftNessAttributes.xB8_BASEBALL_BAT.x8_offset.z */
+    port_swap32((u8*) p + 0xCC); /* ftNessAttributes.xB8_BASEBALL_BAT.x14_size */
+    port_swap32((u8*) p + 0xD0); /* ftNessAttributes.xB8_BASEBALL_BAT.x18_damage_mul */
+    port_swap32((u8*) p + 0xD4); /* ftNessAttributes.xB8_BASEBALL_BAT.x1C_speed_mul */
+    port_claim((u8*) p + 0xD8, 1); /* ftNessAttributes.xB8_BASEBALL_BAT.x20_behavior */
+}
+
+/* ftZelda_DatAttrs: 0xA8 bytes */
+void port_swap_ftZelda_DatAttrs(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftZelda_DatAttrs.x0 */
+    port_swap32((u8*) p + 0x4); /* ftZelda_DatAttrs.x4 */
+    port_swap32((u8*) p + 0x8); /* ftZelda_DatAttrs.x8 */
+    port_swap32((u8*) p + 0xC); /* ftZelda_DatAttrs.xC */
+    port_swap32((u8*) p + 0x10); /* ftZelda_DatAttrs.x10 */
+    port_swap32((u8*) p + 0x14); /* ftZelda_DatAttrs.x14 */
+    port_swap32((u8*) p + 0x18); /* ftZelda_DatAttrs.x18 */
+    port_swap32((u8*) p + 0x1C); /* ftZelda_DatAttrs.x1C */
+    port_swap32((u8*) p + 0x20); /* ftZelda_DatAttrs.x20 */
+    port_swap32((u8*) p + 0x24); /* ftZelda_DatAttrs.x24 */
+    port_swap32((u8*) p + 0x28); /* ftZelda_DatAttrs.x28 */
+    port_swap32((u8*) p + 0x2C); /* ftZelda_DatAttrs.x2C */
+    port_swap32((u8*) p + 0x30); /* ftZelda_DatAttrs.x30 */
+    port_swap32((u8*) p + 0x34); /* ftZelda_DatAttrs.x34 */
+    port_swap32((u8*) p + 0x38); /* ftZelda_DatAttrs.x38 */
+    port_swap32((u8*) p + 0x3C); /* ftZelda_DatAttrs.x3C */
+    port_swap32((u8*) p + 0x40); /* ftZelda_DatAttrs.x40 */
+    port_swap32((u8*) p + 0x44); /* ftZelda_DatAttrs.x44 */
+    port_swap32((u8*) p + 0x48); /* ftZelda_DatAttrs.x48 */
+    port_swap32((u8*) p + 0x4C); /* ftZelda_DatAttrs.x4C */
+    port_swap32((u8*) p + 0x50); /* ftZelda_DatAttrs.x50 */
+    port_swap32((u8*) p + 0x54); /* ftZelda_DatAttrs.x54 */
+    port_swap32((u8*) p + 0x58); /* ftZelda_DatAttrs.x58 */
+    port_swap32((u8*) p + 0x5C); /* ftZelda_DatAttrs.x5C */
+    port_swap32((u8*) p + 0x60); /* ftZelda_DatAttrs.x60 */
+    port_swap32((u8*) p + 0x64); /* ftZelda_DatAttrs.x64 */
+    port_swap32((u8*) p + 0x68); /* ftZelda_DatAttrs.x68 */
+    port_swap32((u8*) p + 0x6C); /* ftZelda_DatAttrs.x6C */
+    port_swap32((u8*) p + 0x70); /* ftZelda_DatAttrs.x70 */
+    port_swap32((u8*) p + 0x74); /* ftZelda_DatAttrs.x74 */
+    port_swap32((u8*) p + 0x78); /* ftZelda_DatAttrs.x78 */
+    port_swap32((u8*) p + 0x7C); /* ftZelda_DatAttrs.x7C */
+    port_swap32((u8*) p + 0x80); /* ftZelda_DatAttrs.x80 */
+    port_swap32((u8*) p + 0x84); /* ftZelda_DatAttrs.x84.x0_bone_id */
+    port_swap32((u8*) p + 0x88); /* ftZelda_DatAttrs.x84.x4_max_damage */
+    port_swap32((u8*) p + 0x8C); /* ftZelda_DatAttrs.x84.x8_offset.x */
+    port_swap32((u8*) p + 0x90); /* ftZelda_DatAttrs.x84.x8_offset.y */
+    port_swap32((u8*) p + 0x94); /* ftZelda_DatAttrs.x84.x8_offset.z */
+    port_swap32((u8*) p + 0x98); /* ftZelda_DatAttrs.x84.x14_size */
+    port_swap32((u8*) p + 0x9C); /* ftZelda_DatAttrs.x84.x18_damage_mul */
+    port_swap32((u8*) p + 0xA0); /* ftZelda_DatAttrs.x84.x1C_speed_mul */
+    port_claim((u8*) p + 0xA4, 1); /* ftZelda_DatAttrs.x84.x20_behavior */
+}
+
+/* ftKb_DatAttrs: 0x424 bytes */
+void port_swap_ftKb_DatAttrs(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftKb_DatAttrs.jumpaerial_turn_duration */
+    port_swap32((u8*) p + 0x4); /* ftKb_DatAttrs.jumpaerial_horizontal_momentum_backwards */
+    port_swap32((u8*) p + 0x8); /* ftKb_DatAttrs.jumpaerial_horizontal_momentum_forwards */
+    port_swap32((u8*) p + 0xC); /* ftKb_DatAttrs.jumpaerial_momentum_from_turning */
+    port_swap32((u8*) p + 0x10); /* ftKb_DatAttrs.jumpaerial_horizontal_momentum */
+    port_swap32((u8*) p + 0x14); /* ftKb_DatAttrs.jumpaerial_jump1_vertical_momentum */
+    port_swap32((u8*) p + 0x18); /* ftKb_DatAttrs.jumpaerial_jump2_vertical_momentum */
+    port_swap32((u8*) p + 0x1C); /* ftKb_DatAttrs.jumpaerial_jump3_vertical_momentum */
+    port_swap32((u8*) p + 0x20); /* ftKb_DatAttrs.jumpaerial_jump4_vertical_momentum */
+    port_swap32((u8*) p + 0x24); /* ftKb_DatAttrs.jumpaerial_jump5_vertical_momentum */
+    port_swap32((u8*) p + 0x28); /* ftKb_DatAttrs.jumpaerial_number_of_jumps */
+    port_swap32((u8*) p + 0x2C); /* ftKb_DatAttrs.jumpaerial_first_jump_action_state */
+    port_swap32((u8*) p + 0x30); /* ftKb_DatAttrs.jumpaerial_final_jump_action_state */
+    port_swap16((u8*) p + 0x34); /* ftKb_DatAttrs.jumpaerial_unk */
+    port_swap32((u8*) p + 0x38); /* ftKb_DatAttrs.specialn_x_offset_inhaled */
+    port_swap32((u8*) p + 0x3C); /* ftKb_DatAttrs.specialn_y_offset_inhaled */
+    port_swap32((u8*) p + 0x40); /* ftKb_DatAttrs.specialn_z_offset_inhaled */
+    port_swap32((u8*) p + 0x44); /* ftKb_DatAttrs.specialn_gravity_of_inhaled */
+    port_swap32((u8*) p + 0x48); /* ftKb_DatAttrs.specialn_velocity_outer_grab_box */
+    port_swap32((u8*) p + 0x4C); /* ftKb_DatAttrs.specialn_velocity_inner_grab_box */
+    port_swap32((u8*) p + 0x50); /* ftKb_DatAttrs.specialn_inhale_velocity */
+    port_swap32((u8*) p + 0x54); /* ftKb_DatAttrs.specialn_inhale_resistance */
+    port_swap32((u8*) p + 0x58); /* ftKb_DatAttrs.specialn_duration_divisor */
+    port_swap32((u8*) p + 0x5C); /* ftKb_DatAttrs.specialn_base_duration */
+    port_swap32((u8*) p + 0x60); /* ftKb_DatAttrs.specialn_star_deceleration_rate */
+    port_swap32((u8*) p + 0x64); /* ftKb_DatAttrs.specialn_star_duration_divisor */
+    port_swap32((u8*) p + 0x68); /* ftKb_DatAttrs.specialn_star_base_duration */
+    port_swap32((u8*) p + 0x6C); /* ftKb_DatAttrs.specialn_frames_in_swallow_star */
+    port_swap32((u8*) p + 0x70); /* ftKb_DatAttrs.specialn_spit_spin */
+    port_swap32((u8*) p + 0x74); /* ftKb_DatAttrs.specialn_x_axis_range_walk */
+    port_swap32((u8*) p + 0x78); /* ftKb_DatAttrs.specialn_y_axis_range_jump */
+    port_swap32((u8*) p + 0x7C); /* ftKb_DatAttrs.specialn_walk_speed */
+    port_swap32((u8*) p + 0x80); /* ftKb_DatAttrs.specialn_jump_height */
+    port_swap32((u8*) p + 0x84); /* ftKb_DatAttrs.specialn_stop_momentum */
+    port_swap32((u8*) p + 0x88); /* ftKb_DatAttrs.specialn_ground_spit_initial_horizontal_velocity */
+    port_swap32((u8*) p + 0x8C); /* ftKb_DatAttrs.specialn_spit_deceleration_rate */
+    port_swap32((u8*) p + 0x90); /* ftKb_DatAttrs.specialn_spit_out_release_angle */
+    port_swap32((u8*) p + 0x94); /* ftKb_DatAttrs.specialn_swallow_star_vertical_velocity */
+    port_swap32((u8*) p + 0x98); /* ftKb_DatAttrs.specialn_swallow_star_gravity */
+    port_swap32((u8*) p + 0x9C); /* ftKb_DatAttrs.specialn_opponent_horizontal_velocity */
+    port_swap32((u8*) p + 0xA0); /* ftKb_DatAttrs.specialn_opponent_vertical_velocity */
+    port_swap32((u8*) p + 0xA4); /* ftKb_DatAttrs.specialn_ability_loss_star_x */
+    port_swap32((u8*) p + 0xA8); /* ftKb_DatAttrs.specialn_ability_loss_star_y */
+    port_swap32((u8*) p + 0xAC); /* ftKb_DatAttrs.specialn_ability_loss_star_z */
+    port_swap32((u8*) p + 0xB0); /* ftKb_DatAttrs.specialn_odds_lose_ability_on_hit */
+    port_swap32((u8*) p + 0xB4); /* ftKb_DatAttrs.specialn_unk1 */
+    port_swap32((u8*) p + 0xB8); /* ftKb_DatAttrs.specialn_swallow_star_y_release */
+    port_swap32((u8*) p + 0xBC); /* ftKb_DatAttrs.specialn_unk2 */
+    port_swap32((u8*) p + 0xC0); /* ftKb_DatAttrs.specialn_unk3 */
+    port_swap32((u8*) p + 0xC4); /* ftKb_DatAttrs.specialn_unk4 */
+    port_swap32((u8*) p + 0xC8); /* ftKb_DatAttrs.specialn_unk5 */
+    port_swap32((u8*) p + 0xCC); /* ftKb_DatAttrs.specials_aerial_vertical_momentum */
+    port_swap32((u8*) p + 0xD0); /* ftKb_DatAttrs.specials_landing_lag */
+    port_swap32((u8*) p + 0xD4); /* ftKb_DatAttrs.specialhi_vertical_momentum */
+    port_swap32((u8*) p + 0xD8); /* ftKb_DatAttrs.specialhi_horizontal_momentum */
+    port_swap32((u8*) p + 0xDC); /* ftKb_DatAttrs.specialhi_projectile_spawn_x */
+    port_swap32((u8*) p + 0xE0); /* ftKb_DatAttrs.specialhi_projectile_spawn_y */
+    port_swap32((u8*) p + 0xE4); /* ftKb_DatAttrs.specialhi_reverse_upb_stick_range */
+    port_swap32((u8*) p + 0xE8); /* ftKb_DatAttrs.specialhi_unk */
+    port_swap32((u8*) p + 0xEC); /* ftKb_DatAttrs.speciallw_max_time_in_stone */
+    port_swap32((u8*) p + 0xF0); /* ftKb_DatAttrs.speciallw_min_time_in_stone */
+    port_swap32((u8*) p + 0xF4); /* ftKb_DatAttrs.speciallw_min_slant_angle_slide */
+    port_swap32((u8*) p + 0xF8); /* ftKb_DatAttrs.speciallw_max_slant_angle_slide */
+    port_swap32((u8*) p + 0xFC); /* ftKb_DatAttrs.speciallw_slide_acceleration */
+    port_swap32((u8*) p + 0x100); /* ftKb_DatAttrs.speciallw_slide_max_speed */
+    port_swap32((u8*) p + 0x104); /* ftKb_DatAttrs.speciallw_gravity */
+    port_swap32((u8*) p + 0x108); /* ftKb_DatAttrs.speciallw_hp */
+    port_swap32((u8*) p + 0x10C); /* ftKb_DatAttrs.speciallw_resistance */
+    port_swap32((u8*) p + 0x110); /* ftKb_DatAttrs.speciallw_unk */
+    port_swap32((u8*) p + 0x114); /* ftKb_DatAttrs.speciallw_freefall_toggle */
+    port_swap32((u8*) p + 0x118); /* ftKb_DatAttrs.specialn_kp_b_button_check_frequency */
+    port_swap32((u8*) p + 0x11C); /* ftKb_DatAttrs.specialn_kp_fuel_recharge_rate */
+    port_swap32((u8*) p + 0x120); /* ftKb_DatAttrs.specialn_kp_flame_size_recharge_rate */
+    port_swap32((u8*) p + 0x124); /* ftKb_DatAttrs.specialn_kp_max_fuel */
+    port_swap32((u8*) p + 0x128); /* ftKb_DatAttrs.specialn_kp_spew_flame_velocity */
+    port_swap32((u8*) p + 0x12C); /* ftKb_DatAttrs.specialn_kp_flame_scale */
+    port_swap32((u8*) p + 0x130); /* ftKb_DatAttrs.specialn_kp_lowest_charge_graphic_size */
+    port_swap32((u8*) p + 0x134); /* ftKb_DatAttrs.specialn_kp_screen_shake_frequency */
+    port_swap32((u8*) p + 0x138); /* ftKb_DatAttrs.specialn_kp_breath_x_offset */
+    port_swap32((u8*) p + 0x13C); /* ftKb_DatAttrs.specialn_kp_breath_y_offset */
+    port_swap32((u8*) p + 0x140); /* ftKb_DatAttrs.specialn_gk_b_button_check_frequency */
+    port_swap32((u8*) p + 0x144); /* ftKb_DatAttrs.specialn_gk_fuel_recharge_rate */
+    port_swap32((u8*) p + 0x148); /* ftKb_DatAttrs.specialn_gk_flame_size_recharge_rate */
+    port_swap32((u8*) p + 0x14C); /* ftKb_DatAttrs.specialn_gk_max_fuel */
+    port_swap32((u8*) p + 0x150); /* ftKb_DatAttrs.specialn_gk_spew_flame_velocity */
+    port_swap32((u8*) p + 0x154); /* ftKb_DatAttrs.specialn_gk_flame_scale */
+    port_swap32((u8*) p + 0x158); /* ftKb_DatAttrs.specialn_gk_lowest_charge_graphic_size */
+    port_swap32((u8*) p + 0x15C); /* ftKb_DatAttrs.specialn_gk_screen_shake_frequency */
+    port_swap32((u8*) p + 0x160); /* ftKb_DatAttrs.specialn_gk_breath_x_offset */
+    port_swap32((u8*) p + 0x164); /* ftKb_DatAttrs.specialn_gk_breath_y_offset */
+    port_swap32((u8*) p + 0x168); /* ftKb_DatAttrs.specialn_ss_charge_time */
+    port_swap32((u8*) p + 0x16C); /* ftKb_DatAttrs.specialn_ss_aerial_shot_recoil */
+    port_swap32((u8*) p + 0x170); /* ftKb_DatAttrs.specialn_ss_frames_per_charge_level */
+    port_swap32((u8*) p + 0x174); /* ftKb_DatAttrs.specialn_ss_freefall_toggle */
+    port_swap32((u8*) p + 0x178); /* ftKb_DatAttrs.specialn_pe_friction */
+    port_swap32((u8*) p + 0x17C); /* ftKb_DatAttrs.specialn_pe_air_horizontal_momentum_preservation */
+    port_swap32((u8*) p + 0x180); /* ftKb_DatAttrs.specialn_pe_air_initial_vertical_momentum */
+    port_swap32((u8*) p + 0x184); /* ftKb_DatAttrs.specialn_pe_fall_acceleration */
+    port_swap32((u8*) p + 0x188); /* ftKb_DatAttrs.specialn_pe_unk2 */
+    port_swap32((u8*) p + 0x18C); /* ftKb_DatAttrs.specialn_pe_unk3 */
+    port_swap32((u8*) p + 0x190); /* ftKb_DatAttrs.specialn_dk_swings_to_full_charge */
+    port_swap32((u8*) p + 0x194); /* ftKb_DatAttrs.specialn_dk_damage_increase_per_swing */
+    port_swap32((u8*) p + 0x198); /* ftKb_DatAttrs.specialn_dk_grounded_punch_horizontal_velocity */
+    port_swap32((u8*) p + 0x19C); /* ftKb_DatAttrs.specialn_dk_freefall_toggle */
+    port_swap32((u8*) p + 0x1A0); /* ftKb_DatAttrs.specialn_ns_frames_to_loop_charge_ground */
+    port_swap32((u8*) p + 0x1A4); /* ftKb_DatAttrs.specialn_ns_frames_to_loop_charge_air */
+    port_swap32((u8*) p + 0x1A8); /* ftKb_DatAttrs.specialn_ns_falling_acceleration_delay */
+    port_swap32((u8*) p + 0x1AC); /* ftKb_DatAttrs.specialn_ns_charge_release_delay */
+    port_swap32((u8*) p + 0x1B0); /* ftKb_DatAttrs.specialn_ns_unk1 */
+    port_swap32((u8*) p + 0x1B4); /* ftKb_DatAttrs.specialn_ns_gravity */
+    port_swap32((u8*) p + 0x1B8); /* ftKb_DatAttrs.specialn_ns_unk2 */
+    port_swap32((u8*) p + 0x1BC); /* ftKb_DatAttrs.specialn_ns_freefall_toggle */
+    port_swap32((u8*) p + 0x1C0); /* ftKb_DatAttrs.specialn_pk_spawn_offset.x */
+    port_swap32((u8*) p + 0x1C4); /* ftKb_DatAttrs.specialn_pk_spawn_offset.y */
+    port_swap32((u8*) p + 0x1C8); /* ftKb_DatAttrs.specialairn_pk_spawn_offset.x */
+    port_swap32((u8*) p + 0x1CC); /* ftKb_DatAttrs.specialairn_pk_spawn_offset.y */
+    port_swap32((u8*) p + 0x1D0); /* ftKb_DatAttrs.specialairn_pk_landing_lag */
+    port_swap32((u8*) p + 0x1D4); /* ftKb_DatAttrs.specialn_pk_itkind */
+    port_swap32((u8*) p + 0x1D8); /* ftKb_DatAttrs.specialairn_pk_itkind */
+    port_swap32((u8*) p + 0x1DC); /* ftKb_DatAttrs.specialn_pc_spawn_offset.x */
+    port_swap32((u8*) p + 0x1E0); /* ftKb_DatAttrs.specialn_pc_spawn_offset.y */
+    port_swap32((u8*) p + 0x1E4); /* ftKb_DatAttrs.specialairn_pc_spawn_offset.x */
+    port_swap32((u8*) p + 0x1E8); /* ftKb_DatAttrs.specialairn_pc_spawn_offset.y */
+    port_swap32((u8*) p + 0x1EC); /* ftKb_DatAttrs.specialairn_pc_landing_lag */
+    port_swap32((u8*) p + 0x1F0); /* ftKb_DatAttrs.specialn_pc_itkind */
+    port_swap32((u8*) p + 0x1F4); /* ftKb_DatAttrs.specialairn_pc_itkind */
+    port_swap32((u8*) p + 0x1F8); /* ftKb_DatAttrs.specialn_ca_x_axis_range */
+    port_swap32((u8*) p + 0x1FC); /* ftKb_DatAttrs.specialn_ca_y_axis_range */
+    port_swap32((u8*) p + 0x200); /* ftKb_DatAttrs.specialn_ca_angle_difference */
+    port_swap32((u8*) p + 0x204); /* ftKb_DatAttrs.specialn_ca_forward_momentum */
+    port_swap32((u8*) p + 0x208); /* ftKb_DatAttrs.specialn_ca_additional_vertical_momentum */
+    port_swap32((u8*) p + 0x20C); /* ftKb_DatAttrs.specialn_gn_x_axis_range */
+    port_swap32((u8*) p + 0x210); /* ftKb_DatAttrs.specialn_gn_y_axis_range */
+    port_swap32((u8*) p + 0x214); /* ftKb_DatAttrs.specialn_gn_angle_difference */
+    port_swap32((u8*) p + 0x218); /* ftKb_DatAttrs.specialn_gn_forward_momentum */
+    port_swap32((u8*) p + 0x21C); /* ftKb_DatAttrs.specialn_gn_additional_vertical_momentum */
+    port_swap32((u8*) p + 0x220); /* ftKb_DatAttrs.specialn_fx_unk1 */
+    port_swap32((u8*) p + 0x224); /* ftKb_DatAttrs.specialn_fx_unk2 */
+    port_swap32((u8*) p + 0x228); /* ftKb_DatAttrs.specialn_fx_unk3 */
+    port_swap32((u8*) p + 0x22C); /* ftKb_DatAttrs.specialn_fx_unk4 */
+    port_swap32((u8*) p + 0x230); /* ftKb_DatAttrs.specialn_fx_launch_angle */
+    port_swap32((u8*) p + 0x234); /* ftKb_DatAttrs.specialn_fx_launch_speed */
+    port_swap32((u8*) p + 0x238); /* ftKb_DatAttrs.specialn_fx_freefall_toggle */
+    port_swap32((u8*) p + 0x23C); /* ftKb_DatAttrs.specialn_fx_blaster_projectile_id */
+    port_swap32((u8*) p + 0x240); /* ftKb_DatAttrs.specialn_fx_blaster_item_id */
+    port_swap32((u8*) p + 0x244); /* ftKb_DatAttrs.specialn_fc_unk1 */
+    port_swap32((u8*) p + 0x248); /* ftKb_DatAttrs.specialn_fc_unk2 */
+    port_swap32((u8*) p + 0x24C); /* ftKb_DatAttrs.specialn_fc_unk3 */
+    port_swap32((u8*) p + 0x250); /* ftKb_DatAttrs.specialn_fc_unk4 */
+    port_swap32((u8*) p + 0x254); /* ftKb_DatAttrs.specialn_fc_launch_angle */
+    port_swap32((u8*) p + 0x258); /* ftKb_DatAttrs.specialn_fc_launch_speed */
+    port_swap32((u8*) p + 0x25C); /* ftKb_DatAttrs.specialn_fc_freefall_toggle */
+    port_swap32((u8*) p + 0x260); /* ftKb_DatAttrs.specialn_fc_blaster_projectile_id */
+    port_swap32((u8*) p + 0x264); /* ftKb_DatAttrs.specialn_fc_blaster_item_id */
+    port_swap32((u8*) p + 0x268); /* ftKb_DatAttrs.specialn_lk_max_charge */
+    port_swap32((u8*) p + 0x26C); /* ftKb_DatAttrs.specialn_lk_arrow_charge_speed */
+    port_swap32((u8*) p + 0x270); /* ftKb_DatAttrs.specialn_lk_freefall_toggle */
+    port_swap32((u8*) p + 0x274); /* ftKb_DatAttrs.specialn_lk_bow_item_loader_id */
+    port_swap32((u8*) p + 0x278); /* ftKb_DatAttrs.specialn_lk_bow_item_id */
+    port_swap32((u8*) p + 0x27C); /* ftKb_DatAttrs.specialn_cl_max_charge */
+    port_swap32((u8*) p + 0x280); /* ftKb_DatAttrs.specialn_cl_arrow_charge_speed */
+    port_swap32((u8*) p + 0x284); /* ftKb_DatAttrs.specialn_cl_freefall_toggle */
+    port_swap32((u8*) p + 0x288); /* ftKb_DatAttrs.specialn_cl_bow_item_loader_id */
+    port_swap32((u8*) p + 0x28C); /* ftKb_DatAttrs.specialn_cl_bow_item_id */
+    port_swap32((u8*) p + 0x290); /* ftKb_DatAttrs.specialn_sk_graphic_x_offset_ground */
+    port_swap32((u8*) p + 0x294); /* ftKb_DatAttrs.specialn_sk_graphic_y_offset_ground */
+    port_swap32((u8*) p + 0x298); /* ftKb_DatAttrs.specialn_sk_graphic_x_offset_air */
+    port_swap32((u8*) p + 0x29C); /* ftKb_DatAttrs.specialn_sk_graphic_y_offset_air */
+    port_swap32((u8*) p + 0x2A0); /* ftKb_DatAttrs.specialn_sk_freefall_toggle */
+    port_swap32((u8*) p + 0x2A4); /* ftKb_DatAttrs.specialn_zd_unk1 */
+    port_swap32((u8*) p + 0x2A8); /* ftKb_DatAttrs.specialn_zd_frames_before_gravity */
+    port_swap32((u8*) p + 0x2AC); /* ftKb_DatAttrs.specialn_zd_horizontal_momentum_preservation */
+    port_swap32((u8*) p + 0x2B0); /* ftKb_DatAttrs.specialn_zd_fall_acceleration */
+    port_swap32((u8*) p + 0x2B4); /* ftKb_DatAttrs.specialn_pr_duration */
+    port_swap32((u8*) p + 0x2B8); /* ftKb_DatAttrs.specialn_pr_unk */
+    port_swap32((u8*) p + 0x2BC); /* ftKb_DatAttrs.specialn_pr_air_height_offset_at_start */
+    port_swap32((u8*) p + 0x2C0); /* ftKb_DatAttrs.specialn_pr_bounciness */
+    port_swap32((u8*) p + 0x2C4); /* ftKb_DatAttrs.specialn_pr_unk1 */
+    port_swap32((u8*) p + 0x2C8); /* ftKb_DatAttrs.specialn_pr_gravity_during_roll */
+    port_swap32((u8*) p + 0x2CC); /* ftKb_DatAttrs.specialn_pr_base_speed */
+    port_swap32((u8*) p + 0x2D0); /* ftKb_DatAttrs.specialn_pr_max_speed */
+    port_swap32((u8*) p + 0x2D4); /* ftKb_DatAttrs.specialn_pr_unk2 */
+    port_swap32((u8*) p + 0x2D8); /* ftKb_DatAttrs.specialn_pr_air_x_axis_momentum */
+    port_swap32((u8*) p + 0x2DC); /* ftKb_DatAttrs.specialn_pr_air_y_axis_momentum */
+    port_swap32((u8*) p + 0x2E0); /* ftKb_DatAttrs.specialn_pr_air_initial_momentum */
+    port_swap32((u8*) p + 0x2E4); /* ftKb_DatAttrs.specialn_pr_max_momentum */
+    port_swap32((u8*) p + 0x2E8); /* ftKb_DatAttrs.specialn_pr_spinning_speed */
+    port_swap32((u8*) p + 0x2EC); /* ftKb_DatAttrs.specialn_pr_spinning_speed_turn */
+    port_swap32((u8*) p + 0x2F0); /* ftKb_DatAttrs.specialn_pr_delay_per_smoke */
+    port_swap32((u8*) p + 0x2F4); /* ftKb_DatAttrs.specialn_pr_unk3 */
+    port_swap32((u8*) p + 0x2F8); /* ftKb_DatAttrs.specialn_pr_bounce1 */
+    port_swap32((u8*) p + 0x2FC); /* ftKb_DatAttrs.specialn_pr_bounce2 */
+    port_swap32((u8*) p + 0x300); /* ftKb_DatAttrs.specialn_pr_base_damage */
+    port_swap32((u8*) p + 0x304); /* ftKb_DatAttrs.specialn_pr_damage_multiplier */
+    port_swap32((u8*) p + 0x308); /* ftKb_DatAttrs.specialn_pr_horizontal_bounce_momentum_on_hit */
+    port_swap32((u8*) p + 0x30C); /* ftKb_DatAttrs.specialn_pr_vertical_bounce_momentum_on_hit */
+    port_swap32((u8*) p + 0x310); /* ftKb_DatAttrs.specialn_pr_forward_momentum_from_stick */
+    port_swap32((u8*) p + 0x314); /* ftKb_DatAttrs.specialn_pr_unk4 */
+    port_swap32((u8*) p + 0x318); /* ftKb_DatAttrs.specialn_pr_unk5 */
+    port_swap32((u8*) p + 0x31C); /* ftKb_DatAttrs.specialn_pr_unk6 */
+    port_swap32((u8*) p + 0x320); /* ftKb_DatAttrs.specialn_pr_charge_rate1 */
+    port_swap32((u8*) p + 0x324); /* ftKb_DatAttrs.specialn_pr_charge_time */
+    port_swap32((u8*) p + 0x328); /* ftKb_DatAttrs.specialn_pr_charge_rate2 */
+    port_swap32((u8*) p + 0x32C); /* ftKb_DatAttrs.specialn_pr_charge_spin_animation */
+    port_swap32((u8*) p + 0x330); /* ftKb_DatAttrs.specialn_pr_unk7 */
+    port_swap32((u8*) p + 0x334); /* ftKb_DatAttrs.specialn_pr_unk8 */
+    port_swap32((u8*) p + 0x338); /* ftKb_DatAttrs.specialn_pr_some_speed_var */
+    port_swap32((u8*) p + 0x33C); /* ftKb_DatAttrs.specialn_pr_spin_anim_speed_after_collision */
+    port_swap32((u8*) p + 0x340); /* ftKb_DatAttrs.specialn_pr_air_speed */
+    port_swap32((u8*) p + 0x344); /* ftKb_DatAttrs.specialn_pr_turn_rate_related */
+    port_swap32((u8*) p + 0x348); /* ftKb_DatAttrs.specialn_pr_unk9 */
+    port_swap32((u8*) p + 0x34C); /* ftKb_DatAttrs.specialn_pr_unk10 */
+    port_swap32((u8*) p + 0x350); /* ftKb_DatAttrs.specialn_pr_unk11 */
+    port_swap32((u8*) p + 0x354); /* ftKb_DatAttrs.specialn_pr_unk12 */
+    port_swap32((u8*) p + 0x358); /* ftKb_DatAttrs.specialn_pr_freefall_toggle */
+    port_swap32((u8*) p + 0x35C); /* ftKb_DatAttrs.ms.charge_iterations */
+    port_swap32((u8*) p + 0x360); /* ftKb_DatAttrs.ms.base_damage */
+    port_swap32((u8*) p + 0x364); /* ftKb_DatAttrs.ms.additional_damage_per_iteration */
+    port_swap32((u8*) p + 0x368); /* ftKb_DatAttrs.ms.air_horizontal_momentum_preservation */
+    port_swap32((u8*) p + 0x36C); /* ftKb_DatAttrs.ms.air_horizontal_deceleration_rate */
+    port_swap32((u8*) p + 0x370); /* ftKb_DatAttrs.fe.charge_iterations */
+    port_swap32((u8*) p + 0x374); /* ftKb_DatAttrs.fe.base_damage */
+    port_swap32((u8*) p + 0x378); /* ftKb_DatAttrs.fe.additional_damage_per_iteration */
+    port_swap32((u8*) p + 0x37C); /* ftKb_DatAttrs.fe.air_horizontal_momentum_preservation */
+    port_swap32((u8*) p + 0x380); /* ftKb_DatAttrs.fe.air_horizontal_deceleration_rate */
+    port_swap32((u8*) p + 0x384); /* ftKb_DatAttrs.specialn_mt_charge_time */
+    port_swap32((u8*) p + 0x388); /* ftKb_DatAttrs.specialn_mt_ground_horizontal_momentum */
+    port_swap32((u8*) p + 0x38C); /* ftKb_DatAttrs.specialn_mt_air_horizontal_momentum */
+    port_swap32((u8*) p + 0x390); /* ftKb_DatAttrs.specialn_mt_loops_to_full_charge */
+    port_swap32((u8*) p + 0x394); /* ftKb_DatAttrs.specialn_mt_frames_to_transition */
+    port_swap32((u8*) p + 0x398); /* ftKb_DatAttrs.specialn_mt_freefall_toggle */
+    port_swap32((u8*) p + 0x39C); /* ftKb_DatAttrs.specialn_pp_air_vertical_momentum */
+    port_swap32((u8*) p + 0x3A0); /* ftKb_DatAttrs.specialn_pp_landing_lag */
+    port_swap32((u8*) p + 0x3A4); /* ftKb_DatAttrs.specialn_pp_x_spawn */
+    port_swap32((u8*) p + 0x3A8); /* ftKb_DatAttrs.specialn_pp_y_spawn */
+    port_swap32((u8*) p + 0x3AC); /* ftKb_DatAttrs.specialn_ys_initial_horizontal_momentum */
+    port_swap32((u8*) p + 0x3B0); /* ftKb_DatAttrs.specialn_ys_initial_vertical_momentum */
+    port_swap32((u8*) p + 0x3B4); /* ftKb_DatAttrs.specialn_ys_damage_multiplier */
+    port_swap32((u8*) p + 0x3B8); /* ftKb_DatAttrs.specialn_ys_unk */
+    port_swap32((u8*) p + 0x3BC); /* ftKb_DatAttrs.specialn_ys_growth_time */
+    port_swap32((u8*) p + 0x3C0); /* ftKb_DatAttrs.specialn_ys_base_duration */
+    port_swap32((u8*) p + 0x3C4); /* ftKb_DatAttrs.specialn_ys_egg_breakout_resistance */
+    port_swap32((u8*) p + 0x3C8); /* ftKb_DatAttrs.specialn_ys_frames_reduced_per_input */
+    port_swap32((u8*) p + 0x3CC); /* ftKb_DatAttrs.specialn_ys_unk1 */
+    port_swap32((u8*) p + 0x3D0); /* ftKb_DatAttrs.specialn_ys_unk2 */
+    port_swap32((u8*) p + 0x3D4); /* ftKb_DatAttrs.specialn_ys_iframes_on_release */
+    port_swap32((u8*) p + 0x3D8); /* ftKb_DatAttrs.specialn_ys_horizontal_velocity_on_breakout */
+    port_swap32((u8*) p + 0x3DC); /* ftKb_DatAttrs.specialn_ys_vertical_velocity_on_breakout */
+    port_swap32((u8*) p + 0x3E0); /* ftKb_DatAttrs.specialn_ys_unk3 */
+    port_swap32((u8*) p + 0x3E4); /* ftKb_DatAttrs.specialn_gw_frame_on_repeat */
+    port_swap32((u8*) p + 0x3E8); /* ftKb_DatAttrs.specialn_gw_max_sausages_per_use */
+    port_swap32((u8*) p + 0x3EC); /* ftKb_DatAttrs.specialn_pe_absorbdesc.x0_bone_id */
+    port_swap32((u8*) p + 0x3F0); /* ftKb_DatAttrs.specialn_pe_absorbdesc.x4_offset.x */
+    port_swap32((u8*) p + 0x3F4); /* ftKb_DatAttrs.specialn_pe_absorbdesc.x4_offset.y */
+    port_swap32((u8*) p + 0x3F8); /* ftKb_DatAttrs.specialn_pe_absorbdesc.x4_offset.z */
+    port_swap32((u8*) p + 0x3FC); /* ftKb_DatAttrs.specialn_pe_absorbdesc.x10_size */
+    port_swap32((u8*) p + 0x400); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x0_bone_id */
+    port_swap32((u8*) p + 0x404); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x4_max_damage */
+    port_swap32((u8*) p + 0x408); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x8_offset.x */
+    port_swap32((u8*) p + 0x40C); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x8_offset.y */
+    port_swap32((u8*) p + 0x410); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x8_offset.z */
+    port_swap32((u8*) p + 0x414); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x14_size */
+    port_swap32((u8*) p + 0x418); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x18_damage_mul */
+    port_swap32((u8*) p + 0x41C); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x1C_speed_mul */
+    port_claim((u8*) p + 0x420, 1); /* ftKb_DatAttrs.specialn_zd_reflectdesc.x20_behavior */
+}
+
+/* ftLk_DatAttrs: 0xDC bytes */
+void port_swap_ftLk_DatAttrs(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftLk_DatAttrs.x0 */
+    port_swap32((u8*) p + 0x4); /* ftLk_DatAttrs.specialn_anim_rate */
+    port_swap32((u8*) p + 0x8); /* ftLk_DatAttrs.x8 */
+    port_swap32((u8*) p + 0xC); /* ftLk_DatAttrs.xC */
+    port_swap32((u8*) p + 0x10); /* ftLk_DatAttrs.x10 */
+    port_swap32((u8*) p + 0x14); /* ftLk_DatAttrs.x14 */
+    port_swap32((u8*) p + 0x18); /* ftLk_DatAttrs.x18 */
+    port_swap32((u8*) p + 0x1C); /* ftLk_DatAttrs.x1C */
+    port_swap32((u8*) p + 0x20); /* ftLk_DatAttrs.x20 */
+    port_swap32((u8*) p + 0x24); /* ftLk_DatAttrs.x24 */
+    port_swap32((u8*) p + 0x28); /* ftLk_DatAttrs.specialhi_pos_y_offset */
+    port_swap32((u8*) p + 0x2C); /* ftLk_DatAttrs.x2C */
+    port_swap32((u8*) p + 0x30); /* ftLk_DatAttrs.x30 */
+    port_swap32((u8*) p + 0x34); /* ftLk_DatAttrs.x34 */
+    port_swap32((u8*) p + 0x38); /* ftLk_DatAttrs.specialairhi_drift_stick_mul */
+    port_swap32((u8*) p + 0x3C); /* ftLk_DatAttrs.specialairhi_drift_max_mul */
+    port_swap32((u8*) p + 0x40); /* ftLk_DatAttrs.x40 */
+    port_swap32((u8*) p + 0x44); /* ftLk_DatAttrs.specialhi_grav_mul */
+    port_swap32((u8*) p + 0x48); /* ftLk_DatAttrs.x48 */
+    port_swap32((u8*) p + 0x4C); /* ftLk_DatAttrs.attackairlw_hit_vel_y */
+    port_swap32((u8*) p + 0x50); /* ftLk_DatAttrs.attackairlw_hit_anim_frame_start */
+    port_swap32((u8*) p + 0x54); /* ftLk_DatAttrs.attackairlw_hit_anim_frame_end */
+    port_swap32((u8*) p + 0x58); /* ftLk_DatAttrs.attackairlw_anim_flags[0] */
+    port_swap32((u8*) p + 0x5C); /* ftLk_DatAttrs.attackairlw_anim_flags[1] */
+    port_swap32((u8*) p + 0x60); /* ftLk_DatAttrs.attackairlw_anim_flags[2] */
+    port_swap32((u8*) p + 0x64); /* ftLk_DatAttrs.x64.x0 */
+    port_swap32((u8*) p + 0x68); /* ftLk_DatAttrs.x64.x4 */
+    port_claim((u8*) p + 0x6C, 1); /* ftLk_DatAttrs.x64.x8 */
+    port_claim((u8*) p + 0x6D, 1); /* ftLk_DatAttrs.x64.x9 */
+    port_claim((u8*) p + 0x6E, 1); /* ftLk_DatAttrs.x64.xA */
+    port_claim((u8*) p + 0x6F, 1); /* ftLk_DatAttrs.x64.xB */
+    port_claim((u8*) p + 0x70, 1); /* ftLk_DatAttrs.x64.xC */
+    port_claim((u8*) p + 0x71, 1); /* ftLk_DatAttrs.x64.xD */
+    port_claim((u8*) p + 0x72, 1); /* ftLk_DatAttrs.x64.xE */
+    port_claim((u8*) p + 0x73, 1); /* ftLk_DatAttrs.x64.xF */
+    port_claim((u8*) p + 0x74, 1); /* ftLk_DatAttrs.x64.x10 */
+    port_swap32((u8*) p + 0x78); /* ftLk_DatAttrs.x64.x14 */
+    port_swap32((u8*) p + 0x7C); /* ftLk_DatAttrs.x64.x18 */
+    port_swap32((u8*) p + 0x80); /* ftLk_DatAttrs.x64.x1C */
+    port_swap32((u8*) p + 0x84); /* ftLk_DatAttrs.x84 */
+    port_swap32((u8*) p + 0x88); /* ftLk_DatAttrs.x88 */
+    port_swap32((u8*) p + 0x8C); /* ftLk_DatAttrs.x8C */
+    port_swap32((u8*) p + 0x90); /* ftLk_DatAttrs.x90 */
+    port_swap32((u8*) p + 0x98); /* ftLk_DatAttrs.x98 */
+    port_swap32((u8*) p + 0xA4); /* ftLk_DatAttrs.xA4 */
+    port_swap32((u8*) p + 0xA8); /* ftLk_DatAttrs.xA8 */
+    port_swap32((u8*) p + 0xAC); /* ftLk_DatAttrs.xAC */
+    port_swap32((u8*) p + 0xB0); /* ftLk_DatAttrs.xB0 */
+    port_swap32((u8*) p + 0xB4); /* ftLk_DatAttrs.xB4 */
+    port_swap32((u8*) p + 0xB8); /* ftLk_DatAttrs.xB8 */
+    port_swap32((u8*) p + 0xBC); /* ftLk_DatAttrs.xBC */
+    port_swap32((u8*) p + 0xC4); /* ftLk_DatAttrs.xC4.x0_bone_id */
+    port_swap32((u8*) p + 0xC8); /* ftLk_DatAttrs.xC4.x4_offset.x */
+    port_swap32((u8*) p + 0xCC); /* ftLk_DatAttrs.xC4.x4_offset.y */
+    port_swap32((u8*) p + 0xD0); /* ftLk_DatAttrs.xC4.x4_offset.z */
+    port_swap32((u8*) p + 0xD4); /* ftLk_DatAttrs.xC4.x10_size */
+    port_swap32((u8*) p + 0xD8); /* ftLk_DatAttrs.xD8 */
+}
+
+/* ftGameWatchAttributes: 0x94 bytes */
+void port_swap_ftGameWatchAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ftGameWatchAttributes.x0_GAMEWATCH_WIDTH */
+    port_claim((u8*) p + 0x4, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[0].r */
+    port_claim((u8*) p + 0x5, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[0].g */
+    port_claim((u8*) p + 0x6, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[0].b */
+    port_claim((u8*) p + 0x7, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[0].a */
+    port_claim((u8*) p + 0x8, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[1].r */
+    port_claim((u8*) p + 0x9, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[1].g */
+    port_claim((u8*) p + 0xA, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[1].b */
+    port_claim((u8*) p + 0xB, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[1].a */
+    port_claim((u8*) p + 0xC, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[2].r */
+    port_claim((u8*) p + 0xD, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[2].g */
+    port_claim((u8*) p + 0xE, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[2].b */
+    port_claim((u8*) p + 0xF, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[2].a */
+    port_claim((u8*) p + 0x10, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[3].r */
+    port_claim((u8*) p + 0x11, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[3].g */
+    port_claim((u8*) p + 0x12, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[3].b */
+    port_claim((u8*) p + 0x13, 1); /* ftGameWatchAttributes.x4_GAMEWATCH_COLOR[3].a */
+    port_claim((u8*) p + 0x14, 1); /* ftGameWatchAttributes.x14_GAMEWATCH_OUTLINE.r */
+    port_claim((u8*) p + 0x15, 1); /* ftGameWatchAttributes.x14_GAMEWATCH_OUTLINE.g */
+    port_claim((u8*) p + 0x16, 1); /* ftGameWatchAttributes.x14_GAMEWATCH_OUTLINE.b */
+    port_claim((u8*) p + 0x17, 1); /* ftGameWatchAttributes.x14_GAMEWATCH_OUTLINE.a */
+    port_swap32((u8*) p + 0x18); /* ftGameWatchAttributes.x18_GAMEWATCH_CHEF_LOOPFRAME */
+    port_swap32((u8*) p + 0x1C); /* ftGameWatchAttributes.x1C_GAMEWATCH_CHEF_MAX */
+    port_swap32((u8*) p + 0x20); /* ftGameWatchAttributes.x20_GAMEWATCH_JUDGE_MOMENTUM_PRESERVE */
+    port_swap32((u8*) p + 0x24); /* ftGameWatchAttributes.x24_GAMEWATCH_JUDGE_MOMENTUM_MUL */
+    port_swap32((u8*) p + 0x28); /* ftGameWatchAttributes.x28_GAMEWATCH_JUDGE_VEL_Y */
+    port_swap32((u8*) p + 0x2C); /* ftGameWatchAttributes.x2C_GAMEWATCH_JUDGE_FRICTION1 */
+    port_swap32((u8*) p + 0x30); /* ftGameWatchAttributes.x30_GAMEWATCH_JUDGE_FRICTION2 */
+    port_swap32((u8*) p + 0x34); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[0] */
+    port_swap32((u8*) p + 0x38); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[1] */
+    port_swap32((u8*) p + 0x3C); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[2] */
+    port_swap32((u8*) p + 0x40); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[3] */
+    port_swap32((u8*) p + 0x44); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[4] */
+    port_swap32((u8*) p + 0x48); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[5] */
+    port_swap32((u8*) p + 0x4C); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[6] */
+    port_swap32((u8*) p + 0x50); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[7] */
+    port_swap32((u8*) p + 0x54); /* ftGameWatchAttributes.x34_GAMEWATCH_JUDGE_ROLL[8] */
+    port_swap32((u8*) p + 0x58); /* ftGameWatchAttributes.x58_GAMEWATCH_RESCUE_STICK_RANGE */
+    port_swap32((u8*) p + 0x5C); /* ftGameWatchAttributes.x5C_GAMEWATCH_RESCUE_ANGLE_UNK */
+    port_swap32((u8*) p + 0x60); /* ftGameWatchAttributes.x60_GAMEWATCH_RESCUE_LANDING */
+    port_swap32((u8*) p + 0x64); /* ftGameWatchAttributes.x64_GAMEWATCH_PANIC_MOMENTUM_PRESERVE */
+    port_swap32((u8*) p + 0x68); /* ftGameWatchAttributes.x68_GAMEWATCH_PANIC_MOMENTUM_MUL */
+    port_swap32((u8*) p + 0x6C); /* ftGameWatchAttributes.x6C_GAMEWATCH_PANIC_FALL_ACCEL */
+    port_swap32((u8*) p + 0x70); /* ftGameWatchAttributes.x70_GAMEWATCH_PANIC_VEL_Y_MAX */
+    port_swap32((u8*) p + 0x74); /* ftGameWatchAttributes.x74_GAMEWATCH_PANIC_DAMAGE_ADD */
+    port_swap32((u8*) p + 0x78); /* ftGameWatchAttributes.x78_GAMEWATCH_PANIC_DAMAGE_MUL */
+    port_swap32((u8*) p + 0x7C); /* ftGameWatchAttributes.x7C_GAMEWATCH_PANIC_TURN_FRAMES */
+    port_swap32((u8*) p + 0x80); /* ftGameWatchAttributes.x80_GAMEWATCH_PANIC_ABSORPTION.x0_bone_id */
+    port_swap32((u8*) p + 0x84); /* ftGameWatchAttributes.x80_GAMEWATCH_PANIC_ABSORPTION.x4_offset.x */
+    port_swap32((u8*) p + 0x88); /* ftGameWatchAttributes.x80_GAMEWATCH_PANIC_ABSORPTION.x4_offset.y */
+    port_swap32((u8*) p + 0x8C); /* ftGameWatchAttributes.x80_GAMEWATCH_PANIC_ABSORPTION.x4_offset.z */
+    port_swap32((u8*) p + 0x90); /* ftGameWatchAttributes.x80_GAMEWATCH_PANIC_ABSORPTION.x10_size */
+}
+
+/* MarsAttributes: 0x98 bytes */
+void port_swap_MarsAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* MarsAttributes.x0 */
+    port_swap32((u8*) p + 0x4); /* MarsAttributes.x4 */
+    port_swap32((u8*) p + 0x8); /* MarsAttributes.x8 */
+    port_swap32((u8*) p + 0xC); /* MarsAttributes.specialn_friction */
+    port_swap32((u8*) p + 0x10); /* MarsAttributes.specialn_start_friction */
+    port_swap32((u8*) p + 0x14); /* MarsAttributes.x14 */
+    port_swap32((u8*) p + 0x18); /* MarsAttributes.x18 */
+    port_swap32((u8*) p + 0x1C); /* MarsAttributes.x1C */
+    port_swap32((u8*) p + 0x20); /* MarsAttributes.x20 */
+    port_swap32((u8*) p + 0x24); /* MarsAttributes.x24 */
+    port_swap32((u8*) p + 0x28); /* MarsAttributes.x28 */
+    port_swap32((u8*) p + 0x2C); /* MarsAttributes.x2C */
+    port_swap32((u8*) p + 0x30); /* MarsAttributes.x30 */
+    port_swap32((u8*) p + 0x34); /* MarsAttributes.x34 */
+    port_swap32((u8*) p + 0x38); /* MarsAttributes.x38 */
+    port_swap32((u8*) p + 0x3C); /* MarsAttributes.x3C */
+    port_swap32((u8*) p + 0x40); /* MarsAttributes.x40 */
+    port_swap32((u8*) p + 0x44); /* MarsAttributes.x44 */
+    port_swap32((u8*) p + 0x48); /* MarsAttributes.x48 */
+    port_swap32((u8*) p + 0x4C); /* MarsAttributes.x4C */
+    port_swap32((u8*) p + 0x50); /* MarsAttributes.x50 */
+    port_swap32((u8*) p + 0x54); /* MarsAttributes.x54 */
+    port_swap32((u8*) p + 0x58); /* MarsAttributes.x58 */
+    port_swap32((u8*) p + 0x5C); /* MarsAttributes.x5C */
+    port_swap32((u8*) p + 0x60); /* MarsAttributes.x60 */
+    port_swap32((u8*) p + 0x64); /* MarsAttributes.x64.x0_bone_id */
+    port_swap32((u8*) p + 0x68); /* MarsAttributes.x64.x4_offset.x */
+    port_swap32((u8*) p + 0x6C); /* MarsAttributes.x64.x4_offset.y */
+    port_swap32((u8*) p + 0x70); /* MarsAttributes.x64.x4_offset.z */
+    port_swap32((u8*) p + 0x74); /* MarsAttributes.x64.x10_size */
+    port_swap32((u8*) p + 0x78); /* MarsAttributes.x78.x0 */
+    port_swap32((u8*) p + 0x7C); /* MarsAttributes.x78.x4 */
+    port_claim((u8*) p + 0x80, 1); /* MarsAttributes.x78.x8 */
+    port_claim((u8*) p + 0x81, 1); /* MarsAttributes.x78.x9 */
+    port_claim((u8*) p + 0x82, 1); /* MarsAttributes.x78.xA */
+    port_claim((u8*) p + 0x83, 1); /* MarsAttributes.x78.xB */
+    port_claim((u8*) p + 0x84, 1); /* MarsAttributes.x78.xC */
+    port_claim((u8*) p + 0x85, 1); /* MarsAttributes.x78.xD */
+    port_claim((u8*) p + 0x86, 1); /* MarsAttributes.x78.xE */
+    port_claim((u8*) p + 0x87, 1); /* MarsAttributes.x78.xF */
+    port_claim((u8*) p + 0x88, 1); /* MarsAttributes.x78.x10 */
+    port_swap32((u8*) p + 0x8C); /* MarsAttributes.x78.x14 */
+    port_swap32((u8*) p + 0x90); /* MarsAttributes.x78.x18 */
+    port_swap32((u8*) p + 0x94); /* MarsAttributes.x78.x1C */
+}
+
+/* itLeadeadAttributes: 0x20 bytes */
+void port_swap_itLeadeadAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* itLeadeadAttributes.x4 */
+    port_swap32((u8*) p + 0x8); /* itLeadeadAttributes.x8 */
+    port_swap32((u8*) p + 0xC); /* itLeadeadAttributes.xC */
+    port_swap32((u8*) p + 0x10); /* itLeadeadAttributes.x10 */
+    port_swap32((u8*) p + 0x14); /* itLeadeadAttributes.x14 */
+    port_swap16((u8*) p + 0x18); /* itLeadeadAttributes.x18 */
+    port_swap16((u8*) p + 0x1A); /* itLeadeadAttributes.x1A */
+    port_swap16((u8*) p + 0x1C); /* itLeadeadAttributes.x1C */
+    port_claim((u8*) p + 0x1E, 1); /* itLeadeadAttributes.x1E */
+}
+
+/* itOctarockAttributes: 0x20 bytes */
+void port_swap_itOctarockAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* itOctarockAttributes.x4 */
+    port_swap32((u8*) p + 0x8); /* itOctarockAttributes.x8 */
+    port_swap32((u8*) p + 0xC); /* itOctarockAttributes.xC */
+    port_swap32((u8*) p + 0x10); /* itOctarockAttributes.x10 */
+    port_swap32((u8*) p + 0x14); /* itOctarockAttributes.x14 */
+    port_swap32((u8*) p + 0x18); /* itOctarockAttributes.x18 */
+    port_swap16((u8*) p + 0x1C); /* itOctarockAttributes.x1C */
+}
+
 /* ItemAttr: 0x84 bytes */
 void port_swap_ItemAttr(void* p)
 {
+    port_claim((u8*) p + 0x2, 1); /* ItemAttr.x3 */
     port_swap32((u8*) p + 0x4); /* ItemAttr.x4_throw_speed_mul */
     port_swap32((u8*) p + 0x8); /* ItemAttr.x8 */
     port_swap32((u8*) p + 0xC); /* ItemAttr.xC_spin_speed */
@@ -1294,6 +2128,7 @@ void port_swap_ItemCommonData(void* p)
     port_swap32((u8*) p + 0x3C); /* ItemCommonData.x3C_float */
     port_swap32((u8*) p + 0x40); /* ItemCommonData.x40_float */
     port_swap32((u8*) p + 0x44); /* ItemCommonData.x44_float */
+    port_claim((u8*) p + 0x48, 1); /* ItemCommonData.x48_byte */
     port_swap32((u8*) p + 0x4C); /* ItemCommonData.x4C_float */
     port_swap32((u8*) p + 0x50); /* ItemCommonData.x50_float */
     port_swap32((u8*) p + 0x54); /* ItemCommonData.x54_float */
@@ -1368,4 +2203,5 @@ void port_swap_ItemModelDesc(void* p)
 {
     port_swap32((u8*) p + 0x4); /* ItemModelDesc.x4_bone_count */
     port_swap32((u8*) p + 0x8); /* ItemModelDesc.x8_bone_attach_id */
+    port_claim((u8*) p + 0xC, 1); /* ItemModelDesc.xC_bit_field */
 }

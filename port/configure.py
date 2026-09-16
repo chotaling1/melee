@@ -54,6 +54,8 @@ CFLAGS = [
     "-Dintptr_t=__INTPTR_TYPE__",
     # port/include first: it overrides stdbool.h (bool must be a 4-byte int).
     f"-I{ROOT}/port/include",
+    # Build-time generated headers (port_gen/*.h).
+    f"-I{ROOT}/port/build/gen",
     f"-isystem {ROOT}/src/MSL",
     f"-I{ROOT}/src",
     f"-I{ROOT}/libs/dolphin/include",
@@ -120,11 +122,20 @@ def main():
     w("  command = $cc $ldflags -o $out $in")
     w("  description = LINK $out")
     w("")
+    # LSB-first script command layouts, derived from the decomp header.
+    gen_cmd = "$builddir/gen/port_gen/lb_cmd.h"
+    w("rule gen_cmd_layouts")
+    w(f"  command = {PYTHON} {PORT}/tools/gen_cmd_layouts.py $in $out")
+    w("  description = GEN $out")
+    w("")
+    w(f"build {gen_cmd}: gen_cmd_layouts {ROOT}/src/melee/lb/types.h"
+      f" | {PORT}/tools/gen_cmd_layouts.py")
+    w("")
     objs = []
     for src in sources:
         obj = "$builddir/obj/" + src[:-2] + ".o"
         objs.append(obj)
-        w(f"build {obj}: cc {ROOT}/{src}")
+        w(f"build {obj}: cc {ROOT}/{src} || {gen_cmd}")
     w("")
     w("build $builddir/melee: link " + " ".join(objs))
     w("default $builddir/melee")

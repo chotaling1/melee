@@ -33,10 +33,18 @@ ItCmd it_803F22A8[16] = {
 };
 
 typedef struct itAnimlistCmdUnk {
+#ifdef MELEE_PORT
+    /* One host-order script word; see CmdUnion in lb/types.h. */
+    u32 x2 : 16;
+    u32 x0_b14 : 2;
+    u32 opcode : 8;
+    u32 x0_b0 : 6;
+#else
     u16 x0_b0 : 6;
     u16 opcode : 8;
     u16 x0_b14 : 2;
     u16 x2;
+#endif
 } itAnimlistCmdUnk;
 
 void it_80278F2C(Item_GObj* item_gobj, CommandInfo* cmd)
@@ -48,20 +56,20 @@ void it_80278F2C(Item_GObj* item_gobj, CommandInfo* cmd)
     s32 arg6;
     PAD_STACK(4);
 
-    arg2 = ((u16*) cmd->u)[0];
+    arg2 = ((u16*) cmd->u)[CMD_HALF(0)];
     arg2 = arg2 & 0x3FF;
     ++cmd->u;
-    arg6 = (f32) ((u16*) cmd->u)[1];
-    ef_id = ((u16*) cmd->u)[0];
+    arg6 = (f32) ((u16*) cmd->u)[CMD_HALF(1)];
+    ef_id = ((u16*) cmd->u)[CMD_HALF(0)];
     ++cmd->u;
-    sp20.x = 0.003906f * ((s16*) cmd->u)[0];
-    sp20.y = 0.003906f * ((s16*) cmd->u)[1];
+    sp20.x = 0.003906f * ((s16*) cmd->u)[CMD_HALF(0)];
+    sp20.y = 0.003906f * ((s16*) cmd->u)[CMD_HALF(1)];
     ++cmd->u;
-    sp20.z = 0.003906f * ((s16*) cmd->u)[0];
-    sp14.x = 0.003906f * ((s16*) cmd->u)[1];
+    sp20.z = 0.003906f * ((s16*) cmd->u)[CMD_HALF(0)];
+    sp14.x = 0.003906f * ((s16*) cmd->u)[CMD_HALF(1)];
     ++cmd->u;
-    sp14.y = 0.003906f * ((s16*) cmd->u)[0];
-    sp14.z = 0.003906f * ((s16*) cmd->u)[1];
+    sp14.y = 0.003906f * ((s16*) cmd->u)[CMD_HALF(0)];
+    sp14.z = 0.003906f * ((s16*) cmd->u)[CMD_HALF(1)];
     ++cmd->u;
     it_80278800(item_gobj, ef_id, arg2, &sp20, &sp14, 0, arg6);
 }
@@ -137,12 +145,12 @@ void it_802790C0(Item_GObj* item_gobj, CommandInfo* cmd)
     hit->x42_b1 = cmd->u->create_hitbox_5.x1_b5;
     hit->x42_b2 = cmd->u->create_hitbox_5.x1_b6;
     hit->x42_b3 = cmd->u->create_hitbox_5.x1_b7;
-    hit->x42_b4 = (((u8*) cmd->u)[2] >> 7) & 1;
-    hit->x42_b5 = (((u8*) cmd->u)[2] >> 6) & 1;
-    hit->x42_b6 = (((u8*) cmd->u)[2] >> 5) & 1;
-    hit->x42_b7 = (((u8*) cmd->u)[2] >> 4) & 1;
-    hit->x43_b0 = (((u8*) cmd->u)[2] >> 3) & 1;
-    hb->x138 = (((u8*) cmd->u)[2] >> 2) & 1;
+    hit->x42_b4 = (((u8*) cmd->u)[CMD_BYTE(2)] >> 7) & 1;
+    hit->x42_b5 = (((u8*) cmd->u)[CMD_BYTE(2)] >> 6) & 1;
+    hit->x42_b6 = (((u8*) cmd->u)[CMD_BYTE(2)] >> 5) & 1;
+    hit->x42_b7 = (((u8*) cmd->u)[CMD_BYTE(2)] >> 4) & 1;
+    hit->x43_b0 = (((u8*) cmd->u)[CMD_BYTE(2)] >> 3) & 1;
+    hb->x138 = (((u8*) cmd->u)[CMD_BYTE(2)] >> 2) & 1;
     ++cmd->u;
 
     hit->x43_b2 = 0;
@@ -157,7 +165,7 @@ void it_80279544(Item_GObj* item_gobj, CommandInfo* cmd)
 {
     Item* item = item_gobj->user_data;
     HitCapsule* hit = &item->x5D4_hitboxes[cmd->u->set_hitbox_damage.idx].hit;
-    u32 val = ((u16*) cmd->u)[1] & 0x1FFF;
+    u32 val = ((u16*) cmd->u)[CMD_HALF(1)] & 0x1FFF;
     PAD_STACK(8);
     it_80272460(hit, (u32) (item->xC3C * ((f32) val * item->xC40)), item_gobj);
     ++cmd->u;
@@ -231,8 +239,8 @@ void it_8027978C(Item_GObj* item_gobj, CommandInfo* cmd)
     case 2:
         arg1 = *(u32*) cmd->u;
         ++cmd->u;
-        arg2 = ((u8*) cmd->u)[2];
-        arg3 = ((u8*) cmd->u)[3];
+        arg2 = ((u8*) cmd->u)[CMD_BYTE(2)];
+        arg3 = ((u8*) cmd->u)[CMD_BYTE(3)];
         switch (opcode) {
         case 0:
             Item_8026AE84(item, arg1, arg2, arg3);

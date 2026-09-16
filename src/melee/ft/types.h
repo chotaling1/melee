@@ -1362,6 +1362,34 @@ struct Fighter {
     /*  fp+58C */ u32 x58C;
     /*  fp+590 */ FigaTree* x590;
     /*  fp+594 */ union {
+#ifdef MELEE_PORT
+        /* Assigned whole from the DAT action table's u32 flags word
+         * (Fighter_WaitAnimData::x10_animCurrFlags), which the port keeps as
+         * a host-order u32: same fields, LSB-first layouts. */
+        struct {
+            u32 x594_b_pad : 24;
+            u32 x594_b7 : 1;
+            u32 x594_b6 : 1;
+            u32 x594_b5 : 1;
+            u32 x594_b4 : 1;
+            u32 x594_b3 : 1;
+            u32 x594_b2 : 1;
+            u32 x594_b1_loop : 1;
+            u32 x594_b0 : 1;
+        };
+        struct {
+            u32 x596_pad : 6;
+            u32 x7 : 3;
+            u32 x0 : 7;
+            u32 x596_pad2 : 16;
+        } x596_bits;
+        struct {
+            u32 x597_bits : 6;
+            u32 x594_pad2 : 3;
+            u32 x594_bits : 13;
+            u32 x594_pad : 10;
+        };
+#else
         struct {
             /* fp+594:0 */ u8 x594_b0 : 1;
             /* fp+594:1 */ u8 x594_b1_loop : 1;
@@ -1382,6 +1410,7 @@ struct Fighter {
             u32 x594_pad2 : 3;
             u32 x597_bits : 6; // FighterKind of this fighter's x590 FigaTree
         };
+#endif
         /* fp+594 */ s32 x594_s32;
     };
     /*  fp+598 */ FigaTree* x598;
@@ -1941,8 +1970,13 @@ struct Fighter {
 ASSERT_SIZE(struct Fighter, 0x23EC);
 
 struct gmScriptEventDefault {
+#ifdef MELEE_PORT
+    u32 value1 : 26; /* LSB-first; see CmdUnion in lb/types.h */
+    u32 opcode : 6;
+#else
     u32 opcode : 6;
     u32 value1 : 26;
+#endif
 };
 
 struct ftData_UnkCountStruct {

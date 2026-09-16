@@ -90,3 +90,35 @@ instructions (opcode 63) sit mostly in `mtx.c`, `psdisp.c` and the AX reverb
 code, i.e. double math in rendering/audio, not gameplay. x86 SSE scalar
 single precision already rounds per operation like PPC single ops, so the
 remaining known gap is contraction.
+
+## Site map (PORT-010)
+
+`port/tools/fma_scan.py` reproduces the counts above (`dol` mode) and maps
+every fused instruction to a source line (`objs` mode) using MWCC objects
+built with `-sym on`, whose DWARF 1 `.line` tables give text offset → line.
+Result: `port/docs/fma-sites.txt` (file:line, function, instruction kind,
+count), 1865 source lines.
+
+Cross-check against the DOL (per-function counts, `fma_scan.py compare`):
+
+- objects: 3814 fused instructions in 841 functions; DOL: 3683 in 819
+- 810 functions in both, **805 with identical counts**
+- the rest are naming or linking artifacts, not missing sites:
+  - static/inline helpers emitted into several objects and deduplicated or
+    dropped at link (`HSD_PadClamp` 12, `calc_dist_2d_accurate` 8,
+    `*_inline`, `commonCall`, ...), which inflates the object total;
+  - Master Hand and Crazy Hand share code, and `symbols.txt` names the
+    retail copies `ftCh_*` where the objects say `ftMh_*` (or the reverse);
+  - `ftColl_8007A06C` 14 vs 20 and `fn_801857C4` 3 vs 7: the object copy
+    includes inlined helpers the retail function calls out-of-line.
+
+Rebuild the map (about 1 minute on this host) from a scratch worktree so
+`build/` stays untouched:
+
+    python configure.py --sym on --build-dir build-sym
+    ninja <all build-sym/GALE01/src/**.o edges that use an mwcc rule>
+    .venv/bin/python port/tools/fma_scan.py objs build-sym/GALE01/src \
+        --sites port/docs/fma-sites.txt
+
+(The port build needs the matching build's `build/GALE01/include`; link it
+into the scratch worktree.)

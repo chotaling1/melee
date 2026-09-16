@@ -136,32 +136,15 @@ their own worktree.
   Ice Climbers pair) survive the run; results table logged here.
 - Log:
 
-### PORT-010: Source-line map of MWCC fused multiply-adds
-- Status: in-progress
-- Owner: chat
-- Why: see `port/docs/fp-parity.md`. 3683 fused instructions in 819
-  retail functions; clang's own contraction agrees in only 379 functions,
-  so each site must be made explicit.
-- Do: build the matching objects with `-sym on` into a scratch build
-  directory (don't touch `build/`), decode fused instructions (opcode 59/63,
-  XO 28..31) per object, map them to file:line through the DWARF 1 `.line`
-  tables, and write `port/docs/fma-sites.txt` (file, line, function, kind;
-  no game data). Also commit the scanner as `port/tools/fma_scan.py`, which
-  can count fused instructions per function in both the DOL and
-  `port/build/melee`.
-- Done when: the site list covers all 3683 instructions (or explains the
-  remainder) and `fma_scan.py` reproduces the counts in the doc.
-- Log:
-
 ### PORT-011: Explicit fused math in gameplay code
 - Status: open
-- Depends: PORT-010
 - Do: add `PORT_FMADD`/`PORT_FMSUB`/`PORT_FNMSUB`/`PORT_FNMADD` macros
   (plain expressions for MWCC, `fmaf`-based under MELEE_PORT) and apply
-  them at the listed sites in `lb/lbcollision.c`, `lb/lbvector.c`,
+  them at the sites in `port/docs/fma-sites.txt` in `lb/lbcollision.c`, `lb/lbvector.c`,
   `mp/`, `cm/camera.c`, then `ft/` and `it/`, one directory per commit.
   Extend `check.sh` with a gate: for converted directories, per-function
-  fused counts in the port equal the retail counts.
+  fused counts in the port (`fma_scan.py port`, built with `-mfma`) equal
+  the retail counts (`fma_scan.py dol`).
 - Done when: gameplay directories are converted and gated; the trace
   change is explained in the PR.
 - Log:

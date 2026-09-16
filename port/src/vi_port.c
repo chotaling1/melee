@@ -14,6 +14,7 @@
 
 #include <sysdolphin/baselib/video.h>
 
+#include <port/endian.h>
 #include <port/port.h>
 
 static u32 retrace_count;
@@ -112,6 +113,9 @@ static void check_frame_limit(void)
                  HSD_VIData.xfb[0].status, HSD_VIData.xfb[1].status,
                  HSD_VIData.xfb[2].status, HSD_VIData.nb_xfb,
                  HSD_VIData.efb.status, HSD_VIData.drawdone.waiting);
+        if (getenv("MELEE_PORT_SWAP_AUDIT")) {
+            port_swap_audit();
+        }
         if (getenv("MELEE_PORT_ABORT_AT_LIMIT")) {
             abort(); /* crash handler prints where the game was */
         }

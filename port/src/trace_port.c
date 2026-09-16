@@ -39,6 +39,16 @@ void port_trace_frame(void)
             continue;
         }
         fp = gobj->user_data;
+        if (frame == 0) {
+            const ftCo_DatAttrs* a = &fp->co_attrs;
+            port_log("p%d kind %d attrs: weight %g gravity %g terminal %g "
+                     "fastfall %g walk_max %g dash_init %g jumpsquat %g "
+                     "jumps %d",
+                     slot, fp->kind, a->weight, a->gravity,
+                     a->terminal_velocity, a->fast_fall_velocity,
+                     a->walk_max_vel, a->dash_initial_velocity,
+                     a->jump_startup_time, a->max_jumps);
+        }
         port_log("f%u p%d kind %d motion %d %s pos (%.3f, %.3f) vel (%.3f, "
                  "%.3f) dmg %.1f stocks %d",
                  frame, slot, fp->kind, fp->motion_id,

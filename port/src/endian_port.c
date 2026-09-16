@@ -1,6 +1,7 @@
 /// In-place big-endian -> host conversion of HSD archive data.
 /// See port/include/port/endian.h for the model.
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,6 +18,7 @@ typedef struct {
     u32 data_size; ///< size of the data section (starts at HEADER_SIZE)
     u32* starts;   ///< sorted data offsets that something points at
     u32 nstarts;
+    char name[48]; ///< first public symbol, for diagnostics
 } Region;
 
 static Region regions[MAX_ARCHIVES];
@@ -190,6 +192,16 @@ int port_archive_swap(u8* src, size_t file_size)
     }
     qsort(r->starts, r->nstarts, sizeof(u32), cmp_u32);
 
+    r->name[0] = '\0';
+    if (nb_public != 0) {
+        u32 sym_base = extern_off + nb_extern * 8;
+        u32 name_off = sym_base + ((u32*) (src + public_off))[1];
+        if (name_off < file_size) {
+            strncpy(r->name, (char*) src + name_off, sizeof(r->name) - 1);
+            r->name[sizeof(r->name) - 1] = '\0';
+        }
+    }
+
     return 1;
 }
 
@@ -262,4 +274,68 @@ size_t port_extent(const void* p)
 void port_swap32_extent(void* p)
 {
     port_swap32_array(p, port_extent(p) / 4);
+}
+
+/// MELEE_PORT_SWAP_AUDIT: list every pointed-at object in a live archive of
+/// which no byte was converted. Most are legitimately raw (display lists,
+/// vertex/texture/palette data, keyframe bytes, byte tables, strings); the
+/// word statistics help spot data a walker missed: "be_f" counts words that
+/// look like big-endian floats in [1e-3, 1e5], "be_i" small big-endian ints.
+void port_swap_audit(void)
+{
+    int ri;
+    for (ri = 0; ri < nregions; ri++) {
+        Region* r = &regions[ri];
+        u32 i;
+        for (i = 0; i < r->nstarts; i++) {
+            u32 start = r->starts[i];
+            u32 end = r->data_size;
+            u32 off, done = 0, nonzero = 0, be_f = 0, be_i = 0, nwords;
+            u8* d;
+            if (i > 0 && r->starts[i - 1] == start) {
+                continue;
+            }
+            {
+                u32 j = i + 1;
+                while (j < r->nstarts && r->starts[j] == start) {
+                    j++;
+                }
+                if (j < r->nstarts) {
+                    end = r->starts[j];
+                }
+            }
+            if (start >= end || end > r->data_size) {
+                continue;
+            }
+            d = r->base + HEADER_SIZE;
+            for (off = start; off < end; off++) {
+                u32 b = HEADER_SIZE + off;
+                if (r->done[b >> 3] & (1 << (b & 7))) {
+                    done++;
+                }
+                if (d[off]) {
+                    nonzero++;
+                }
+            }
+            if (done != 0 || nonzero == 0) {
+                continue;
+            }
+            nwords = (end - start) / 4;
+            for (off = start; off + 4 <= end; off += 4) {
+                u32 w = bswap32(*(u32*) (d + off));
+                u32 e = (w >> 23) & 0xFF;
+                if (w != 0 && e >= 117 && e <= 143) {
+                    be_f++;
+                } else if (w != 0 && w < 0x10000) {
+                    be_i++;
+                }
+            }
+            fprintf(stderr,
+                    "[audit] %s +0x%05x size 0x%x words %u be_f %u be_i %u "
+                    "first %08x %08x\n",
+                    r->name, start, end - start, nwords, be_f, be_i,
+                    end - start >= 4 ? bswap32(*(u32*) (d + start)) : 0,
+                    end - start >= 8 ? bswap32(*(u32*) (d + start + 4)) : 0);
+        }
+    }
 }

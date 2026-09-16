@@ -56,6 +56,9 @@ size_t port_extent(const void* p);
 /// any object made only of pointers, f32 and 32-bit integers.
 void port_swap32_extent(void* p);
 
+/// Log objects in live archives that were never converted (see endian_port.c).
+void port_swap_audit(void);
+
 /// Returns 1 if p points into a registered archive's data.
 int port_in_archive(const void* p);
 

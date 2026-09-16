@@ -59,6 +59,17 @@ their own worktree.
 
 ## Tickets
 
+### PORT-018: Use MSL's float math instead of host libm
+- Status: in-progress
+- Owner: chat
+- Why: sinf/cosf/tanf/atanf/fmodf/logf/exp2f resolve to host libc (musl on
+  Linux, MinGW on Windows). melee.exe on Windows diverges from the Linux
+  trace at f120, and neither host matches console (MSL `src/MSL/trigf.c`,
+  `math.c`).
+- Do: build the decompiled MSL float math into the port for both targets.
+- Done when: Linux and Windows traces are identical; baseline updated.
+- Log:
+
 ### PORT-003: Battlefield from the real DAT
 - Status: open
 - Do: `MELEE_PORT_DEMO_MATCH=1` without `MELEE_PORT_STAGE=line` uses

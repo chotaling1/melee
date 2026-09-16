@@ -430,7 +430,7 @@ void gm_SetupTitleDemo(void)
 
 #ifdef MELEE_PORT
     /* MELEE_PORT_DEMO_MATCH makes the attract demo a fixed 1v1, items off
-     * (see onEnterVs): "1" is Fox vs Marth; "<a>,<b>" picks CharacterKind
+     * unless MELEE_PORT_DEMO_ITEMS is set (see onEnterVs): "1" is Fox vs Marth; "<a>,<b>" picks CharacterKind
      * values (e.g. "8,2" = Mario vs Fox). The stage is Final Destination
      * when MELEE_PORT_STAGE=line (the synthetic, DAT-less stage replaces
      * FD), else Battlefield. */
@@ -457,9 +457,10 @@ void gm_SetupTitleDemo(void)
             /* The demo camera follows these two slots; keep them occupied. */
             gm_801BF6C8(0);
             gm_801BF6E8(1);
-            OSReport("[port] demo match: ckind %d vs %d, %s, items off\n", p0,
+            OSReport("[port] demo match: ckind %d vs %d, %s, items %s\n", p0,
                      p1,
-                     line ? "synthetic line stage (FD slot)" : "Battlefield");
+                     line ? "synthetic line stage (FD slot)" : "Battlefield",
+                     getenv("MELEE_PORT_DEMO_ITEMS") != NULL ? "on" : "off");
         }
     }
 #endif
@@ -524,7 +525,11 @@ void onEnterVs(GameModeState* arg0)
     md->rules.stkind = (u16) gm_801BF694();
     gm_SetupAllPlayerDefaults(md->players);
 #ifdef MELEE_PORT
-    if (getenv("MELEE_PORT_DEMO_MATCH") != NULL) {
+    /* MELEE_PORT_DEMO_ITEMS=1 keeps the default item rules (medium, all
+     * kinds) in the forced match. */
+    if (getenv("MELEE_PORT_DEMO_MATCH") != NULL &&
+        getenv("MELEE_PORT_DEMO_ITEMS") == NULL)
+    {
         md->rules.item_freq = -1; /* item switch: none */
         md->rules.x20 = 0;        /* no item kinds enabled */
     }

@@ -118,7 +118,10 @@ static StageParam line_stage_params[] = { {
     .x14 = 6,
     .x16 = 12,
     .x18 = 100,
-    /* .x1A: per-item spawn switches, all 0 = no items on this stage. */
+    /* Per-item spawn switches (1 = may spawn here), indexed by item kind
+     * and read by Ground_801C28CC. */
+    .x1A = { 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
 } };
 
 #define LINE_BG { 0x0C, 0x06, 0x28, 0xFF }
@@ -139,7 +142,10 @@ static GroundParam line_param = {
     .x4C_fixed_cam = false,
     .x50 = 0, .x54 = 45, .x58 = 356, .x5C = 30, .x60 = -2, .x64 = 0,
     .x68 = 100,
-    /* .x6A: item frequency table, left 0 (items off). */
+    /* Item spawn weights per item kind, read by Ground_801C28CC. Only
+     * used when the match rules turn items on (MELEE_PORT_DEMO_ITEMS). */
+    .x6A = { 60, 60, 40, 0, 30, 6, 20, 8, 3, 8, 7, 7, 16, 8, 10, 7, 14, 8,
+             20, 16, 10, 16, 10, 9, 15, 12, 7, 5, 6, 15, 12, 10, 7, 10, 40 },
     .stage_params = line_stage_params,
     .stage_param_count = ARRAY_SIZE(line_stage_params),
     .xB8 = LINE_BG, .xBC = LINE_BG, .xC0 = LINE_BG,

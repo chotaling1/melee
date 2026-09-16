@@ -53,6 +53,9 @@
 /* 2682F0 */ static bool Item_802682F0(HSD_GObj* gobj);
 /* 268560 */ static void Item_80268560(HSD_GObj* gobj);
 /* 26862C */ static HSD_GObj* Item_8026862C(SpawnItem* spawnItem);
+#ifdef MELEE_PORT
+void port_trace_item_spawn(int kind, float x, float y); /* trace_port.c */
+#endif
 /* 268BE0 */ static void Item_80268BE0(HSD_JObj* item_jobj,
                                        HSD_AnimJoint* anim_joint,
                                        HSD_MatAnimJoint* matanim_joint,
@@ -984,6 +987,10 @@ static HSD_GObj* Item_8026862C(SpawnItem* spawnItem)
         HSD_GObjFree(gobj);
         return NULL;
     }
+#ifdef MELEE_PORT
+    port_trace_item_spawn(spawnItem->kind, spawnItem->pos.x,
+                          spawnItem->pos.y);
+#endif
     return gobj;
 }
 

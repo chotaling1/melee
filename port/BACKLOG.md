@@ -60,7 +60,7 @@ their own worktree.
 ## Tickets
 
 ### PORT-001: Swap itPublicData (ItCo.usd)
-- Status: open
+- Status: done
 - Why: ItCo.usd `itPublicData` is loaded every match and entirely
   big-endian (~14k unconverted objects in `MELEE_PORT_SWAP_AUDIT`). Items
   are off in the test match, so nothing crashes yet, but item spawns and
@@ -74,6 +74,21 @@ their own worktree.
   in ItCo.usd (strings, keyframes and GPU payloads are fine); check.sh
   passes.
 - Log:
+- 2026-09-16 16:47: done. `port_swap_itPublicData` (swap_item.c): generated
+  `ItemCommonData` swap; the 43 common, 118 from-Kuriboh and 49 Pokemon
+  article tables (sizes from Item_80267978's kind ranges, NULL slots
+  skipped); it_804D6D40_t words; color-anim rows. Article fixes: dynamics
+  +0xC hit bubbles, 0x18-byte model descs (+0x14 f32[8]). Pointers in
+  special attributes handled per kind: Foods (28 joints), Kinoko/DKinoko
+  and WStar (anim joints), Kuriboh/Leadead/Octarock/Ottosea (+0 word
+  block), Unk4 (3x joint/anim/matanim rows), Unknown + Unknown_Swarm (26
+  joints). Audit: "no type known ... itPublicData" gone; flagged ItCo.usd
+  objects 7396 -> 4762, all keyframes (3235 FObjDesc `ad`), display lists,
+  vertex/texture/palette data, plus 4 model groups (0x25f0bc, 0x66cc8,
+  0x74af4, 0xaa4a0) that no relocation points to. Trace changed from f180:
+  ftcoll.c reads ItemCommonData xD4/x78 on fighter hits, previously BE
+  garbage (bisected: only the ItemCommonData swap changes it); baseline
+  updated. check.sh: ALL GATES PASSED, 34 "no type known" (was 36).
 
 ### PORT-002: Items-on forced match
 - Status: open

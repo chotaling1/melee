@@ -158,6 +158,7 @@ typedef struct {
 
 static const GameRoot roots[] = {
     { "lbRefData", swap_lbRefData },
+    { "itPublicData", port_swap_itPublicData },
     { "coll_data", swap_coll_data },
     { "grGroundParam", swap_grGroundParam },
     { "map_head", swap_map_head },

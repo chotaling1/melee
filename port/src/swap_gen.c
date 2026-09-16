@@ -1273,6 +1273,96 @@ void port_swap_ItemAttr(void* p)
     }
 }
 
+/* ItemCommonData: 0x160 bytes */
+void port_swap_ItemCommonData(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* ItemCommonData.x0 */
+    port_swap32((u8*) p + 0x4); /* ItemCommonData.x4 */
+    port_swap32((u8*) p + 0x8); /* ItemCommonData.x8 */
+    port_swap32((u8*) p + 0xC); /* ItemCommonData.xC */
+    port_swap32((u8*) p + 0x10); /* ItemCommonData.x10 */
+    port_swap32((u8*) p + 0x14); /* ItemCommonData.x14 */
+    port_swap32((u8*) p + 0x18); /* ItemCommonData.x18 */
+    port_swap32((u8*) p + 0x1C); /* ItemCommonData.x1C */
+    port_swap32((u8*) p + 0x20); /* ItemCommonData.x20 */
+    port_swap32((u8*) p + 0x24); /* ItemCommonData.x24 */
+    port_swap32((u8*) p + 0x28); /* ItemCommonData.x28 */
+    port_swap32((u8*) p + 0x2C); /* ItemCommonData.x2C */
+    port_swap32((u8*) p + 0x30); /* ItemCommonData.x30_lifetime */
+    port_swap32((u8*) p + 0x34); /* ItemCommonData.x34 */
+    port_swap32((u8*) p + 0x38); /* ItemCommonData.x38_float */
+    port_swap32((u8*) p + 0x3C); /* ItemCommonData.x3C_float */
+    port_swap32((u8*) p + 0x40); /* ItemCommonData.x40_float */
+    port_swap32((u8*) p + 0x44); /* ItemCommonData.x44_float */
+    port_swap32((u8*) p + 0x4C); /* ItemCommonData.x4C_float */
+    port_swap32((u8*) p + 0x50); /* ItemCommonData.x50_float */
+    port_swap32((u8*) p + 0x54); /* ItemCommonData.x54_float */
+    port_swap32((u8*) p + 0x58); /* ItemCommonData.x58_float */
+    port_swap32((u8*) p + 0x5C); /* ItemCommonData.x5C_float */
+    port_swap32((u8*) p + 0x60); /* ItemCommonData.x60_float */
+    port_swap32((u8*) p + 0x64); /* ItemCommonData.x64_float */
+    port_swap32((u8*) p + 0x68); /* ItemCommonData.x68_float */
+    port_swap32((u8*) p + 0x6C); /* ItemCommonData.x6C_float */
+    port_swap32((u8*) p + 0x70); /* ItemCommonData.x70_float */
+    port_swap32((u8*) p + 0x74); /* ItemCommonData.x74_float */
+    port_swap32((u8*) p + 0x78); /* ItemCommonData.x78_float */
+    port_swap32((u8*) p + 0x7C); /* ItemCommonData.x7C_float */
+    port_swap32((u8*) p + 0x80); /* ItemCommonData.x80_float[0] */
+    port_swap32((u8*) p + 0x84); /* ItemCommonData.x80_float[1] */
+    port_swap32((u8*) p + 0x88); /* ItemCommonData.x80_float[2] */
+    port_swap32((u8*) p + 0x8C); /* ItemCommonData.x80_float[3] */
+    port_swap32((u8*) p + 0x90); /* ItemCommonData.x80_float[4] */
+    port_swap32((u8*) p + 0x94); /* ItemCommonData.x80_float[5] */
+    port_swap32((u8*) p + 0x98); /* ItemCommonData.x80_float[6] */
+    port_swap32((u8*) p + 0x9C); /* ItemCommonData.x80_float[7] */
+    port_swap32((u8*) p + 0xA0); /* ItemCommonData.x80_float[8] */
+    port_swap32((u8*) p + 0xA4); /* ItemCommonData.x80_float[9] */
+    port_swap32((u8*) p + 0xA8); /* ItemCommonData.x80_float[10] */
+    port_swap32((u8*) p + 0xAC); /* ItemCommonData.x80_float[11] */
+    port_swap32((u8*) p + 0xB0); /* ItemCommonData.x80_float[12] */
+    port_swap32((u8*) p + 0xB4); /* ItemCommonData.xB4 */
+    port_swap32((u8*) p + 0xB8); /* ItemCommonData.xB8 */
+    port_swap32((u8*) p + 0xBC); /* ItemCommonData.xBC */
+    port_swap32((u8*) p + 0xC0); /* ItemCommonData.xC0 */
+    port_swap32((u8*) p + 0xC4); /* ItemCommonData.xC4 */
+    port_swap32((u8*) p + 0xC8); /* ItemCommonData.xC8 */
+    port_swap32((u8*) p + 0xCC); /* ItemCommonData.xCC */
+    port_swap32((u8*) p + 0xD0); /* ItemCommonData.xD0 */
+    port_swap32((u8*) p + 0xD4); /* ItemCommonData.xD4 */
+    port_swap32((u8*) p + 0xD8); /* ItemCommonData.xD8 */
+    port_swap32((u8*) p + 0xDC); /* ItemCommonData.xDC */
+    port_swap32((u8*) p + 0xE0); /* ItemCommonData.unk_degrees */
+    port_swap32((u8*) p + 0xE8); /* ItemCommonData.xE8 */
+    port_swap32((u8*) p + 0xF0); /* ItemCommonData.xF0 */
+    port_swap32((u8*) p + 0xF4); /* ItemCommonData.xF4 */
+    port_swap32((u8*) p + 0xF8); /* ItemCommonData.xF8 */
+    port_swap32((u8*) p + 0xFC); /* ItemCommonData.xFC[0] */
+    port_swap32((u8*) p + 0x100); /* ItemCommonData.xFC[1] */
+    port_swap32((u8*) p + 0x104); /* ItemCommonData.xFC[2] */
+    port_swap32((u8*) p + 0x108); /* ItemCommonData.xFC[3] */
+    port_swap32((u8*) p + 0x10C); /* ItemCommonData.xFC[4] */
+    port_swap32((u8*) p + 0x110); /* ItemCommonData.xFC[5] */
+    port_swap32((u8*) p + 0x114); /* ItemCommonData.xFC[6] */
+    port_swap32((u8*) p + 0x118); /* ItemCommonData.xFC[7] */
+    port_swap32((u8*) p + 0x11C); /* ItemCommonData.xFC[8] */
+    port_swap32((u8*) p + 0x120); /* ItemCommonData.xFC[9] */
+    port_swap32((u8*) p + 0x124); /* ItemCommonData.x124 */
+    port_swap32((u8*) p + 0x128); /* ItemCommonData.x128[0] */
+    port_swap32((u8*) p + 0x12C); /* ItemCommonData.x128[1] */
+    port_swap32((u8*) p + 0x130); /* ItemCommonData.x128[2] */
+    port_swap32((u8*) p + 0x134); /* ItemCommonData.x128[3] */
+    port_swap32((u8*) p + 0x138); /* ItemCommonData.x138 */
+    port_swap32((u8*) p + 0x13C); /* ItemCommonData.x13C */
+    port_swap32((u8*) p + 0x140); /* ItemCommonData.x140 */
+    port_swap32((u8*) p + 0x144); /* ItemCommonData.x144 */
+    port_swap32((u8*) p + 0x148); /* ItemCommonData.x148 */
+    port_swap32((u8*) p + 0x14C); /* ItemCommonData.x14C */
+    port_swap32((u8*) p + 0x150); /* ItemCommonData.x150 */
+    port_swap32((u8*) p + 0x154); /* ItemCommonData.x154 */
+    port_swap32((u8*) p + 0x158); /* ItemCommonData.x158 */
+    port_swap32((u8*) p + 0x15C); /* ItemCommonData.x15C */
+}
+
 /* ItemModelDesc: 0x10 bytes */
 void port_swap_ItemModelDesc(void* p)
 {

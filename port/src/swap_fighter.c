@@ -268,7 +268,7 @@ static void swap_ftData(void* addr)
 /* ---- ftLoadCommonData (PlCo.dat) ------------------------------------- */
 
 /// { script*; u8 priority; u8 slot; u8 pad[2] } color animation rows.
-static void swap_color_anims(void* p)
+void port_swap_color_anims(void* p)
 {
     size_t i, n;
     if (!OK(p)) {
@@ -305,8 +305,8 @@ static void swap_ftLoadCommonData(void* addr)
     words(ptr_at(addr, 0x0C));
     word_ptr_array(ptr_at(addr, 0x10)); /* ftPartsTable: {u8*, u8*, u32} */
     word_ptr_array(ptr_at(addr, 0x14)); /* {u8[4]* entries; s32 count} */
-    swap_color_anims(ptr_at(addr, 0x18));
-    swap_color_anims(ptr_at(addr, 0x1C));
+    port_swap_color_anims(ptr_at(addr, 0x18));
+    port_swap_color_anims(ptr_at(addr, 0x1C));
     if (OK(ptr_at(addr, 0x20))) { /* respawn platform {joint, animjoint} */
         void* rp = ptr_at(addr, 0x20);
         port_walk_Joint(ptr_at(rp, 0));

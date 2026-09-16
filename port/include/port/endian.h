@@ -59,6 +59,13 @@ void port_swap32_extent(void* p);
 /// Log objects in live archives that were never converted (see endian_port.c).
 void port_swap_audit(void);
 
+/// 1 if the 4-byte word at p is a relocated pointer (word-aligned in the
+/// data section).
+int port_is_pointer_word(const void* p);
+
+/// 1 if the byte at p has already been converted (or claimed).
+int port_is_claimed(const void* p);
+
 /// Returns 1 if p points into a registered archive's data.
 int port_in_archive(const void* p);
 

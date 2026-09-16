@@ -16,6 +16,7 @@ typedef struct {
     u32 size;      ///< file size
     u8* done;      ///< 1 bit per byte: already in host order
     u32 data_size; ///< size of the data section (starts at HEADER_SIZE)
+    u8* ptrs;      ///< 1 bit per data word: relocated pointer
     u32* starts;   ///< sorted data offsets that something points at
     u32 nstarts;
     char name[48]; ///< first public symbol, for diagnostics
@@ -71,6 +72,7 @@ void port_archive_forget(u8* src)
     for (i = 0; i < nregions; i++) {
         if (regions[i].base == src) {
             free(regions[i].done);
+            free(regions[i].ptrs);
             free(regions[i].starts);
             regions[i] = regions[--nregions];
             return;
@@ -88,6 +90,7 @@ static Region* add_region(u8* src, u32 size)
         Region* o = &regions[i];
         if (o->base < src + size && src < o->base + o->size) {
             free(o->done);
+            free(o->ptrs);
             free(o->starts);
             regions[i] = regions[--nregions];
         } else {
@@ -103,6 +106,7 @@ static Region* add_region(u8* src, u32 size)
     r->size = size;
     r->done = calloc((size + 7) / 8, 1);
     r->data_size = 0;
+    r->ptrs = NULL;
     r->starts = NULL;
     r->nstarts = 0;
     return r;
@@ -182,10 +186,14 @@ int port_archive_swap(u8* src, size_t file_size)
     /* Object starts: every pointer target and public symbol. They bound
      * the extent of each object (see port_extent). */
     r->data_size = data_size;
+    r->ptrs = calloc((data_size / 4 + 7) / 8, 1);
     r->starts = malloc((nb_reloc + nb_public + 1) * sizeof(u32));
     for (i = 0; i < nb_reloc; i++) {
         u32 off = ((u32*) (src + reloc_off))[i];
         r->starts[r->nstarts++] = *(u32*) (src + data_off + off);
+        if (off / 4 < data_size / 4) {
+            r->ptrs[(off / 4) >> 3] |= (u8) (1 << ((off / 4) & 7));
+        }
     }
     for (i = 0; i < nb_public; i++) {
         r->starts[r->nstarts++] = ((u32*) (src + public_off))[i * 2];
@@ -338,4 +346,31 @@ void port_swap_audit(void)
                     end - start >= 8 ? bswap32(*(u32*) (d + start + 4)) : 0);
         }
     }
+}
+
+
+int port_is_pointer_word(const void* p)
+{
+    Region* r = find_region(p);
+    u32 off;
+    if (r == NULL || r->ptrs == NULL) {
+        return 0;
+    }
+    off = (u32) ((u8*) p - r->base);
+    if (off < HEADER_SIZE || off >= HEADER_SIZE + r->data_size) {
+        return 0;
+    }
+    off = (off - HEADER_SIZE) / 4;
+    return (r->ptrs[off >> 3] >> (off & 7)) & 1;
+}
+
+int port_is_claimed(const void* p)
+{
+    Region* r = find_region(p);
+    u32 off;
+    if (r == NULL) {
+        return 0;
+    }
+    off = (u32) ((u8*) p - r->base);
+    return (r->done[off >> 3] >> (off & 7)) & 1;
 }

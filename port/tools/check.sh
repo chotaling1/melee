@@ -11,7 +11,8 @@
 # Exit status 0 only if every gate passes:
 #   1. matching build: build/GALE01/main.dol sha1 is the retail one
 #      (--quick skips it once build/GALE01/include exists)
-#   2. port build (configure + ninja)
+#   2. port build (configure + ninja), plus the Windows cross build
+#      (x86-windows-gnu, link only)
 #   3. headless forced match (Fox vs Marth, line stage) reaches 9000
 #      retraces and exits 0
 # It also reports (without failing) whether the fighter trace differs from
@@ -64,6 +65,15 @@ if $PY port/configure.py >"$LOG/port.log" 2>&1 && $NINJA -C port >>"$LOG/port.lo
 else
     bad "port build (log: $LOG/port.log)"
     tail -20 "$LOG/port.log"
+fi
+
+step "windows cross build (link only; can't run here)"
+if PORT_TARGET=x86-windows-gnu $PY port/configure.py >"$LOG/win.log" 2>&1 &&
+    $NINJA -C port -f build-x86-windows-gnu.ninja >>"$LOG/win.log" 2>&1; then
+    ok "port/build-x86-windows-gnu/melee.exe"
+else
+    bad "windows build (log: $LOG/win.log)"
+    tail -20 "$LOG/win.log"
 fi
 
 if [ -x port/build/melee ]; then

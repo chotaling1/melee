@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
 #include <time.h>
 
+#include <port/host.h>
 #include <port/port.h>
 
 /* ---- logging ---- */
@@ -70,17 +70,12 @@ OSErrorHandler OSSetErrorHandler(OSError error, OSErrorHandler handler)
 /// Dolphin for step-2 comparisons.
 #define PORT_ARENA_LO (PORT_MEM1_BASE + 0x00600000u)
 
-/* Bounds of the port executable's own image (static linking: code, data
- * and bss sit at low host addresses). */
-extern const char __ehdr_start[];
-extern char _end[];
-
 void* port_mem1_ptr(u32 addr)
 {
     /* Static buffers in the executable (e.g. devcom.c's DVD->ARAM relay
      * buffers, which live in MEM1 .bss on the console) have host addresses
      * below 0x01800000 and must not be mistaken for physical addresses. */
-    if (addr >= (uintptr_t) __ehdr_start && addr < (uintptr_t) _end) {
+    if (port_host_in_image(addr)) {
         return (void*) addr;
     }
     if (addr < PORT_MEM1_BASE) {
@@ -91,11 +86,8 @@ void* port_mem1_ptr(u32 addr)
 
 static void map_mem1(void)
 {
-    void* want = (void*) PORT_MEM1_BASE;
-    void* got = mmap(want, PORT_MEM1_SIZE, PROT_READ | PROT_WRITE,
-                     MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE, -1, 0);
-    if (got != want) {
-        port_log("cannot map MEM1 at %p (got %p)", want, got);
+    if (!port_host_map_fixed(PORT_MEM1_BASE, PORT_MEM1_SIZE)) {
+        port_log("cannot map MEM1 at 0x%08x", PORT_MEM1_BASE);
         abort();
     }
 
@@ -103,9 +95,7 @@ static void map_mem1(void)
      * (GXWGFifo) write command bytes straight to 0xCC008000. Headless, a
      * RAM page there turns those writes into no-ops; the renderer will
      * replace the macros instead. */
-    got = mmap((void*) 0xCC000000u, 0x10000, PROT_READ | PROT_WRITE,
-               MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE, -1, 0);
-    if (got != (void*) 0xCC000000u) {
+    if (!port_host_map_fixed(0xCC000000u, 0x10000)) {
         port_log("cannot map hardware registers at 0xCC000000");
         abort();
     }

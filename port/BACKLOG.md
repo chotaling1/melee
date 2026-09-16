@@ -135,19 +135,6 @@ their own worktree.
   Ice Climbers pair) survive the run; results table logged here.
 - Log:
 
-### PORT-008: Windows x86 build target
-- Status: in-progress
-- Owner: chat
-- Why: step 3 (window, input) must be testable on Chuck's Windows PC.
-- Do: `PORT_TARGET=x86-windows-gnu` build with Zig: platform layer for
-  file/ISO access, MEM1 mapping (`VirtualAlloc` at 0x80000000 or a
-  relocation strategy if that address is unavailable), timing, crash
-  logging. Keep the Linux build working.
-- Done when: `port/build/melee.exe` links; it can't be run here, so also
-  write a short `port/docs/windows.md` with how Chuck runs the headless
-  check on Windows. Mark `needs-chuck` for the on-Windows test.
-- Log:
-
 ### PORT-010: Source-line map of MWCC fused multiply-adds
 - Status: open
 - Why: see `port/docs/fp-parity.md`. 3683 fused instructions in 819
@@ -175,6 +162,14 @@ their own worktree.
   fused counts in the port equal the retail counts.
 - Done when: gameplay directories are converted and gated; the trace
   change is explained in the PR.
+- Log:
+
+### PORT-012: Run melee.exe on Windows
+- Status: needs-chuck
+- Do: follow `port/docs/windows.md` on a 64-bit Windows PC: run the
+  headless test match and compare the trace with
+  `port/tests/demo_line.trace`. Paste the log tail (and the trace diff if
+  any) into this ticket's log, or tell a chat session.
 - Log:
 
 ### PORT-009: Dolphin comparison tooling

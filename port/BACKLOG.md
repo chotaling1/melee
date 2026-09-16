@@ -130,21 +130,6 @@ their own worktree.
   Ice Climbers pair) survive the run; results table logged here.
 - Log:
 
-### PORT-007: Floating-point parity audit (fused multiply-add)
-- Status: in-progress
-- Owner: chat
-- Why: physics and DI must match console floats. MWCC may emit
-  `fmadds`/`fmsubs` (fused) where clang with `-ffp-contract=off` does not
-  fuse, and PPC single-precision rounding differs from x87/SSE in places.
-- Do: research only. Scan the matching build's objects (dtk disassembly)
-  for fused multiply-add instructions, map them to source functions, and
-  estimate which are gameplay-relevant (ft, mp, it, cm). Propose a fix
-  strategy (e.g. `fma` calls under MELEE_PORT in those spots) as new
-  `proposed` tickets.
-- Done when: a findings section with counts and the function list is
-  added to this ticket's log (or a `port/docs/` note).
-- Log:
-
 ### PORT-008: Windows x86 build target
 - Status: in-progress
 - Owner: chat
@@ -156,6 +141,35 @@ their own worktree.
 - Done when: `port/build/melee.exe` links; it can't be run here, so also
   write a short `port/docs/windows.md` with how Chuck runs the headless
   check on Windows. Mark `needs-chuck` for the on-Windows test.
+- Log:
+
+### PORT-010: Source-line map of MWCC fused multiply-adds
+- Status: open
+- Why: see `port/docs/fp-parity.md`. 3683 fused instructions in 819
+  retail functions; clang's own contraction agrees in only 379 functions,
+  so each site must be made explicit.
+- Do: build the matching objects with `-sym on` into a scratch build
+  directory (don't touch `build/`), decode fused instructions (opcode 59/63,
+  XO 28..31) per object, map them to file:line through the DWARF 1 `.line`
+  tables, and write `port/docs/fma-sites.txt` (file, line, function, kind;
+  no game data). Also commit the scanner as `port/tools/fma_scan.py`, which
+  can count fused instructions per function in both the DOL and
+  `port/build/melee`.
+- Done when: the site list covers all 3683 instructions (or explains the
+  remainder) and `fma_scan.py` reproduces the counts in the doc.
+- Log:
+
+### PORT-011: Explicit fused math in gameplay code
+- Status: open
+- Depends: PORT-010
+- Do: add `PORT_FMADD`/`PORT_FMSUB`/`PORT_FNMSUB`/`PORT_FNMADD` macros
+  (plain expressions for MWCC, `fmaf`-based under MELEE_PORT) and apply
+  them at the listed sites in `lb/lbcollision.c`, `lb/lbvector.c`,
+  `mp/`, `cm/camera.c`, then `ft/` and `it/`, one directory per commit.
+  Extend `check.sh` with a gate: for converted directories, per-function
+  fused counts in the port equal the retail counts.
+- Done when: gameplay directories are converted and gated; the trace
+  change is explained in the PR.
 - Log:
 
 ### PORT-009: Dolphin comparison tooling

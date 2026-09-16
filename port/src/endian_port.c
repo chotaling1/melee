@@ -11,9 +11,12 @@
 #define HEADER_SIZE 0x20
 
 typedef struct {
-    u8* base; ///< start of the file buffer
-    u32 size; ///< file size
-    u8* done; ///< 1 bit per byte: already in host order
+    u8* base;      ///< start of the file buffer
+    u32 size;      ///< file size
+    u8* done;      ///< 1 bit per byte: already in host order
+    u32 data_size; ///< size of the data section (starts at HEADER_SIZE)
+    u32* starts;   ///< sorted data offsets that something points at
+    u32 nstarts;
 } Region;
 
 static Region regions[MAX_ARCHIVES];
@@ -66,6 +69,7 @@ void port_archive_forget(u8* src)
     for (i = 0; i < nregions; i++) {
         if (regions[i].base == src) {
             free(regions[i].done);
+            free(regions[i].starts);
             regions[i] = regions[--nregions];
             return;
         }
@@ -82,6 +86,7 @@ static Region* add_region(u8* src, u32 size)
         Region* o = &regions[i];
         if (o->base < src + size && src < o->base + o->size) {
             free(o->done);
+            free(o->starts);
             regions[i] = regions[--nregions];
         } else {
             i++;
@@ -95,6 +100,9 @@ static Region* add_region(u8* src, u32 size)
     r->base = src;
     r->size = size;
     r->done = calloc((size + 7) / 8, 1);
+    r->data_size = 0;
+    r->starts = NULL;
+    r->nstarts = 0;
     return r;
 }
 
@@ -109,6 +117,12 @@ static void swap_words(Region* r, u32 off, u32 count)
     }
 }
 
+static int cmp_u32(const void* a, const void* b)
+{
+    u32 x = *(const u32*) a, y = *(const u32*) b;
+    return x < y ? -1 : x > y;
+}
+
 int port_archive_swap(u8* src, size_t file_size)
 {
     u32* hdr = (u32*) src;
@@ -120,14 +134,15 @@ int port_archive_swap(u8* src, size_t file_size)
     if (src == NULL) {
         return 0;
     }
-    r = find_region(src);
-    if (r && r->base == src && r->size == file_size) {
-        return 1; /* already converted */
+    if (hdr[0] == file_size) {
+        return 1; /* already converted (or a native archive) */
     }
     if (bswap32(hdr[0]) != file_size) {
-        /* Not a big-endian archive of this size (or already native). */
-        return hdr[0] == file_size;
+        return 0; /* not an archive of this size */
     }
+    /* Big-endian header: fresh file data, possibly loaded over a buffer that
+     * held an earlier archive (fighter animations reuse one buffer), so the
+     * old region is dropped by add_region. */
 
     r = add_region(src, (u32) file_size);
 
@@ -161,6 +176,19 @@ int port_archive_swap(u8* src, size_t file_size)
         u32 off = ((u32*) (src + extern_off))[i * 2];
         swap_words(r, data_off + off, 1);
     }
+
+    /* Object starts: every pointer target and public symbol. They bound
+     * the extent of each object (see port_extent). */
+    r->data_size = data_size;
+    r->starts = malloc((nb_reloc + nb_public + 1) * sizeof(u32));
+    for (i = 0; i < nb_reloc; i++) {
+        u32 off = ((u32*) (src + reloc_off))[i];
+        r->starts[r->nstarts++] = *(u32*) (src + data_off + off);
+    }
+    for (i = 0; i < nb_public; i++) {
+        r->starts[r->nstarts++] = ((u32*) (src + public_off))[i * 2];
+    }
+    qsort(r->starts, r->nstarts, sizeof(u32), cmp_u32);
 
     return 1;
 }
@@ -203,4 +231,35 @@ void port_swap16_array(void* p, size_t count)
     for (i = 0; i < count; i++) {
         port_swap16((u8*) p + i * 2);
     }
+}
+
+size_t port_extent(const void* p)
+{
+    Region* r = find_region(p);
+    u32 off, lo, hi;
+    if (r == NULL || r->starts == NULL) {
+        return 0;
+    }
+    off = (u32) ((u8*) p - r->base);
+    if (off < HEADER_SIZE || off >= HEADER_SIZE + r->data_size) {
+        return 0;
+    }
+    off -= HEADER_SIZE;
+    /* First start > off. */
+    lo = 0;
+    hi = r->nstarts;
+    while (lo < hi) {
+        u32 mid = (lo + hi) / 2;
+        if (r->starts[mid] <= off) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    return (lo < r->nstarts ? r->starts[lo] : r->data_size) - off;
+}
+
+void port_swap32_extent(void* p)
+{
+    port_swap32_array(p, port_extent(p) / 4);
 }

@@ -46,6 +46,16 @@ int port_claim(void* p, size_t n);
 void port_swap16_array(void* p, size_t count);
 void port_swap32_array(void* p, size_t count);
 
+/// Size of the object starting at p: bytes up to the next address that any
+/// relocated pointer or public symbol refers to (or the end of the data
+/// section). 0 if p is not inside a registered archive's data.
+size_t port_extent(const void* p);
+
+/// Swap every 4-byte word of the object at p (port_extent). Relocated
+/// pointer words are already claimed and are skipped, so this is right for
+/// any object made only of pointers, f32 and 32-bit integers.
+void port_swap32_extent(void* p);
+
 /// Returns 1 if p points into a registered archive's data.
 int port_in_archive(const void* p);
 

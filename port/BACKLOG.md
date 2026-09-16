@@ -20,7 +20,9 @@ input) needs a Windows build first.
 2. **Sync.** `git fetch origin`. If a `ticket/*` branch for an
    `in-progress` ticket exists, continue it (rebase on `origin/pc-port`);
    else check out a new `ticket/<id>-<slug>` from `origin/pc-port`, and
-   pick the first `open` ticket whose dependencies are `done`.
+   pick the first `open` ticket whose dependencies are merged (no longer
+   listed). Skip any ticket with an `Owner:` line other than `bot`: a chat
+   session has claimed it.
 3. **Work** to the acceptance criteria. Follow `AGENTS.md` rules (no game
    data in git, `#ifdef MELEE_PORT` in shared code, matching build
    green). Commit small logical steps on the ticket branch and push it, so a
@@ -30,8 +32,8 @@ input) needs a Windows build first.
    trace changed on purpose, run `port/tools/check.sh --update-trace`,
    commit the new `port/tests/demo_line.trace`, and explain the change in
    the PR body.
-5. **Land.** Update the ticket here (status `done`, log entry) in the same
-   branch, then:
+5. **Land.** Remove the ticket from this file in the same branch (the PR
+   body is the record: what changed, check.sh output, trace changes), then:
    `gh pr create --repo chotaling1/melee --base pc-port --head <branch>`
    with a body listing what changed and the check.sh output, and
    `gh pr merge --repo chotaling1/melee --merge --delete-branch <pr>`.
@@ -50,8 +52,10 @@ input) needs a Windows build first.
    PR/commit, check.sh result, next step>`. Keep entries short and
    factual; include real numbers and failures.
 
-Statuses: `open`, `in-progress`, `blocked`, `needs-chuck`, `proposed`,
-`done`.
+Statuses: `open`, `in-progress`, `blocked`, `needs-chuck`, `proposed`.
+Merged tickets are deleted from this file. Chat sessions claim a ticket by
+adding `- Owner: chat` (pushed to `pc-port` before starting) and work in
+their own worktree.
 
 ## Tickets
 
@@ -102,7 +106,8 @@ Statuses: `open`, `in-progress`, `blocked`, `needs-chuck`, `proposed`,
 - Log:
 
 ### PORT-005: Sweep for runtime bitfields that receive DAT words
-- Status: open
+- Status: in-progress
+- Owner: chat
 - Why: `Fighter::x594` got a whole u32 flags word from the action table
   and was read through MSB-first bitfields; it silently decoded wrong
   until it crashed. Others may not crash.
@@ -126,7 +131,8 @@ Statuses: `open`, `in-progress`, `blocked`, `needs-chuck`, `proposed`,
 - Log:
 
 ### PORT-007: Floating-point parity audit (fused multiply-add)
-- Status: open
+- Status: in-progress
+- Owner: chat
 - Why: physics and DI must match console floats. MWCC may emit
   `fmadds`/`fmsubs` (fused) where clang with `-ffp-contract=off` does not
   fuse, and PPC single-precision rounding differs from x87/SSE in places.
@@ -140,7 +146,8 @@ Statuses: `open`, `in-progress`, `blocked`, `needs-chuck`, `proposed`,
 - Log:
 
 ### PORT-008: Windows x86 build target
-- Status: open
+- Status: in-progress
+- Owner: chat
 - Why: step 3 (window, input) must be testable on Chuck's Windows PC.
 - Do: `PORT_TARGET=x86-windows-gnu` build with Zig: platform layer for
   file/ISO access, MEM1 mapping (`VirtualAlloc` at 0x80000000 or a

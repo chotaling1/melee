@@ -1,0 +1,47 @@
+#ifndef PORT_ENDIAN_H
+#define PORT_ENDIAN_H
+
+/// Big-endian DAT data on a little-endian host.
+///
+/// Game data (HSD archives) is stored big-endian. The port converts it in
+/// place, once, in two layers:
+///   1. port_archive_swap(): the archive header, relocation/public/extern
+///      tables and every relocated pointer word. The relocation table lists
+///      exactly where the pointers are, so this layer needs no types.
+///   2. Typed swaps (port_swap32/16/f32 and the per-struct helpers) at the
+///      points where code first interprets data with a known C type.
+///
+/// Every swapped byte range is recorded in a per-archive bitmap, so a
+/// descriptor reachable from several places is only ever swapped once, and
+/// pointers that do not point into a registered archive (host static data,
+/// already-native heap objects) are left alone.
+
+#include <dolphin/types.h>
+
+#include <stddef.h>
+
+/// Called at the top of HSD_ArchiveParse with the raw file buffer. Converts
+/// the header, tables and pointer words to host order and registers the
+/// buffer. Returns 1 if the buffer was converted (or already registered).
+int port_archive_swap(u8* src, size_t file_size);
+
+/// Forget an archive buffer (called when its memory is freed/reused).
+void port_archive_forget(u8* src);
+
+/// Swap a field in place if it lies inside a registered archive and has not
+/// been swapped yet. Safe to call repeatedly on the same address.
+void port_swap16(void* p);
+void port_swap32(void* p);
+static inline void port_swapf32(void* p)
+{
+    port_swap32(p);
+}
+
+/// Swap `count` consecutive fields of the given width.
+void port_swap16_array(void* p, size_t count);
+void port_swap32_array(void* p, size_t count);
+
+/// Returns 1 if p points into a registered archive's data.
+int port_in_archive(const void* p);
+
+#endif

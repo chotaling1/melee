@@ -4,6 +4,7 @@
 /// SDK's own C code, compiled straight from libs/dolphin.
 
 #include <dolphin/os.h>
+#include <dolphin/vi.h>
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -87,6 +88,17 @@ static void map_mem1(void)
         abort();
     }
 
+    /* Hardware registers (0xCC000000..). The SDK's inline GX macros
+     * (GXWGFifo) write command bytes straight to 0xCC008000. Headless, a
+     * RAM page there turns those writes into no-ops; the renderer will
+     * replace the macros instead. */
+    got = mmap((void*) 0xCC000000u, 0x10000, PROT_READ | PROT_WRITE,
+               MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE, -1, 0);
+    if (got != (void*) 0xCC000000u) {
+        port_log("cannot map hardware registers at 0xCC000000");
+        abort();
+    }
+
     LOMEM_U32(0x0020) = 0x0D15EA5E; /* boot magic */
     LOMEM_U32(0x0028) = PORT_MEM1_SIZE; /* physical mem size */
     LOMEM_U32(0x002C) = 0x00000003; /* console type: retail */
@@ -133,6 +145,7 @@ void DCStoreRange(void* addr, u32 nBytes)
 /// keeps a headless run deterministic no matter how fast the host is; a
 /// windowed build paces the retraces to real time instead of the clock.
 static OSTime port_ticks;
+static OSTime next_retrace;
 
 static void init_time(void)
 {
@@ -140,6 +153,7 @@ static void init_time(void)
      * GameCube epoch is 2000-01-01 00:00:00. */
     time_t now = time(NULL);
     port_ticks = (OSTime) (now - 946684800) * PORT_TIMER_CLOCK;
+    next_retrace = port_ticks + PORT_TICKS_PER_RETRACE;
 }
 
 static void flush_deferred(void);
@@ -244,9 +258,15 @@ void OSSetAbsAlarm(OSAlarm* alarm, OSTime time, OSAlarmHandler handler)
 void OSSetPeriodicAlarm(OSAlarm* alarm, OSTime start, OSTime period,
                         OSAlarmHandler handler)
 {
+    OSTime fire = start;
     alarm->period = period;
     alarm->start = start;
-    alarm_insert(alarm, start, handler);
+    /* As in the SDK, `start` is absolute and may be far in the past: the
+     * first firing is the next period boundary after now. */
+    if (period > 0 && fire <= port_ticks) {
+        fire = start + ((port_ticks - start) / period + 1) * period;
+    }
+    alarm_insert(alarm, fire, handler);
 }
 
 void OSCancelAlarm(OSAlarm* alarm)
@@ -254,37 +274,49 @@ void OSCancelAlarm(OSAlarm* alarm)
     alarm_unlink(alarm);
 }
 
-static void run_alarms(void)
+/// Fire the earliest due alarm, if any. Returns 1 if one fired.
+static int run_one_alarm(void)
 {
     OSAlarm* a;
-    /* Handlers may set or cancel alarms; restart the scan after each. */
-again:
+    OSAlarm* due = NULL;
+    OSAlarmHandler handler;
+
     for (a = alarm_head; a; a = a->next) {
-        if (a->fire <= port_ticks) {
-            OSAlarmHandler handler = a->handler;
-            if (a->period) {
-                a->fire += a->period;
-            } else {
-                alarm_unlink(a);
-            }
-            if (handler) {
-                handler(a, NULL);
-            }
-            goto again;
+        if (a->fire <= port_ticks && (!due || a->fire < due->fire)) {
+            due = a;
         }
     }
+    if (!due) {
+        return 0;
+    }
+    handler = due->handler;
+    if (due->period) {
+        due->fire += due->period;
+    } else {
+        alarm_unlink(due);
+    }
+    if (handler) {
+        handler(due, NULL);
+    }
+    return 1;
 }
 
-void port_os_retrace(void)
-{
-    port_ticks += PORT_TICKS_PER_RETRACE;
-    flush_deferred();
-    run_alarms();
-}
+/* ---- interrupts ----
+ *
+ * Time model: on the console, alarm (decrementer) and VI (retrace)
+ * interrupts arrive asynchronously. Here they are delivered at
+ * "interrupt windows": whenever interrupts become enabled, and whenever
+ * the timebase is read. Each window also advances virtual time a little,
+ * so busy-wait loops (e.g. gm_801A4D34 waiting for the 60 Hz pad alarm)
+ * make progress. All of this is deterministic: the same code path always
+ * sees the same interrupt timing.
+ */
 
-/* ---- interrupts: enable state + deferred "interrupt" callbacks ---- */
+/// Virtual time consumed per interrupt-enable window (~50 us).
+#define WINDOW_TICKS 2025
 
 static BOOL interrupts_enabled = TRUE;
+static int in_irq;
 
 #define DEFER_MAX 256
 
@@ -293,7 +325,6 @@ static struct {
     void* arg;
 } defer_queue[DEFER_MAX];
 static unsigned defer_head, defer_tail;
-static int in_deferred;
 
 void port_defer(void (*fn)(void*), void* arg)
 {
@@ -307,23 +338,58 @@ void port_defer(void (*fn)(void*), void* arg)
     defer_tail = next;
 }
 
-/// Run queued callbacks as an interrupt handler would: with interrupts
-/// masked, and never re-entrantly.
-static void flush_deferred(void)
+/// Deliver everything that is due, as interrupt handlers would: with
+/// interrupts masked and never re-entrantly. Order per pass: device
+/// completions, then alarms, then the VI retrace.
+static void service_interrupts(void)
 {
-    if (in_deferred || !interrupts_enabled) {
+    int progress;
+
+    if (in_irq || !interrupts_enabled) {
         return;
     }
-    in_deferred = 1;
+    in_irq = 1;
     interrupts_enabled = FALSE;
-    while (defer_head != defer_tail) {
-        void (*fn)(void*) = defer_queue[defer_head].fn;
-        void* arg = defer_queue[defer_head].arg;
-        defer_head = (defer_head + 1) % DEFER_MAX;
-        fn(arg);
-    }
+    do {
+        progress = 0;
+        while (defer_head != defer_tail) {
+            void (*fn)(void*) = defer_queue[defer_head].fn;
+            void* arg = defer_queue[defer_head].arg;
+            defer_head = (defer_head + 1) % DEFER_MAX;
+            fn(arg);
+            progress = 1;
+        }
+        if (run_one_alarm()) {
+            progress = 1;
+        }
+        if (port_ticks >= next_retrace) {
+            next_retrace += PORT_TICKS_PER_RETRACE;
+            port_vi_interrupt();
+            progress = 1;
+        }
+    } while (progress);
     interrupts_enabled = TRUE;
-    in_deferred = 0;
+    in_irq = 0;
+}
+
+static void flush_deferred(void)
+{
+    service_interrupts();
+}
+
+void port_advance(OSTime ticks)
+{
+    port_ticks += ticks;
+    service_interrupts();
+}
+
+void port_wait_retrace(void)
+{
+    u32 start = VIGetRetraceCount();
+    while (VIGetRetraceCount() == start) {
+        OSTime dt = next_retrace - port_ticks;
+        port_advance(dt > 0 ? dt : 1);
+    }
 }
 
 BOOL OSDisableInterrupts(void)
@@ -337,8 +403,10 @@ BOOL OSRestoreInterrupts(BOOL level)
 {
     BOOL old = interrupts_enabled;
     interrupts_enabled = level;
-    if (level) {
-        flush_deferred();
+    if (level && !old) {
+        port_advance(WINDOW_TICKS);
+    } else if (level) {
+        service_interrupts();
     }
     return old;
 }

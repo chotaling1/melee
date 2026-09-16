@@ -811,6 +811,11 @@ void AXDriver_8038DA70(const char* path, void (*callback)(void))
     s32 j;
     s32 i;
 
+#ifdef MELEE_PORT
+    /* No audio yet (roadmap step 5); see HSD_SynthSFXLoad. */
+    return;
+#endif
+
     entrynum = DVDConvertPathToEntrynum(path);
     if (entrynum == -1 || DVDFastOpen(entrynum, &fileInfo) == 0) {
         OSReport("can not open %s\n", path);

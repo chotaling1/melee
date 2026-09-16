@@ -1,0 +1,72 @@
+#ifndef PORT_SWAP_H
+#define PORT_SWAP_H
+
+/// Typed byte-swap walkers for DAT data. See port/src/swap_port.c.
+
+#include <sysdolphin/baselib/forward.h>
+#include <melee/sc/forward.h>
+
+/* Generated per-struct field swaps (port/src/swap_gen.c). */
+void port_swap_HSD_WObjDesc(void* p);
+void port_swap_HSD_CameraDescCommon(void* p);
+void port_swap_HSD_CameraDescFrustum(void* p);
+void port_swap_HSD_CameraDescPerspective(void* p);
+void port_swap_HSD_Joint(void* p);
+void port_swap_HSD_DObjDesc(void* p);
+void port_swap_HSD_MObjDesc(void* p);
+void port_swap_HSD_Material(void* p);
+void port_swap_HSD_PEDesc(void* p);
+void port_swap_HSD_TObjDesc(void* p);
+void port_swap_HSD_ImageDesc(void* p);
+void port_swap_HSD_TlutDesc(void* p);
+void port_swap_HSD_TObjTevDesc(void* p);
+void port_swap_HSD_PObjDesc(void* p);
+void port_swap_HSD_ShapeSetDesc(void* p);
+void port_swap_HSD_ShapeAnim(void* p);
+void port_swap_HSD_ShapeAnimJoint(void* p);
+void port_swap_HSD_ShapeAnimDObj(void* p);
+void port_swap_HSD_EnvelopeDesc(void* p);
+void port_swap_HSD_VtxDescList(void* p);
+void port_swap_HSD_AObjDesc(void* p);
+void port_swap_HSD_FObjDesc(void* p);
+void port_swap_HSD_AnimJoint(void* p);
+void port_swap_HSD_MatAnimJoint(void* p);
+void port_swap_HSD_MatAnim(void* p);
+void port_swap_HSD_TexAnim(void* p);
+void port_swap_HSD_LightDesc(void* p);
+void port_swap_HSD_LightAttn(void* p);
+void port_swap_HSD_FogDesc(void* p);
+void port_swap_HSD_FogAdjDesc(void* p);
+void port_swap_HSD_RObjDesc(void* p);
+void port_swap_HSD_RObjAnimJoint(void* p);
+void port_swap_HSD_CameraAnim(void* p);
+void port_swap_HSD_WObjAnim(void* p);
+void port_swap_HSD_LightPointDesc(void* p);
+void port_swap_HSD_LightSpotDesc(void* p);
+void port_swap_HSD_TexLODDesc(void* p);
+void port_swap_HSD_Spline(void* p);
+
+/* Graph walkers (port/src/swap_port.c). */
+void port_walk_Joint(HSD_Joint* j);
+void port_walk_AnimJoint(HSD_AnimJoint* j);
+void port_walk_MatAnimJoint(HSD_MatAnimJoint* j);
+void port_walk_ShapeAnimJoint(HSD_ShapeAnimJoint* j);
+void port_walk_AObjDesc(HSD_AObjDesc* a);
+void port_walk_CObjDesc(HSD_CObjDesc* c);
+void port_walk_CameraAnim(HSD_CameraAnim* a);
+void port_walk_LightDesc(HSD_LightDesc* l);
+void port_walk_LightAnim(HSD_LightAnim* a);
+void port_walk_FogDesc(HSD_FogDesc* f);
+void port_walk_SceneDesc(SceneDesc* s);
+void port_walk_StaticModelDesc(StaticModelDesc* m);
+void port_walk_DynamicModelDesc(DynamicModelDesc* m);
+
+/// Swap the object graph rooted at a public archive symbol, choosing the
+/// type from the symbol name.
+void port_swap_public(const char* symbol, void* addr);
+
+/// Game-specific (non-sysdolphin) root types, by symbol name. Returns 1 if
+/// the symbol was recognised. Implemented in port/src/swap_game.c.
+int port_swap_game_public(const char* symbol, void* addr);
+
+#endif

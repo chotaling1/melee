@@ -165,6 +165,10 @@ void gm_801A4014(GameMode* mode)
     sm = &state_machine;
     state = findState(mode->states);
     sm->routing.curr_state_id = state->id;
+#ifdef MELEE_PORT
+    OSReport("[port] enter state %d, scene kind %d, retrace %u\n", state->id,
+             state->info.scene_kind, VIGetRetraceCount());
+#endif
 
     preloadState(state);
     if (state->on_enter != NULL) {

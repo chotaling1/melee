@@ -205,6 +205,12 @@ int HSD_SynthSFXLoad(const char* filename, int bankID, void (*cb)(int, int),
 
     entrynum = DVDConvertPathToEntrynum(filename);
 
+#ifdef MELEE_PORT
+    /* No audio yet (roadmap step 5): SSM banks are big-endian and the
+     * port has no DSP/AX mixer, so skip loading them entirely. */
+    return entrynum;
+#endif
+
     while (HSD_Synth_804D772C >= 6) {
     }
 

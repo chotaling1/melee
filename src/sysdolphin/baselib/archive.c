@@ -4,6 +4,11 @@
 
 #include <dolphin/os.h>
 
+#ifdef MELEE_PORT
+#include <port/endian.h>
+#include <port/swap.h>
+#endif
+
 static inline void Locate(HSD_Archive* archive)
 {
     u32 i;
@@ -22,6 +27,10 @@ s32 HSD_ArchiveParse(HSD_Archive* archive, u8* src, size_t file_size)
     if (archive == NULL) {
         return -1;
     }
+
+#ifdef MELEE_PORT
+    port_archive_swap(src, file_size);
+#endif
 
     memset(archive, 0, sizeof(HSD_Archive));
     archive->flags |= 1;
@@ -77,6 +86,10 @@ void* HSD_ArchiveGetPublicAddress(HSD_Archive* archive, const char* symbols)
 
         if (comparison == 0) {
             // If both strings are equal, we've found the node
+#ifdef MELEE_PORT
+            port_swap_public(symbols,
+                             archive->data + archive->public_info[i].offset);
+#endif
             return archive->data + archive->public_info[i].offset;
         }
     }

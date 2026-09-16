@@ -18,9 +18,16 @@
 /// Ticks per NTSC field (59.94 Hz).
 #define PORT_TICKS_PER_RETRACE 675675u
 
-/// Called once per VIWaitForRetrace: advances the virtual timebase by one
-/// field and fires due OS alarms.
-void port_os_retrace(void);
+/// Advance virtual time and deliver any interrupts that became due
+/// (deferred device callbacks, OS alarms, VI retrace).
+void port_advance(s64 ticks);
+
+/// Advance virtual time until the next VI retrace has been delivered.
+void port_wait_retrace(void);
+
+/// The VI retrace interrupt handler (vi_port.c); called by the OS layer
+/// with interrupts masked.
+void port_vi_interrupt(void);
 
 /// Queue a completion callback that on hardware would arrive from an
 /// interrupt (ARQ/DVD/AX done). It runs the next time interrupts are

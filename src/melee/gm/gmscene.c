@@ -22,6 +22,10 @@
 #include <sysdolphin/baselib/perf.h>
 #include <sysdolphin/baselib/sobjlib.h>
 
+#ifdef MELEE_PORT
+void port_trace_frame(void); /* port/src/trace_port.c */
+#endif
+
 /* 479D30 */ static HSD_GObjLibInitDataType gobj_init_data;
 /* 479D58 */ static struct gm_80479D58_t gm_80479D58;
 /* 4D672C */ HSD_GObj* gm_804D672C;
@@ -345,6 +349,9 @@ void gm_801A4D34(void (*on_frame)(void), UNUSED GameSceneInfo* info)
                 temp_r25->unk_10.pre_gobj_proc();
             }
             HSD_GObj_RunProcs();
+#ifdef MELEE_PORT
+            port_trace_frame();
+#endif
             if (temp_r25->unk_0 != -2) {
                 temp_r25->unk_0++;
             }

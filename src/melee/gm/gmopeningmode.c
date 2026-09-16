@@ -444,6 +444,9 @@ void gm_SetupTitleDemo(void)
             gm_801BF65C(c, 0);
         }
         gm_801BF684(line ? St_Kind_Last : St_Kind_Battle);
+        /* The demo camera follows these two slots; keep them occupied. */
+        gm_801BF6C8(0);
+        gm_801BF6E8(1);
         OSReport("[port] demo match: Fox vs Marth, %s, items off\n",
                  line ? "synthetic line stage (FD slot)" : "Battlefield");
     }

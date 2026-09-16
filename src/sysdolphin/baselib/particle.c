@@ -3044,7 +3044,15 @@ void hsd_8039D0A0(HSD_Generator* gen)
         u8 pad[0x410];
         HSD_ObjAllocData alloc_data;
     } ParticleData;
+#ifdef MELEE_PORT
+    /* The struct above is laid over adjacent statics (hsd_804D08E8,
+     * hsd_804D0908, ..., hsd_804D0F60), which only holds for MWCC's data
+     * layout. Name the real objects instead. */
+    HSD_JObj** const data_jobj = hsd_804D08E8;
+#endif
+#ifndef MELEE_PORT
     ParticleData* data = (ParticleData*) hsd_804D08E8;
+#endif
     HSD_Particle* prev;
     HSD_Particle* prt;
     HSD_Particle* next;
@@ -3053,7 +3061,11 @@ void hsd_8039D0A0(HSD_Generator* gen)
 
     prev = NULL;
     idnum = gen->idnum;
+#ifdef MELEE_PORT
+    head = &hsd_804D0908[gen->linkNo];
+#else
     head = &data->particle[gen->linkNo];
+#endif
     prt = *head;
 
     while (prt != NULL) {
@@ -3081,6 +3093,15 @@ void hsd_8039D0A0(HSD_Generator* gen)
 
             if (prt->kind & 0x8000) {
                 s32 jidx = (prt->kind >> 12) & 7;
+#ifdef MELEE_PORT
+                if (data_jobj[jidx] != NULL) {
+                    HSD_JObjUnref(data_jobj[jidx]);
+                    data_jobj[jidx] = NULL;
+                }
+            }
+
+            HSD_ObjFree(&hsd_804D0F60.alloc_data, prt);
+#else
                 if (data->jobj[jidx] != NULL) {
                     HSD_JObjUnref(data->jobj[jidx]);
                     data->jobj[jidx] = NULL;
@@ -3088,6 +3109,7 @@ void hsd_8039D0A0(HSD_Generator* gen)
             }
 
             HSD_ObjFree(&data->alloc_data, prt);
+#endif
             hsd_804D78E2--;
         } else {
             prev = prt;

@@ -11,6 +11,15 @@ struct DebugContext {
 
 static ReportCallback reportCallback;
 static PanicCallback panicCallback;
+
+#ifdef MELEE_PORT
+
+/// The original hooks MSL's stdout->write_proc, which has no equivalent on
+/// a host libc. OSReport in the port writes straight to stderr instead.
+void HSD_LogInit(void) {}
+
+#else
+
 static __io_proc logFunc;
 
 #ifdef MUST_MATCH
@@ -35,6 +44,8 @@ void HSD_LogInit(void)
     stdout->write_proc = report_func;
     stdout->state.error = 0;
 }
+
+#endif
 
 void __assert(const char* str, u32 arg1, const char* arg2)
 {

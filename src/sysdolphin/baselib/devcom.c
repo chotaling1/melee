@@ -406,9 +406,14 @@ int HSD_DevComRequest(int file, uintptr_t src, uintptr_t dest, size_t size,
         !(HSD_DevComGetDestType(type) == DEVCOMDEST_SBUF
             && size > DEVCOM_BUF_SIZE));
 
+#ifndef MELEE_PORT
+    /* 32-byte alignment is a DVD/ARAM DMA hardware requirement. The port's
+     * transfers are memcpy/pread, and host static data is not guaranteed
+     * to land on 32-byte boundaries the way the GameCube link did. */
     HSD_ASSERT(0x1EF, src % 32 == 0);
     HSD_ASSERT(0x1F0, dest % 32 == 0);
     HSD_ASSERT(0x1F1, size % 32 == 0);
+#endif
     HSD_ASSERT(0x1F2, size != 0);
 
     pri = (type & 0x38) == 0x20 ? pri : 3;

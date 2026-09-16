@@ -23,6 +23,11 @@
 #include <melee/vi/vi1201v2.h>
 #include <sysdolphin/baselib/random.h>
 
+#ifdef MELEE_PORT
+#include <stdlib.h>
+#include <string.h>
+#endif
+
 struct gm_random_history {
     u8 pad0[2];
     u8 character_usage[0x1A];
@@ -422,6 +427,27 @@ void gm_SetupTitleDemo(void)
     gm_801BF684(gm_801641CC((u8) count));
     gm_GetRandomHistory()->stage_usage[count] += 1;
     gm_801BF6A8(HSD_Randi(4));
+
+#ifdef MELEE_PORT
+    /* MELEE_PORT_DEMO_MATCH=1: make the attract demo a fixed 1v1, Fox vs
+     * Marth, items off (see onEnterVs). The stage is Final Destination when
+     * MELEE_PORT_STAGE=line (the synthetic, DAT-less stage replaces FD),
+     * else Battlefield. */
+    if (getenv("MELEE_PORT_DEMO_MATCH") != NULL) {
+        const char* stage = getenv("MELEE_PORT_STAGE");
+        bool line = stage != NULL && strcmp(stage, "line") == 0;
+        gm_801BF634(0, CKind_Fox);
+        gm_801BF634(1, CKind_Mars);
+        gm_801BF634(2, ChKind_None);
+        gm_801BF634(3, ChKind_None);
+        for (c = 0; c < 4; c++) {
+            gm_801BF65C(c, 0);
+        }
+        gm_801BF684(line ? St_Kind_Last : St_Kind_Battle);
+        OSReport("[port] demo match: Fox vs Marth, %s, items off\n",
+                 line ? "synthetic line stage (FD slot)" : "Battlefield");
+    }
+#endif
 }
 
 void gm_PreloadTitleDemo(void)
@@ -482,9 +508,21 @@ void onEnterVs(GameModeState* arg0)
     md->rules.game_speed = gm_804DAC88;
     md->rules.stkind = (u16) gm_801BF694();
     gm_SetupAllPlayerDefaults(md->players);
+#ifdef MELEE_PORT
+    if (getenv("MELEE_PORT_DEMO_MATCH") != NULL) {
+        md->rules.item_freq = -1; /* item switch: none */
+        md->rules.x20 = 0;        /* no item kinds enabled */
+    }
+#endif
 
     for (i = 0; i < 4; i++) {
         CharacterKind kind = gm_801BF648(i);
+#ifdef MELEE_PORT
+        if (kind == ChKind_None) {
+            md->players[i].slot_type = Gm_PKind_NA;
+            continue;
+        }
+#endif
         md->players[i].ckind = kind;
         md->players[i].color = gm_801BF670(i);
         md->players[i].slot_type = Gm_PKind_Cpu;

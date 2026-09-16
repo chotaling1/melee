@@ -2048,6 +2048,44 @@ void port_swap_itOctarockAttributes(void* p)
     port_swap16((u8*) p + 0x1C); /* itOctarockAttributes.x1C */
 }
 
+/* TrophyData: 0x24 bytes */
+void port_swap_TrophyData(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* TrophyData.id */
+    port_swap32((u8*) p + 0x4); /* TrophyData.x04 */
+    port_swap32((u8*) p + 0x8); /* TrophyData.x08 */
+    port_swap32((u8*) p + 0xC); /* TrophyData.x0C */
+    port_swap32((u8*) p + 0x10); /* TrophyData.x10 */
+    port_swap32((u8*) p + 0x14); /* TrophyData.x14 */
+    port_swap32((u8*) p + 0x18); /* TrophyData.x18 */
+    port_swap32((u8*) p + 0x1C); /* TrophyData.x1C */
+    port_claim((u8*) p + 0x20, 1); /* TrophyData.x20 */
+    port_claim((u8*) p + 0x21, 1); /* TrophyData.x21 */
+    port_claim((u8*) p + 0x22, 1); /* TrophyData.x22 */
+    port_claim((u8*) p + 0x23, 1); /* TrophyData.x23 */
+}
+
+/* ToyNameData: 0xC bytes */
+void port_swap_ToyNameData(void* p)
+{
+    port_swap16((u8*) p + 0x0); /* ToyNameData.x0 */
+    port_swap16((u8*) p + 0x2); /* ToyNameData.x2 */
+    port_swap16((u8*) p + 0x4); /* ToyNameData.x4 */
+    port_swap16((u8*) p + 0x6); /* ToyNameData.x6 */
+    port_swap16((u8*) p + 0x8); /* ToyNameData.x8 */
+    port_swap16((u8*) p + 0xA); /* ToyNameData.xA */
+}
+
+/* TyDspEntry: 0x10 bytes */
+void port_swap_TyDspEntry(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* TyDspEntry.x00 */
+    port_claim((u8*) p + 0x4, 1); /* TyDspEntry.x04 */
+    port_claim((u8*) p + 0x5, 1); /* TyDspEntry.x05 */
+    port_swap32((u8*) p + 0x8); /* TyDspEntry.x08 */
+    port_swap32((u8*) p + 0xC); /* TyDspEntry.x0C */
+}
+
 /* ItemAttr: 0x84 bytes */
 void port_swap_ItemAttr(void* p)
 {

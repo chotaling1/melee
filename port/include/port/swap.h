@@ -71,6 +71,9 @@ void port_swap_ftGameWatchAttributes(void* p);
 void port_swap_MarsAttributes(void* p);
 void port_swap_itLeadeadAttributes(void* p);
 void port_swap_itOctarockAttributes(void* p);
+void port_swap_TrophyData(void* p);
+void port_swap_ToyNameData(void* p);
+void port_swap_TyDspEntry(void* p);
 void port_swap_ItemAttr(void* p);
 void port_swap_ItemCommonData(void* p);
 void port_swap_ItemModelDesc(void* p);
@@ -81,6 +84,7 @@ void port_swap_article(void* a);
 void port_swap_color_anims(void* p);
 void port_swap_itPublicData(void* addr);
 int port_swap_fighter_public(const char* symbol, void* addr);
+int port_swap_misc_public(const char* symbol, void* addr); /* swap_misc.c */
 
 /* Graph walkers (port/src/swap_port.c). */
 void port_walk_Joint(HSD_Joint* j);

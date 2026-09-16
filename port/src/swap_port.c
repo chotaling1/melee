@@ -588,7 +588,8 @@ void port_swap_public(const char* symbol, void* addr)
     } else if (ends_with(symbol, "_fog")) {
         port_walk_FogDesc(addr);
     } else if (!port_swap_game_public(symbol, addr) &&
-               !port_swap_fighter_public(symbol, addr))
+               !port_swap_fighter_public(symbol, addr) &&
+               !port_swap_misc_public(symbol, addr))
     {
         port_log("port_swap_public: no type known for symbol '%s'", symbol);
     }

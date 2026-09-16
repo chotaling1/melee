@@ -116,16 +116,6 @@ their own worktree.
   Add it as a second gate in check.sh with its own baseline trace.
 - Log:
 
-### PORT-004: Remaining untyped public symbols in a match
-- Status: in-progress
-- Owner: chat
-- Do: add walkers for the symbols check.sh still reports as "no type
-  known": `SIS_IntroData`, `SIS_MessageData` (sislib text),
-  `lbRumbleData`, `ty*Tbl` (trophy tables), `TitleMark_sobjdesc`,
-  `MemCardIconData`, `lbBgFlashColAnimData`. One commit per symbol family.
-- Done when: check.sh reports 0 "no type known" warnings.
-- Log:
-
 ### PORT-006: Forced match for any two characters
 - Status: open
 - Do: `MELEE_PORT_DEMO_MATCH=<ckind>,<ckind>` picks the characters (keep

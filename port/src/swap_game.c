@@ -135,6 +135,79 @@ static void swap_map_head(void* addr)
     }
 }
 
+/// Number of words in the array at `addr`: its extent, extended while the
+/// words past it are still relocated pointers (the entries of a pointer
+/// array that were laid out before their targets shorten the extent).
+static size_t array_words(void* addr)
+{
+    size_t n = port_extent(addr) / 4;
+    while (n < 256 && port_is_pointer_word((u8*) addr + n * 4)) {
+        n++;
+    }
+    return n;
+}
+
+/// "itemdata": the stage's own items (ground.c Ground_801C0800), a
+/// NULL-terminated array of { s32 kind; Article* } (struct GroundItemData)
+/// handed to it_8026B40C. Battlefield's is empty (just the terminator).
+static void swap_itemdata(void* addr)
+{
+    size_t i, n = array_words(addr);
+    for (i = 0; i < n; i++) {
+        s32* e;
+        if (!port_is_pointer_word((s32**) addr + i)) {
+            continue; /* a plain 0 word is the NULL terminator */
+        }
+        e = *((s32**) addr + i);
+        if (!OK(e)) {
+            continue;
+        }
+        port_swap32(e); /* kind */
+        port_swap_item_article(*e, *(void**) (e + 1));
+    }
+}
+
+/// "ALDYakuAll": item state scripts copied over the stage item article's
+/// states (ground.c Ground_801C0800, from index 1). Entry 0 is unused.
+static void swap_ald_yaku_all(void* addr)
+{
+    size_t i, n = array_words(addr);
+    for (i = 0; i < n; i++) {
+        void* script;
+        if (!port_is_pointer_word((void**) addr + i)) {
+            continue;
+        }
+        script = *((void**) addr + i);
+        if (OK(script)) {
+            port_swap_script(script);
+        }
+    }
+}
+
+/// "yakumono_param": stage hazard parameters; every gr*.c casts it to its
+/// own struct, so there is no shared layout. Battlefield's
+/// (grbattle.c grBattle_YakumonoParam) is two background color-overlay
+/// script pointers. Other stages get their scripts swapped and a warning
+/// for the scalar words, which need that stage's struct.
+static void swap_yakumono_param(void* addr)
+{
+    size_t i, n = port_extent(addr) / 4;
+    size_t scalars = 0;
+    for (i = 0; i < n; i++) {
+        void* w = (u8*) addr + i * 4;
+        if (port_is_pointer_word(w)) {
+            port_swap_script(*(void**) w);
+        } else {
+            scalars++;
+        }
+    }
+    if (scalars != 0) {
+        port_log("yakumono_param: %u untyped scalar words (stage struct "
+                 "not implemented)",
+                 (unsigned) scalars);
+    }
+}
+
 static void swap_map_plit(void* addr)
 {
     port_walk_LightLists(addr);
@@ -160,6 +233,9 @@ static const GameRoot roots[] = {
     { "lbRefData", swap_lbRefData },
     { "itPublicData", port_swap_itPublicData },
     { "coll_data", swap_coll_data },
+    { "itemdata", swap_itemdata },
+    { "ALDYakuAll", swap_ald_yaku_all },
+    { "yakumono_param", swap_yakumono_param },
     { "grGroundParam", swap_grGroundParam },
     { "map_head", swap_map_head },
     { "map_plit", swap_map_plit },

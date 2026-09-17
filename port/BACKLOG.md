@@ -60,22 +60,6 @@ their own worktree.
 
 ## Tickets
 
-### PORT-003: Battlefield from the real DAT
-- Status: open
-- Do: `MELEE_PORT_DEMO_MATCH=1` without `MELEE_PORT_STAGE=line` uses
-  Battlefield (`GrNBa.dat`). Complete the stage swaps (map_head models,
-  yakumono, particles, `ALDYakuAll`, `itemdata`) and stage callbacks until
-  it runs. Stage-only items whose special attributes have s16/u8 fields
-  need typed swaps like Redead/Octorok got in PORT-005 (add them to
-  `gen_swap.py` TYPES and swap them before the extent pass):
-  `itLikelikeAttributes` (u8 +3C..+3E), `itTincleAttributes` (u8 +54/+55),
-  `itWhiteBeaAttributes` (s16 +08..+14), `itOldottoseaAttributes`
-  (u8 +10, +28).
-- Done when: the Battlefield forced match reaches 9000 retraces with exit 0;
-  fighters stand on the platforms (trace y > 0 on ground at some point).
-  Add it as a second gate in check.sh with its own baseline trace.
-- Log:
-
 ### PORT-013: Samus: texture animation crash
 - Status: open
 - Do: `MELEE_PORT_DEMO_MATCH=16,2 MELEE_PORT_STAGE=line` crashes in
@@ -305,3 +289,29 @@ the fighter trace with drawing on must equal the headless trace. -->
   window behavior, anything wrong in the debug draws. Findings become
   tickets.
 - Log:
+
+### PORT-029: Battlefield diverges between Linux and Windows
+- Status: proposed
+- Why: found while landing PORT-003. The line-stage trace is still
+  byte-identical across the two builds, but the Battlefield forced match
+  (`MELEE_PORT_DEMO_MATCH=1`, no `MELEE_PORT_STAGE`) differs: at f1200 of
+  the first demo Fox has 31.0% on Windows and 32.0% on Linux while
+  standing still on the left platform (-45.061, 27.200); the second demo
+  then diverges completely (116 diff lines out of 102 trace lines).
+  A 1% difference on a motionless fighter is the magnifier tick
+  (`Fighter_8006A360`), the same symptom PR #9 traced to an off-screen
+  test fed by uninitialized data - so suspect another weak GX/VI stub with
+  an out-pointer, or state the Battlefield camera path reads and the line
+  stage never touches. Both builds are `-msse2 -mfpmath=sse
+  -ffp-contract=off`, so plain codegen FP differences are unlikely.
+- Do: bisect with `MELEE_PORT_TRACE=1` around f1150-1250 on both builds,
+  find the first differing value, and audit the stubs/state it comes from
+  (`port/src/sdk_stubs_gen.c` out-pointers first). Then make the
+  Battlefield gate cross-platform in port/docs/windows.md.
+- Done when: the Windows Battlefield trace equals
+  `port/tests/demo_bf.trace`.
+- Log:
+  - 2026-09-16 22:35: filed from the PORT-003 run. Windows logs were
+    captured with `cmd /c "melee.exe 2> log"`; PowerShell's own `2>`
+    redirect wraps native stderr at the console width and loses line
+    tails.

@@ -15,9 +15,12 @@
 #      (x86-windows-gnu, link only)
 #   3. headless forced match (Fox vs Marth, line stage) reaches 9000
 #      retraces and exits 0
-# It also reports (without failing) whether the fighter trace differs from
-# port/tests/demo_line.trace, and the swap-audit warning count; a changed
-# trace must be explained in the PR. --update-trace rewrites the baseline.
+#   4. the same match on Battlefield (GrNBa.dat), where a fighter must also
+#      stand on a platform (on the ground above y=0)
+# It also reports (without failing) whether the fighter traces differ from
+# port/tests/demo_line.trace and port/tests/demo_bf.trace, and the
+# swap-audit warning count; a changed trace must be explained in the PR.
+# --update-trace rewrites both baselines.
 
 set -u
 cd "$(git rev-parse --show-toplevel)" || exit 2
@@ -76,35 +79,57 @@ else
     tail -20 "$LOG/win.log"
 fi
 
-if [ -x port/build/melee ]; then
-    step "headless forced match (line stage, 9000 retraces)"
+# $1 label, $2 MELEE_PORT_STAGE value ("" = the demo's stage, Battlefield),
+# $3 baseline trace file. Leaves the run log in $LOG/<name>.log.
+match_gate() {
+    label=$1
+    stage=$2
+    baseline=$3
+    name=$(basename "$baseline" .trace)
+    step "headless forced match ($label, 9000 retraces)"
     MELEE_PORT_TRACE=60 MELEE_PORT_SWAP_AUDIT=1 MELEE_PORT_DEMO_MATCH=1 \
-        MELEE_PORT_STAGE=line MELEE_PORT_INPUT="60:A,120:A" \
-        MELEE_PORT_FRAMES=9000 timeout 600 port/build/melee >"$LOG/run.log" 2>&1
+        MELEE_PORT_STAGE="$stage" MELEE_PORT_INPUT="60:A,120:A" \
+        MELEE_PORT_FRAMES=9000 timeout 600 port/build/melee \
+        >"$LOG/$name.log" 2>&1
     rc=$?
-    if [ $rc = 0 ] && grep -q "reached MELEE_PORT_FRAMES=9000" "$LOG/run.log"; then
+    if [ $rc = 0 ] && grep -q "reached MELEE_PORT_FRAMES=9000" "$LOG/$name.log"
+    then
         ok "exit 0 at 9000 retraces"
     else
-        bad "run exit $rc (log: $LOG/run.log)"
-        grep -v "no type known\|retrace\|^\[audit\]" "$LOG/run.log" | tail -15
+        bad "run exit $rc (log: $LOG/$name.log)"
+        grep -v "no type known\|retrace\|^\[audit\]" "$LOG/$name.log" | tail -15
     fi
-    grep -E '^\[port\] (f[0-9]+ (p[0-9]|item spawn)|p[0-9] kind [0-9]+ attrs)' "$LOG/run.log" \
-        | sed 's/^\[port\] //' >"$LOG/trace.txt"
-    step "trace vs port/tests/demo_line.trace (informational)"
+    grep -E '^\[port\] (f[0-9]+ (p[0-9]|item spawn)|p[0-9] kind [0-9]+ attrs)' \
+        "$LOG/$name.log" | sed 's/^\[port\] //' >"$LOG/$name.trace"
+    step "trace vs $baseline (informational)"
     if [ "$UPDATE" = 1 ]; then
-        mkdir -p port/tests && cp "$LOG/trace.txt" port/tests/demo_line.trace
-        echo "   baseline updated ($(wc -l <port/tests/demo_line.trace) lines)"
-    elif [ -f port/tests/demo_line.trace ]; then
-        if cmp -s "$LOG/trace.txt" port/tests/demo_line.trace; then
+        mkdir -p port/tests && cp "$LOG/$name.trace" "$baseline"
+        echo "   baseline updated ($(wc -l <"$baseline") lines)"
+    elif [ -f "$baseline" ]; then
+        if cmp -s "$LOG/$name.trace" "$baseline"; then
             echo "   unchanged"
         else
             echo "   CHANGED: first differences:"
-            diff port/tests/demo_line.trace "$LOG/trace.txt" | head -10
+            diff "$baseline" "$LOG/$name.trace" | head -10
         fi
     else
         echo "   no baseline yet"
     fi
-    echo "   'no type known' warnings: $(grep -c 'no type known' "$LOG/run.log")"
+    echo "   'no type known' warnings: $(grep -c 'no type known' "$LOG/$name.log")"
+}
+
+if [ -x port/build/melee ]; then
+    match_gate "line stage" line port/tests/demo_line.trace
+    match_gate "Battlefield" "" port/tests/demo_bf.trace
+    # Battlefield's platforms: a fighter has to stand above y=0 at some
+    # point, which the flat line stage can never show.
+    step "Battlefield platforms"
+    if grep -Eq 'gnd pos \([^,]*, [1-9][0-9]*\.[0-9]+\)' "$LOG/demo_bf.trace"
+    then
+        ok "a fighter stands on a platform (y > 0 on the ground)"
+    else
+        bad "no fighter ever stood above y=0 (log: $LOG/demo_bf.log)"
+    fi
 fi
 
 echo "logs: $LOG"

@@ -49,6 +49,10 @@ CFLAGS = [
     "-msse2",
     "-mfpmath=sse",
     "-ffp-contract=off",
+    # Game float math comes from MSL (src/MSL, port/src/math_port.c), never
+    # the host libm: clang must not fold or rewrite these calls either.
+    *[f"-fno-builtin-{fn}" for fn in
+      ("sinf", "cosf", "tanf", "atanf", "fmodf", "logf")],
     # Same defines as the matching build ...
     "-DVERSION_GALE01",
     "-DBUILD_VERSION=0",
@@ -95,6 +99,10 @@ EXTRA_SOURCES = [
     "libs/dolphin/src/dolphin/os/OSAlloc.c",  # heaps: __OSCurrHeap & co.
     "libs/dolphin/src/dolphin/os/OSArena.c",  # arena lo/hi bump allocator
     "libs/dolphin/src/dolphin/mtx/mtx44.c",  # MTXFrustum/Perspective/Ortho
+    # MSL float math as on console (host libm differs per OS and from PPC).
+    "src/MSL/trigf.c",  # sinf, cosf, tanf
+    "src/MSL/math.c",  # logf
+    "src/MSL/math_data.c",  # sin/cos polynomial, ln tables
 ]
 
 # Files that are PPC/MSL-only and have a port replacement in port/src.

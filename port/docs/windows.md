@@ -69,6 +69,13 @@ doesn't, link its objects half-and-half with the normal build to find the
 file, then opt locals out with `__attribute__((uninitialized))` to find the
 variable (PORT-029 found three this way).
 
+Struct layout is the other cause. mingw defaults to MSVC bitfield layout,
+where `u32 f : 1; u8 x;` makes a 4-byte `u32` unit before `x` (8 bytes total
+instead of 4). port/configure.py therefore builds game code for Windows with
+`-mno-ms-bitfields`. PORT-029's Battlefield crash (`assertion "jobj" failed`
+in the percent HUD after a KO) was `FlagsX` in if/ifstatus.c growing by 4
+bytes, so `x44_vec[3]` overwrote `jobjs[0]`.
+
 Verified 2026-09-16 on Windows 11 Home (PORT-012): exit 0 at 9000 retraces
 in about 1 s, and the log is byte-identical to the Linux run, including a
 per-frame trace (`MELEE_PORT_TRACE=1`, 5502 fighter lines). When the host

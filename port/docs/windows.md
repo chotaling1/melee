@@ -46,6 +46,29 @@ Select-String -Path run.log -Pattern '^\[port\] (f\d+ p\d|p\d kind \d+ attrs)' |
 
 then compare `trace.txt` with the repo's `port/tests/demo_line.trace`.
 
+The Battlefield match (the demo's own stage, loaded from `GrNBa.dat`) is the
+second check.sh gate and must match too. Run the same commands with the
+stage variable cleared, and compare with `port/tests/demo_bf.trace`:
+
+```powershell
+$env:MELEE_PORT_STAGE = ""
+cmd /c ".\melee.exe 2> run_bf.log"
+Select-String -Path run_bf.log -Pattern '^\[port\] (f\d+ (p\d|item spawn)|p\d kind \d+ attrs)' |
+  ForEach-Object { $_.Line -replace '^\[port\] ', '' } > trace_bf.txt
+```
+
+Capture logs through `cmd /c` as above. PowerShell's own `2>` wraps native
+stderr at the console width and cuts off line ends.
+
+A Linux/Windows difference usually means an uninitialized read (stack
+contents differ per OS and compiler), not float codegen. On Linux, reproduce
+it without Windows by building a copy of `port/build.ninja` with
+`-ftrivial-auto-var-init=zero` (or `=pattern`) prepended to `cflags` and a
+different `builddir`. Every such build must give the same trace. If one
+doesn't, link its objects half-and-half with the normal build to find the
+file, then opt locals out with `__attribute__((uninitialized))` to find the
+variable (PORT-029 found three this way).
+
 Verified 2026-09-16 on Windows 11 Home (PORT-012): exit 0 at 9000 retraces
 in about 1 s, and the log is byte-identical to the Linux run, including a
 per-frame trace (`MELEE_PORT_TRACE=1`, 5502 fighter lines). When the host

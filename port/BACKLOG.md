@@ -60,6 +60,86 @@ their own worktree.
 
 ## Tickets
 
+### PORT-029: Battlefield diverges between Linux and Windows
+- Status: in-progress
+- Owner: chat
+- Why: found while landing PORT-003. The line-stage trace is still
+  byte-identical across the two builds, but the Battlefield forced match
+  (`MELEE_PORT_DEMO_MATCH=1`, no `MELEE_PORT_STAGE`) differs: at f1200 of
+  the first demo Fox has 31.0% on Windows and 32.0% on Linux while
+  standing still on the left platform (-45.061, 27.200); the second demo
+  then diverges completely (116 diff lines out of 102 trace lines).
+  A 1% difference on a motionless fighter is the magnifier tick
+  (`Fighter_8006A360`), the same symptom PR #9 traced to an off-screen
+  test fed by uninitialized data - so suspect another weak GX/VI stub with
+  an out-pointer, or state the Battlefield camera path reads and the line
+  stage never touches. Both builds are `-msse2 -mfpmath=sse
+  -ffp-contract=off`, so plain codegen FP differences are unlikely.
+- Do: bisect with `MELEE_PORT_TRACE=1` around f1150-1250 on both builds,
+  find the first differing value, and audit the stubs/state it comes from
+  (`port/src/sdk_stubs_gen.c` out-pointers first). Then make the
+  Battlefield gate cross-platform in port/docs/windows.md.
+- Done when: the Windows Battlefield trace equals
+  `port/tests/demo_bf.trace`.
+- Log:
+  - 2026-09-16 22:35: filed from the PORT-003 run. Windows logs were
+    captured with `cmd /c "melee.exe 2> log"`; PowerShell's own `2>`
+    redirect wraps native stderr at the console width and loses line
+    tails.
+
+### PORT-019: Debug framebuffer and frame dumps (no window)
+- Status: open
+- Do: add `port/src/fb_port.c` + `port/include/port/fb.h`: a 640x480 RGBA
+  framebuffer with a depth buffer, clear, clipped line (width in pixels) and
+  flat/vertex-colored triangle rasterization with depth test, alpha blend.
+  Once per retrace (vi_port.c, after the game's draw pass) the frame is
+  "presented": with `MELEE_PORT_DUMP_FRAMES=a-b[/step]` it writes
+  `frame_NNNNN.bmp` (BMP writer, no deps) to `MELEE_PORT_DUMP_DIR` (default
+  cwd). Nothing draws into it yet except a test pattern behind
+  `MELEE_PORT_FB_TEST=1`.
+- Done when: a Linux run with FB_TEST dumps the expected pattern (check a
+  few pixel values in a small `port/tools/bmp_check.py`); the default
+  headless run and trace are unchanged; check.sh passes.
+- Log:
+
+### PORT-020: GX debug-draw subset into the framebuffer
+- Status: open
+- Depends: PORT-019
+- Do: `port/src/gx_debug.c` implements, on the CPU, the GX calls used by
+  `lb/lbcollision.c` and `mp/mplib.c` debug draws: GXSetProjection (state
+  exists in gx_port.c), GXSetViewport, GXLoadPosMtxImm/GXSetCurrentMtx,
+  GXClearVtxDesc/GXSetVtxDesc/GXSetVtxAttrFmt, GXBegin/GXPosition3f32/
+  GXColor4u8/GXEnd (GX_POINTS, LINES, LINESTRIP, TRIANGLES, TRIANGLESTRIP,
+  TRIANGLEFAN, QUADS), GXSetLineWidth/GXSetPointSize, GXSetZMode,
+  GXSetCullMode, GXSETARRAY/GXSetArray + GXCallDisplayList for the
+  executable's static index display lists (`lbColl_SphereDisplayList`,
+  `lbColl_CylinderDisplayList`; big-endian command bytes). Material/TEV
+  state is ignored (vertex or channel color only).
+  Only emit geometry inside an explicit debug scope
+  (`port_gx_debug_begin/end`), so model display lists, shadows, bg flash
+  and afterimages (which also call GXBegin/GXCallDisplayList) draw nothing.
+  Verify the GX weak stubs these replace are removed/overridden.
+- Done when: a port test hook draws one `lbColl_` sphere at a known world
+  position with the match camera and the dumped frame shows it where
+  `GXProject` puts that position (pixel check in bmp_check.py).
+- Log:
+
+### PORT-021: Stage collision, blast zones and camera bounds
+- Status: open
+- Depends: PORT-020
+- Do: `MELEE_PORT_DEBUG_DRAW` (comma list; this ticket: `coll`) runs a port
+  debug pass after the game's camera render (see camera.c ~4030, which
+  already calls mpLib_8005A2DC/mpLib_DrawZones/mpLib_DrawSpecialPoints
+  when its debug flags are set). Use the game's collision line draw
+  (mpLib_DrawMatchingLines colors per line kind: floor, ceiling, walls,
+  ledges, platforms) inside the debug scope, plus port-drawn rectangles for
+  blast zones and camera limits (stage general points 0x95-0x98).
+- Done when: on the line stage (`MELEE_PORT_STAGE=line`,
+  `MELEE_PORT_DEMO_MATCH=1`) a dumped frame shows the floor from -85.57 to
+  85.57 and the blast zone box; trace identical to headless; add a
+  check.sh gate dumping one frame and checking it with bmp_check.py.
+- Log:
+
 ### PORT-013: Samus: texture animation crash
 - Status: open
 - Do: `MELEE_PORT_DEMO_MATCH=16,2 MELEE_PORT_STAGE=line` crashes in
@@ -131,59 +211,6 @@ and Windows shows the same buffer in an SDL window. Only the GX calls the
 game's own debug draws use get implemented; everything else stays a stub
 (step 4 replaces this with a real GX backend). Gameplay must not change:
 the fighter trace with drawing on must equal the headless trace. -->
-
-### PORT-019: Debug framebuffer and frame dumps (no window)
-- Status: open
-- Do: add `port/src/fb_port.c` + `port/include/port/fb.h`: a 640x480 RGBA
-  framebuffer with a depth buffer, clear, clipped line (width in pixels) and
-  flat/vertex-colored triangle rasterization with depth test, alpha blend.
-  Once per retrace (vi_port.c, after the game's draw pass) the frame is
-  "presented": with `MELEE_PORT_DUMP_FRAMES=a-b[/step]` it writes
-  `frame_NNNNN.bmp` (BMP writer, no deps) to `MELEE_PORT_DUMP_DIR` (default
-  cwd). Nothing draws into it yet except a test pattern behind
-  `MELEE_PORT_FB_TEST=1`.
-- Done when: a Linux run with FB_TEST dumps the expected pattern (check a
-  few pixel values in a small `port/tools/bmp_check.py`); the default
-  headless run and trace are unchanged; check.sh passes.
-- Log:
-
-### PORT-020: GX debug-draw subset into the framebuffer
-- Status: open
-- Depends: PORT-019
-- Do: `port/src/gx_debug.c` implements, on the CPU, the GX calls used by
-  `lb/lbcollision.c` and `mp/mplib.c` debug draws: GXSetProjection (state
-  exists in gx_port.c), GXSetViewport, GXLoadPosMtxImm/GXSetCurrentMtx,
-  GXClearVtxDesc/GXSetVtxDesc/GXSetVtxAttrFmt, GXBegin/GXPosition3f32/
-  GXColor4u8/GXEnd (GX_POINTS, LINES, LINESTRIP, TRIANGLES, TRIANGLESTRIP,
-  TRIANGLEFAN, QUADS), GXSetLineWidth/GXSetPointSize, GXSetZMode,
-  GXSetCullMode, GXSETARRAY/GXSetArray + GXCallDisplayList for the
-  executable's static index display lists (`lbColl_SphereDisplayList`,
-  `lbColl_CylinderDisplayList`; big-endian command bytes). Material/TEV
-  state is ignored (vertex or channel color only).
-  Only emit geometry inside an explicit debug scope
-  (`port_gx_debug_begin/end`), so model display lists, shadows, bg flash
-  and afterimages (which also call GXBegin/GXCallDisplayList) draw nothing.
-  Verify the GX weak stubs these replace are removed/overridden.
-- Done when: a port test hook draws one `lbColl_` sphere at a known world
-  position with the match camera and the dumped frame shows it where
-  `GXProject` puts that position (pixel check in bmp_check.py).
-- Log:
-
-### PORT-021: Stage collision, blast zones and camera bounds
-- Status: open
-- Depends: PORT-020
-- Do: `MELEE_PORT_DEBUG_DRAW` (comma list; this ticket: `coll`) runs a port
-  debug pass after the game's camera render (see camera.c ~4030, which
-  already calls mpLib_8005A2DC/mpLib_DrawZones/mpLib_DrawSpecialPoints
-  when its debug flags are set). Use the game's collision line draw
-  (mpLib_DrawMatchingLines colors per line kind: floor, ceiling, walls,
-  ledges, platforms) inside the debug scope, plus port-drawn rectangles for
-  blast zones and camera limits (stage general points 0x95-0x98).
-- Done when: on the line stage (`MELEE_PORT_STAGE=line`,
-  `MELEE_PORT_DEMO_MATCH=1`) a dumped frame shows the floor from -85.57 to
-  85.57 and the blast zone box; trace identical to headless; add a
-  check.sh gate dumping one frame and checking it with bmp_check.py.
-- Log:
 
 ### PORT-022: Hitboxes, hurtboxes and ECBs
 - Status: open
@@ -289,29 +316,3 @@ the fighter trace with drawing on must equal the headless trace. -->
   window behavior, anything wrong in the debug draws. Findings become
   tickets.
 - Log:
-
-### PORT-029: Battlefield diverges between Linux and Windows
-- Status: proposed
-- Why: found while landing PORT-003. The line-stage trace is still
-  byte-identical across the two builds, but the Battlefield forced match
-  (`MELEE_PORT_DEMO_MATCH=1`, no `MELEE_PORT_STAGE`) differs: at f1200 of
-  the first demo Fox has 31.0% on Windows and 32.0% on Linux while
-  standing still on the left platform (-45.061, 27.200); the second demo
-  then diverges completely (116 diff lines out of 102 trace lines).
-  A 1% difference on a motionless fighter is the magnifier tick
-  (`Fighter_8006A360`), the same symptom PR #9 traced to an off-screen
-  test fed by uninitialized data - so suspect another weak GX/VI stub with
-  an out-pointer, or state the Battlefield camera path reads and the line
-  stage never touches. Both builds are `-msse2 -mfpmath=sse
-  -ffp-contract=off`, so plain codegen FP differences are unlikely.
-- Do: bisect with `MELEE_PORT_TRACE=1` around f1150-1250 on both builds,
-  find the first differing value, and audit the stubs/state it comes from
-  (`port/src/sdk_stubs_gen.c` out-pointers first). Then make the
-  Battlefield gate cross-platform in port/docs/windows.md.
-- Done when: the Windows Battlefield trace equals
-  `port/tests/demo_bf.trace`.
-- Log:
-  - 2026-09-16 22:35: filed from the PORT-003 run. Windows logs were
-    captured with `cmd /c "melee.exe 2> log"`; PowerShell's own `2>`
-    redirect wraps native stderr at the console width and loses line
-    tails.

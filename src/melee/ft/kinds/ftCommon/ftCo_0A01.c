@@ -6203,6 +6203,12 @@ static bool ftCo_800ADE48(Fighter* fp)
             } else {
                 data2->xFA_b1 = false;
             }
+#ifdef MELEE_PORT
+            /* Retail leaves switch_cmd unset here and tests r31, which every
+             * caller holds non-zero (&fp->cpu, fp, or ftCo_800AE7AC's
+             * non-zero cmd); an uninitialized read would be host garbage. */
+            switch_cmd = 1;
+#endif
         }
         if (switch_cmd != 0) {
             ftCo_800B4A78(fp);

@@ -43,6 +43,12 @@ void OSPanic(const char* file, int line, const char* msg, ...)
     vfprintf(stderr, msg, ap);
     va_end(ap);
     fputc('\n', stderr);
+#ifdef _WIN32
+    /* abort() fast-fails past the exception filter; trap instead so
+     * crash_win32.c prints the backtrace. */
+    fflush(stderr);
+    __builtin_trap();
+#endif
     abort();
 }
 

@@ -73,6 +73,14 @@ CFLAGS = [
     f"-I{ROOT}/libs/dolphin/src",
 ]
 
+# Windows (mingw) defaults to MSVC bitfield layout, where a bitfield run of
+# one base type takes a whole unit of that type (u32 flags : 1 ... ; u8 x;
+# is 8 bytes instead of 4). Game structs, and the swap walkers generated from
+# the Linux build's DWARF, assume the GCC layout both Linux and MWCC-era
+# decomp code rely on, so game code uses it on Windows too. Host files that
+# include <windows.h> (*_win32.c) keep the platform ABI.
+GAME_CFLAGS = ["-mno-ms-bitfields"] if WINDOWS else []
+
 LDFLAGS = [
     f"-target {TARGET}",
     # Linux: fully static (no 32-bit loader on the build host). Windows:
@@ -164,6 +172,8 @@ def main():
         obj = "$builddir/obj/" + src[:-2] + ".o"
         objs.append(obj)
         w(f"build {obj}: cc {ROOT}/{src} || {gen_cmd}")
+        if GAME_CFLAGS and not src.endswith("_win32.c"):
+            w("  cflags = $cflags " + " ".join(GAME_CFLAGS))
     w("")
     w(f"build $builddir/{EXE}: link " + " ".join(objs))
     w(f"default $builddir/{EXE}")

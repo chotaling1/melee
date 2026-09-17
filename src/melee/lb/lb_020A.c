@@ -187,7 +187,11 @@ void fn_8002113C(HSD_JObj* jobj, Vec3* axis, f32 angle)
     Mtx tmpMtx;
     Mtx rotMtx;
     Mtx result;
+#ifdef MELEE_PORT
+    Quaternion rot; /* the JObj rotation accessors copy 4 floats */
+#else
     Vec3 rot;
+#endif
     Quaternion rot2;
     Vec3 localAxis;
     Mtx mtx;
@@ -205,6 +209,11 @@ void fn_8002113C(HSD_JObj* jobj, Vec3* axis, f32 angle)
         HSD_MkRotationMtx(tmpMtx, &rot);
         PSMTXConcat(tmpMtx, rotMtx, result);
         HSD_QuatLib_8037EB28(result, &rot);
+#ifdef MELEE_PORT
+        /* On console the 4th float lies in result[0][0] (sp+0x7C, right
+         * after rot at sp+0x70), so that is what lands in rotate.w. */
+        rot.w = result[0][0];
+#endif
         HSD_JObjSetRotation(jobj, (Quaternion*) &rot);
     } else {
         HSD_JObjGetRotation(jobj, &rot2);

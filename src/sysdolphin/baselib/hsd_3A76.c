@@ -498,7 +498,11 @@ void HSD_SisLib_803A84BC(HSD_GObj* gobj, int pass)
             }
             HSD_CObjGetViewingMtx(HSD_CObjGetCurrent(), (MtxPtr)&m);
         } else {
+#ifdef MELEE_PORT
+            Mtx44 projection_m; /* MTXOrtho writes 4 rows */
+#else
             Mtx projection_m;
+#endif
 
             GXSetZMode(0U, 0U, 0U);
             GXSetViewport(0.0F, 0.0F, 640.0F, 480.0F, 0.0F, 1.0F);

@@ -61,7 +61,7 @@ their own worktree.
 ## Tickets
 
 ### PORT-029: Battlefield diverges between Linux and Windows
-- Status: in-progress
+- Status: blocked
 - Owner: chat
 - Why: found while landing PORT-003. The line-stage trace is still
   byte-identical across the two builds, but the Battlefield forced match
@@ -86,6 +86,16 @@ their own worktree.
     captured with `cmd /c "melee.exe 2> log"`; PowerShell's own `2>`
     redirect wraps native stderr at the console width and loses line
     tails.
+  - 2026-09-16 23:30: fixed in PR #11 (branch ticket/PORT-029-bf-divergence,
+    not merged). Linux was wrong: 3x4 Mtx passed to MTXPerspective/MTXOrtho
+    in lbVector_WorldToScreen clobbered a stack neighbour (magnifier tick),
+    plus unset switch_cmd (ftCo_800ADE48) and Vec3 rot used as Quaternion
+    (fn_8002113C). Normal/zero/pattern-init Linux builds now agree on both
+    stages; check.sh ALL GATES PASSED with updated baselines. Blocked: the
+    Windows node exec rejects every command (`custom-env-not-supported`),
+    so the Windows trace is unverified. Next: run windows.md line + BF
+    checks with the branch's melee.exe, then merge PR #11 and drop this
+    ticket.
 
 ### PORT-019: Debug framebuffer and frame dumps (no window)
 - Status: open

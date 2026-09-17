@@ -7,7 +7,8 @@ drop tickets; the top-most `open` ticket is worked first.
 
 Roadmap context: `AGENTS.md` (not in git) and the step list in the repo's
 agent notes. Step 2 (real data, simulation) is in progress; step 3 (window,
-input) needs a Windows build first.
+input, debug draws) is ticketed as PORT-019..028 and runs after the step 2
+tickets. A ticket's `Depends:` tickets must be merged first.
 
 ## Procedure (for the automated run)
 
@@ -139,10 +140,168 @@ their own worktree.
   change is explained in the PR.
 - Log:
 
+<!-- Roadmap step 3: window, input, debug draws. Scoped 2026-09-16 with
+Chuck. Design: the debug renderer rasterizes into a CPU framebuffer
+(port-owned, no GPU), so Linux can dump frames to image files for check.sh
+and Windows shows the same buffer in an SDL window. Only the GX calls the
+game's own debug draws use get implemented; everything else stays a stub
+(step 4 replaces this with a real GX backend). Gameplay must not change:
+the fighter trace with drawing on must equal the headless trace. -->
+
+### PORT-019: Debug framebuffer and frame dumps (no window)
+- Status: open
+- Do: add `port/src/fb_port.c` + `port/include/port/fb.h`: a 640x480 RGBA
+  framebuffer with a depth buffer, clear, clipped line (width in pixels) and
+  flat/vertex-colored triangle rasterization with depth test, alpha blend.
+  Once per retrace (vi_port.c, after the game's draw pass) the frame is
+  "presented": with `MELEE_PORT_DUMP_FRAMES=a-b[/step]` it writes
+  `frame_NNNNN.bmp` (BMP writer, no deps) to `MELEE_PORT_DUMP_DIR` (default
+  cwd). Nothing draws into it yet except a test pattern behind
+  `MELEE_PORT_FB_TEST=1`.
+- Done when: a Linux run with FB_TEST dumps the expected pattern (check a
+  few pixel values in a small `port/tools/bmp_check.py`); the default
+  headless run and trace are unchanged; check.sh passes.
+- Log:
+
+### PORT-020: GX debug-draw subset into the framebuffer
+- Status: open
+- Depends: PORT-019
+- Do: `port/src/gx_debug.c` implements, on the CPU, the GX calls used by
+  `lb/lbcollision.c` and `mp/mplib.c` debug draws: GXSetProjection (state
+  exists in gx_port.c), GXSetViewport, GXLoadPosMtxImm/GXSetCurrentMtx,
+  GXClearVtxDesc/GXSetVtxDesc/GXSetVtxAttrFmt, GXBegin/GXPosition3f32/
+  GXColor4u8/GXEnd (GX_POINTS, LINES, LINESTRIP, TRIANGLES, TRIANGLESTRIP,
+  TRIANGLEFAN, QUADS), GXSetLineWidth/GXSetPointSize, GXSetZMode,
+  GXSetCullMode, GXSETARRAY/GXSetArray + GXCallDisplayList for the
+  executable's static index display lists (`lbColl_SphereDisplayList`,
+  `lbColl_CylinderDisplayList`; big-endian command bytes). Material/TEV
+  state is ignored (vertex or channel color only).
+  Only emit geometry inside an explicit debug scope
+  (`port_gx_debug_begin/end`), so model display lists, shadows, bg flash
+  and afterimages (which also call GXBegin/GXCallDisplayList) draw nothing.
+  Verify the GX weak stubs these replace are removed/overridden.
+- Done when: a port test hook draws one `lbColl_` sphere at a known world
+  position with the match camera and the dumped frame shows it where
+  `GXProject` puts that position (pixel check in bmp_check.py).
+- Log:
+
+### PORT-021: Stage collision, blast zones and camera bounds
+- Status: open
+- Depends: PORT-020
+- Do: `MELEE_PORT_DEBUG_DRAW` (comma list; this ticket: `coll`) runs a port
+  debug pass after the game's camera render (see camera.c ~4030, which
+  already calls mpLib_8005A2DC/mpLib_DrawZones/mpLib_DrawSpecialPoints
+  when its debug flags are set). Use the game's collision line draw
+  (mpLib_DrawMatchingLines colors per line kind: floor, ceiling, walls,
+  ledges, platforms) inside the debug scope, plus port-drawn rectangles for
+  blast zones and camera limits (stage general points 0x95-0x98).
+- Done when: on the line stage (`MELEE_PORT_STAGE=line`,
+  `MELEE_PORT_DEMO_MATCH=1`) a dumped frame shows the floor from -85.57 to
+  85.57 and the blast zone box; trace identical to headless; add a
+  check.sh gate dumping one frame and checking it with bmp_check.py.
+- Log:
+
+### PORT-022: Hitboxes, hurtboxes and ECBs
+- Status: open
+- Depends: PORT-021
+- Do: `MELEE_PORT_DEBUG_DRAW=hitbox` sets the game's own per-fighter
+  display mode (`Fighter.x21FC_flag`, semantics in db/dbanim.c) so
+  ftDrawCommon_800805C8 / itdraw.c draw hit capsules, hurt capsules,
+  shields, reflect/absorb bubbles in the game's colors, inside the debug
+  scope. `ecb` draws mpLib_DrawEcbs. If a mode bit also hides the model or
+  changes logic, set only what drawing needs and note it in the PR.
+- Done when: a dumped frame during a Fox attack (pick the frame from
+  `MELEE_PORT_TRACE=1`) shows a hitbox; hurtboxes visible on both
+  fighters; trace identical to headless; check.sh gate extended.
+- Log:
+
+### PORT-023: Skeletons
+- Status: open
+- Depends: PORT-020
+- Do: `MELEE_PORT_DEBUG_DRAW=skel` draws each fighter's (and held item's)
+  JObj tree as parent-to-child lines from world matrices, one color per
+  player, joints as points. Headless runs may skip matrix setup, so call
+  HSD_JObjSetupMatrix (or equivalent) from the port pass only; it must not
+  change the trace.
+- Done when: a sequence of dumped frames shows the stick figure following
+  the trace motion (e.g. a jump: y rises then falls); trace identical.
+- Log:
+
+### PORT-024: SDL3 for the Windows build
+- Status: open
+- Do: add SDL3 (pinned release, e.g. 3.2.x) for `x86-windows-gnu` only.
+  First try the official `SDL3-devel-<ver>-mingw` package (i686 import lib
+  + SDL3.dll): fetch it in a script (`port/tools/fetch_sdl.py`, checksum
+  pinned, extracted under `port/third_party/`, gitignored) and link with
+  zig. If zig cannot link it, build SDL3 from source with zig cc using
+  SDL's `SDL_build_config_windows.h`. Document in port/docs/windows.md.
+  The Linux build stays SDL-free.
+- Done when: melee.exe links with SDL; `SDL3.dll` is placed next to the
+  exe by the build; check.sh still passes (Windows link step).
+- Log:
+
+### PORT-025: Window and real-time pacing (Windows)
+- Status: open
+- Depends: PORT-019, PORT-024
+- Do: `MELEE_PORT_WINDOW=1` opens a resizable window (640x480 logical,
+  4:3 letterboxed), uploads the framebuffer to an SDL texture each
+  retrace, pumps events, paces retraces to 59.94 Hz wall clock (the time
+  model stays retrace-driven), and exits 0 when the window closes. Esc
+  quits. Without the variable nothing changes.
+- Verify on the Windows node (see port/docs/windows.md: run via
+  `exec host=node` PowerShell `-EncodedCommand`, the WSL share is at
+  `\\wsl.localhost\OpenClawGateway\...`). If a node-launched process
+  cannot show a window on the desktop, verify with MELEE_PORT_DUMP_FRAMES
+  from the windowed build instead and set PORT-027 to cover the visual
+  check.
+- Done when: windowed run on the node reaches the match and the dumped (or
+  captured) frames show the PORT-021/022 debug draws; 9000-retrace run
+  with window matches the headless trace; average frame time 16.68 ms
+  +/- 0.2 logged at exit.
+- Log:
+
+### PORT-026: Controller and keyboard input
+- Status: open
+- Depends: PORT-025
+- Do: replace the PADRead path in pad_port.c (keep MELEE_PORT_INPUT for
+  tests; it wins when set) with SDL gamepads for ports 1-4: main stick and
+  C-stick to s8, analog triggers to u8 (plus digital L/R at full press),
+  A B X Y Z Start and D-pad. Keyboard fallback for port 1 (document the
+  layout). Hot-plug. Use SDL's GameCube adapter support where available and
+  document the WinUSB (Zadig) requirement. Sample once per retrace, before
+  the game polls. Test with SDL's virtual joystick
+  (SDL_AttachVirtualJoystick) driven by a script so the bot can verify.
+- Done when: a virtual-joystick run moves port 1 in a way the trace shows
+  (e.g. hold right: Fox dashes, pos x increases); docs list the mappings.
+- Log:
+
+### PORT-027: Human-controlled test match
+- Status: open
+- Depends: PORT-026
+- Why: MELEE_PORT_DEMO_MATCH hijacks the attract demo (both CPU, and a
+  button press would normally end it).
+- Do: `MELEE_PORT_MATCH=<p1ckind>,<p2ckind>[,stage]` starts a real VS match
+  directly (skip menus): port 1 human, port 2 CPU (`MELEE_PORT_CPU_LEVEL`,
+  default 9), 4 stocks, timer off. Pause with Start works as in game.
+  Debug hotkeys: F1-F4 toggle coll/hitbox/ecb/skel, F5 frame advance while
+  paused.
+- Done when: scripted/virtual input controls Fox in the trace; CPU acts;
+  a match ends on stocks with exit 0 back to a result or restart.
+- Log:
+
 ### PORT-009: Dolphin comparison tooling
 - Status: needs-chuck
 - Do: define a per-frame state dump (position, velocity, action state,
   percent, frame counters, RNG seed) that can be produced both by the port
   and by Dolphin (memory watch / Lua script at known addresses), plus a
   diff tool. Needs Chuck to run Dolphin and record the same match.
+- Log:
+
+### PORT-028: Chuck plays it
+- Status: needs-chuck
+- Depends: PORT-027
+- Do: on Windows, run the documented windowed match with a controller
+  (and the GameCube adapter if available); report input feel/latency,
+  window behavior, anything wrong in the debug draws. Findings become
+  tickets.
 - Log:

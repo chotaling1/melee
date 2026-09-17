@@ -316,3 +316,34 @@ the fighter trace with drawing on must equal the headless trace. -->
   window behavior, anything wrong in the debug draws. Findings become
   tickets.
 - Log:
+
+### PORT-030: Uninitialized-read gate in check.sh
+- Status: proposed
+- Why: PORT-029 found three host-layout-dependent reads (3x4 Mtx passed to
+  MTXPerspective/MTXOrtho, `switch_cmd` in ftCo_800ADE48, Vec3 `rot` used
+  as a Quaternion in fn_8002113C) only by rebuilding with
+  `-ftrivial-auto-var-init=zero|pattern`. The same class will come back
+  with every newly reached code path (characters, items, stages).
+- Do: add a `port/configure.py` knob for extra cflags + build dir, and a
+  check.sh gate (or `--uninit` option if too slow for every run) that
+  builds a `pattern` variant and requires both match traces to equal the
+  normal build's. Document the object/declaration bisect recipe as a
+  script (object halves, then `__attribute__((uninitialized))` per local).
+- Done when: the gate passes on pc-port and fails when one of the PORT-029
+  fixes is reverted.
+- Log:
+
+### PORT-031: Weak SDK stubs that leave out-structs undefined
+- Status: proposed
+- Why: 69 still-linked weak stubs in `port/src/sdk_stubs_gen.c` take
+  non-const pointers. Most are sinks (AX voice setters, GXLoad*), but some
+  fill structs callers may read back: `MCCGetConnectionStatus` (enum out),
+  `THPDec_8032F8D4` (decode info out), `GXInitLight*`/`GXInitTexObj*`/
+  `GXInitTlutObj` (object fields), `AXFX{Chorus,Delay,Reverb*}Init`.
+  PR #9 (GXProject) was this class; PORT-029's causes were not.
+- Do: for each, check the game's callers for read-backs of the out data;
+  implement the SDK's defined result (or zero-fill with a comment) where
+  anything is read.
+- Done when: every stub with a read-back out-pointer is implemented; traces
+  unchanged or the change explained.
+- Log:

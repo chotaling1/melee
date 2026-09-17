@@ -46,6 +46,12 @@ Select-String -Path run.log -Pattern '^\[port\] (f\d+ p\d|p\d kind \d+ attrs)' |
 
 then compare `trace.txt` with the repo's `port/tests/demo_line.trace`.
 
+Verified 2026-09-16 on Windows 11 Home (PORT-012): exit 0 at 9000 retraces
+in about 1 s, and the log is byte-identical to the Linux run, including a
+per-frame trace (`MELEE_PORT_TRACE=1`, 5502 fighter lines). When the host
+is the machine running WSL, the build and the ISO can be used in place
+through `\\wsl.localhost\<distro>\...` (set `MELEE_ISO` to that path).
+
 ## If it crashes
 
 The Windows crash handler prints `fatal exception`, the faulting address, EIP

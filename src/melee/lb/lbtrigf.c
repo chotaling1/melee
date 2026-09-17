@@ -5,6 +5,10 @@
 #include <math.h>
 #include <placeholder.h>
 
+#ifdef MELEE_PORT
+float __fnmsubs(float, float, float); /* port/src/math_port.c */
+#endif
+
 /* 022DF8 */ static float lb_sqrtf(float x);
 /* 400770 */ extern float MSL_TrigF_80400770[];
 /* 400774 */ extern float MSL_TrigF_80400774[];
@@ -144,7 +148,7 @@ static const float atanf_lookup[] = {
     0.0,
 };
 
-#ifdef __MWERKS__
+#if defined(__MWERKS__) || defined(MELEE_PORT)
 float atanf(float x)
 {
     float const silver_ratio = 2.4142136573791504f;

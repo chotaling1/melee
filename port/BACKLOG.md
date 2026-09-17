@@ -59,17 +59,6 @@ their own worktree.
 
 ## Tickets
 
-### PORT-018: Use MSL's float math instead of host libm
-- Status: in-progress
-- Owner: chat
-- Why: sinf/cosf/tanf/atanf/fmodf/logf/exp2f resolve to host libc (musl on
-  Linux, MinGW on Windows). melee.exe on Windows diverges from the Linux
-  trace at f120, and neither host matches console (MSL `src/MSL/trigf.c`,
-  `math.c`).
-- Do: build the decompiled MSL float math into the port for both targets.
-- Done when: Linux and Windows traces are identical; baseline updated.
-- Log:
-
 ### PORT-003: Battlefield from the real DAT
 - Status: open
 - Do: `MELEE_PORT_DEMO_MATCH=1` without `MELEE_PORT_STAGE=line` uses
@@ -148,14 +137,6 @@ their own worktree.
   the retail counts (`fma_scan.py dol`).
 - Done when: gameplay directories are converted and gated; the trace
   change is explained in the PR.
-- Log:
-
-### PORT-012: Run melee.exe on Windows
-- Status: needs-chuck
-- Do: follow `port/docs/windows.md` on a 64-bit Windows PC: run the
-  headless test match and compare the trace with
-  `port/tests/demo_line.trace`. Paste the log tail (and the trace diff if
-  any) into this ticket's log, or tell a chat session.
 - Log:
 
 ### PORT-009: Dolphin comparison tooling

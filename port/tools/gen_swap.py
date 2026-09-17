@@ -107,9 +107,14 @@ TYPES = [
     "ftLk_DatAttrs",
     "ftGameWatchAttributes",
     "MarsAttributes",
-    # Item special attributes with u8/s16 fields (itPublicData articles).
+    # Item special attributes with u8/s16 fields (itPublicData articles and
+    # the stage item tables, stage_info.itemdata).
     "itLeadeadAttributes",
     "itOctarockAttributes",
+    "itLikelikeAttributes",
+    "itTincleAttributes",
+    "itWhiteBeaAttributes",
+    "itOldottoseaAttributes",
     # Trophy tables (TyDatai.usd, src/melee/ty/types.h)
     "TrophyData",
     "ToyNameData",

@@ -77,12 +77,12 @@ void port_swap_article(void* addr)
 }
 
 
-/* ---- itPublicData (ItCo.usd) ----------------------------------------- */
-
 static inline void* ptr_at(void* obj, size_t off)
 {
     return *(void**) ((u8*) obj + off);
 }
+
+/* ---- itPublicData (ItCo.usd) ----------------------------------------- */
 
 /// Pointers inside the special attributes of the few itPublicData items
 /// that have them (everything else there is f32/s32 words). Offsets are
@@ -110,7 +110,10 @@ static void swap_special_pointers(ItemKind kind, void* sp)
     case It_Kind_Kuriboh:
     case It_Kind_Leadead:
     case It_Kind_Octarock:
-    case It_Kind_Ottosea: /* +0: 0x14 bytes of s32/f32 */
+    case It_Kind_Ottosea:
+    case It_Kind_Old_Otto: /* itOldottoseaAttributes.x0 */
+    case It_Kind_Whitebea: /* itWhiteBeaAttributes.x0 */
+        /* +0: { s32; f32 } rows of animation/speed parameters */
         words(ptr_at(sp, 0));
         break;
     case It_Kind_Unk4:
@@ -133,6 +136,49 @@ static void swap_special_pointers(ItemKind kind, void* sp)
     }
 }
 
+/// One article of a known item kind: the special attributes of some kinds
+/// hold s16/u8 fields or pointers, which the generic word pass in
+/// port_swap_article would get wrong.
+void port_swap_item_article(int kind, void* addr)
+{
+    Article* a = addr;
+
+    if (!OK(a)) {
+        return;
+    }
+    /* Special attributes with s16/u8 fields: typed swap first, so the
+     * extent word pass in port_swap_article skips those words. */
+    if (OK(a->x4_specialAttributes)) {
+        switch ((ItemKind) kind) {
+        case It_Kind_Leadead:
+            port_swap_itLeadeadAttributes(a->x4_specialAttributes);
+            break;
+        case It_Kind_Octarock:
+            port_swap_itOctarockAttributes(a->x4_specialAttributes);
+            break;
+        /* Stage items (stage_info.itemdata). */
+        case It_Kind_Likelike:
+            port_swap_itLikelikeAttributes(a->x4_specialAttributes);
+            break;
+        case It_Kind_Tincle:
+            port_swap_itTincleAttributes(a->x4_specialAttributes);
+            break;
+        case It_Kind_Whitebea:
+            port_swap_itWhiteBeaAttributes(a->x4_specialAttributes);
+            break;
+        case It_Kind_Old_Otto:
+            port_swap_itOldottoseaAttributes(a->x4_specialAttributes);
+            break;
+        default:
+            break;
+        }
+    }
+    port_swap_article(a);
+    if (OK(a->x4_specialAttributes)) {
+        swap_special_pointers((ItemKind) kind, a->x4_specialAttributes);
+    }
+}
+
 /// Article* table of `count` entries starting at item kind `first`; NULL
 /// slots (fighter articles live in the fighter DATs) are skipped.
 static void article_table(Article** t, ItemKind first, size_t count)
@@ -145,29 +191,7 @@ static void article_table(Article** t, ItemKind first, size_t count)
         count = port_extent(t) / 4;
     }
     for (i = 0; i < count; i++) {
-        Article* a = t[i];
-        if (!OK(a)) {
-            continue;
-        }
-        /* Special attributes with s16/u8 fields: typed swap first, so the
-         * extent word pass in port_swap_article skips those words. */
-        if (OK(a->x4_specialAttributes)) {
-            switch ((ItemKind) (first + i)) {
-            case It_Kind_Leadead:
-                port_swap_itLeadeadAttributes(a->x4_specialAttributes);
-                break;
-            case It_Kind_Octarock:
-                port_swap_itOctarockAttributes(a->x4_specialAttributes);
-                break;
-            default:
-                break;
-            }
-        }
-        port_swap_article(a);
-        if (OK(a->x4_specialAttributes)) {
-            swap_special_pointers((ItemKind) (first + i),
-                                  a->x4_specialAttributes);
-        }
+        port_swap_item_article((int) (first + i), t[i]);
     }
 }
 

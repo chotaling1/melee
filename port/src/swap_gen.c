@@ -2048,6 +2048,99 @@ void port_swap_itOctarockAttributes(void* p)
     port_swap16((u8*) p + 0x1C); /* itOctarockAttributes.x1C */
 }
 
+/* itLikelikeAttributes: 0x88 bytes */
+void port_swap_itLikelikeAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* itLikelikeAttributes.x4 */
+    port_swap32((u8*) p + 0x8); /* itLikelikeAttributes.x8 */
+    port_swap32((u8*) p + 0xC); /* itLikelikeAttributes.xC */
+    port_swap32((u8*) p + 0x18); /* itLikelikeAttributes.x18 */
+    port_swap32((u8*) p + 0x1C); /* itLikelikeAttributes.x1C */
+    port_swap32((u8*) p + 0x20); /* itLikelikeAttributes.x20 */
+    port_swap32((u8*) p + 0x24); /* itLikelikeAttributes.x24 */
+    port_swap32((u8*) p + 0x28); /* itLikelikeAttributes.x28 */
+    port_swap32((u8*) p + 0x2C); /* itLikelikeAttributes.x2C */
+    port_swap32((u8*) p + 0x30); /* itLikelikeAttributes.x30 */
+    port_swap32((u8*) p + 0x34); /* itLikelikeAttributes.x34 */
+    port_swap32((u8*) p + 0x38); /* itLikelikeAttributes.x38 */
+    port_claim((u8*) p + 0x3C, 1); /* itLikelikeAttributes.x3C */
+    port_claim((u8*) p + 0x3D, 1); /* itLikelikeAttributes.x3D */
+    port_claim((u8*) p + 0x3E, 1); /* itLikelikeAttributes.x3E */
+    port_swap32((u8*) p + 0x40); /* itLikelikeAttributes.x40[0].state */
+    port_swap32((u8*) p + 0x44); /* itLikelikeAttributes.x40[0].damage */
+    port_swap32((u8*) p + 0x48); /* itLikelikeAttributes.x40[0].kb_angle */
+    port_swap32((u8*) p + 0x4C); /* itLikelikeAttributes.x40[0].unkC */
+    port_swap32((u8*) p + 0x50); /* itLikelikeAttributes.x40[0].unk10 */
+    port_swap32((u8*) p + 0x54); /* itLikelikeAttributes.x40[0].unk14 */
+    port_swap32((u8*) p + 0x58); /* itLikelikeAttributes.x40[0].element */
+    port_swap32((u8*) p + 0x5C); /* itLikelikeAttributes.x40[0].sfx_severity */
+    port_swap32((u8*) p + 0x60); /* itLikelikeAttributes.x40[0].sfx_kind */
+    port_swap32((u8*) p + 0x64); /* itLikelikeAttributes.x40[1].state */
+    port_swap32((u8*) p + 0x68); /* itLikelikeAttributes.x40[1].damage */
+    port_swap32((u8*) p + 0x6C); /* itLikelikeAttributes.x40[1].kb_angle */
+    port_swap32((u8*) p + 0x70); /* itLikelikeAttributes.x40[1].unkC */
+    port_swap32((u8*) p + 0x74); /* itLikelikeAttributes.x40[1].unk10 */
+    port_swap32((u8*) p + 0x78); /* itLikelikeAttributes.x40[1].unk14 */
+    port_swap32((u8*) p + 0x7C); /* itLikelikeAttributes.x40[1].element */
+    port_swap32((u8*) p + 0x80); /* itLikelikeAttributes.x40[1].sfx_severity */
+    port_swap32((u8*) p + 0x84); /* itLikelikeAttributes.x40[1].sfx_kind */
+}
+
+/* itTincleAttributes: 0x58 bytes */
+void port_swap_itTincleAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x0); /* itTincleAttributes.x0 */
+    port_swap32((u8*) p + 0x4); /* itTincleAttributes.x4 */
+    port_swap32((u8*) p + 0x8); /* itTincleAttributes.x8 */
+    port_swap32((u8*) p + 0xC); /* itTincleAttributes.xC */
+    port_swap32((u8*) p + 0x10); /* itTincleAttributes.x10 */
+    port_swap32((u8*) p + 0x14); /* itTincleAttributes.x14 */
+    port_swap32((u8*) p + 0x18); /* itTincleAttributes.x18 */
+    port_swap32((u8*) p + 0x1C); /* itTincleAttributes.x1C */
+    port_swap32((u8*) p + 0x20); /* itTincleAttributes.x20 */
+    port_swap32((u8*) p + 0x24); /* itTincleAttributes.x24 */
+    port_swap32((u8*) p + 0x28); /* itTincleAttributes.x28 */
+    port_swap32((u8*) p + 0x2C); /* itTincleAttributes.x2C */
+    port_swap32((u8*) p + 0x30); /* itTincleAttributes.x30 */
+    port_swap32((u8*) p + 0x34); /* itTincleAttributes.x34 */
+    port_swap32((u8*) p + 0x38); /* itTincleAttributes.x38 */
+    port_swap32((u8*) p + 0x3C); /* itTincleAttributes.x3C */
+    port_swap32((u8*) p + 0x40); /* itTincleAttributes.x40 */
+    port_swap32((u8*) p + 0x44); /* itTincleAttributes.x44 */
+    port_swap32((u8*) p + 0x48); /* itTincleAttributes.x48 */
+    port_swap32((u8*) p + 0x4C); /* itTincleAttributes.x4C */
+    port_swap32((u8*) p + 0x50); /* itTincleAttributes.x50 */
+    port_claim((u8*) p + 0x54, 1); /* itTincleAttributes.x54 */
+    port_claim((u8*) p + 0x55, 1); /* itTincleAttributes.x55 */
+}
+
+/* itWhiteBeaAttributes: 0x18 bytes */
+void port_swap_itWhiteBeaAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* itWhiteBeaAttributes.x4 */
+    port_swap16((u8*) p + 0x8); /* itWhiteBeaAttributes.x8 */
+    port_swap16((u8*) p + 0xA); /* itWhiteBeaAttributes.xA */
+    port_swap16((u8*) p + 0xC); /* itWhiteBeaAttributes.xC */
+    port_swap16((u8*) p + 0xE); /* itWhiteBeaAttributes.xE */
+    port_swap32((u8*) p + 0x10); /* itWhiteBeaAttributes.x10 */
+    port_swap16((u8*) p + 0x14); /* itWhiteBeaAttributes.x14 */
+}
+
+/* itOldottoseaAttributes: 0x2C bytes */
+void port_swap_itOldottoseaAttributes(void* p)
+{
+    port_swap32((u8*) p + 0x4); /* itOldottoseaAttributes.x4 */
+    port_swap32((u8*) p + 0x8); /* itOldottoseaAttributes.x8 */
+    port_swap32((u8*) p + 0xC); /* itOldottoseaAttributes.xC */
+    port_claim((u8*) p + 0x10, 1); /* itOldottoseaAttributes.x10 */
+    port_swap32((u8*) p + 0x14); /* itOldottoseaAttributes.x14 */
+    port_swap32((u8*) p + 0x18); /* itOldottoseaAttributes.x18 */
+    port_swap32((u8*) p + 0x1C); /* itOldottoseaAttributes.x1C */
+    port_swap32((u8*) p + 0x20); /* itOldottoseaAttributes.x20 */
+    port_swap32((u8*) p + 0x24); /* itOldottoseaAttributes.x24 */
+    port_claim((u8*) p + 0x28, 1); /* itOldottoseaAttributes.x28 */
+}
+
 /* TrophyData: 0x24 bytes */
 void port_swap_TrophyData(void* p)
 {
